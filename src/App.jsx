@@ -1,5 +1,5 @@
 import 'normalize.css'; // Reset CSS
-import './App.css'
+// import './App.css'
 import { AuthProvider } from './contexts/AuthContext';
 import { DeviceProvider } from './contexts/DeviceContext';
 import { ThemeProvider } from './contexts/ThemeContext';
