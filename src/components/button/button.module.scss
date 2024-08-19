@@ -1,0 +1,97 @@
+@use '/src/styles/style.scss';
+
+%btn {
+  width: 150px;
+  height: 44px;
+  border: none;
+  border-radius: 25px;
+  user-select: none;
+}
+
+.primaryBtn {
+  @extend %btn;
+  color: style.$white;
+  background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+}
+
+.outlineBtn {
+  @extend %btn;
+  color: style.$white;
+  background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+  border: none;
+}
+
+.footprint {
+  margin-left: 12px;
+  transition: transform .5s ease;
+}
+
+.moreBtnLabel:hover {
+  cursor: pointer;
+}
+
+.labelMoreBtn {
+  width: 40px;
+  height: 40px;
+  margin-left: 12px;
+  background-color: style.$primary_blue;
+  border: 1px solid style.$primary_blue;
+  border-radius: 50%;
+  color: style.$white;
+  transition: all 0.2s ease-out;
+}
+
+.mobileBookBtn {
+  position: fixed;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  bottom: 24px;
+  right: 24px;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  font-size: 14px;
+  color: style.$white;
+  background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+  box-shadow: 0px 0px 40px 0px #0000001F;
+}
+
+@media screen and (min-width: 480px) {
+  .primaryBtn:hover {
+    cursor: pointer;
+    background: style.$dark_orange;
+
+    & .footprint {
+      transform: rotate(45deg);
+    }
+  }
+
+
+  .outlineBtn {
+    color: style.$white;
+    background: transparent;
+    border: 1px solid style.$white;
+
+    &:hover {
+      cursor: pointer;
+      border: style.$dark_orange;
+      background: style.$dark_orange;
+
+      & .footprint {
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  .labelMoreBtn:hover {
+    cursor: pointer;
+    background-color: style.$white;
+    color: style.$primary_blue
+  }
+
+  .mobileBookBtn {
+    display: none;
+  }
+}

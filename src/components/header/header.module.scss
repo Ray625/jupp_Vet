@@ -1,0 +1,337 @@
+@use '/src/styles/style.scss';
+
+.container {
+  position: fixed;
+  width: 100vw;
+  z-index: 100;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 80px;
+  padding: 8px 24px;
+  background-color: style.$white;
+  box-shadow: 0px 4px 20px 0px #00000014;
+}
+
+.logo {
+  height: 44px;
+  width: 156px;
+  background-image: url('../../public/svg/logo.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+// navbar 連結共用樣式
+%link {
+  padding: 8px 16px;
+  text-decoration: none;
+  color: style.$dark_gray;
+  font-size: style.$font-size;
+  position: relative;
+  user-select: none;
+
+  &::after {
+    content: '';
+    width: 13.5px;
+    height: 12px;
+    background-image: url('../../public/svg/footprint.svg');
+    position: absolute;
+    left: -6px;
+    top: 50%;
+    transform: translate(0, -50%);
+    display: none;
+  }
+
+  &:hover::after {
+    display: block;
+  }
+}
+
+.navbarList {
+  height: 100%; // 把下面推出去讓滑鼠hover向下移動的過程不會讓下拉選單消失
+  display: none; // mobile時隱藏
+
+  >.navbarEntry {
+    @extend %link;
+    height: 100%;
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      & .dropdownMenu {
+        display: flex;
+      }
+    }
+  }
+}
+
+.btnGroup {
+  display: none;
+
+  >.login {
+    @extend %link;
+    margin-left: 20px;
+  }
+}
+
+.dropdownMenu {
+  border-radius: 0 0 16px 16px;
+  background-color: style.$white;
+  margin: 0;
+  padding: 8px 0;
+  width: 148px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 100%;
+  left: -27px;
+  box-shadow: 0px 10px 12px 0px #00000014;
+
+  &:hover {
+    display: flex;
+  }
+
+  div {
+    width: 132px;
+    padding: 16px 24px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: style.$dark_gray;
+
+    &:hover {
+      background-color: style.$hover_gray;
+    }
+  }
+}
+
+.hamburgerContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  background-color: transparent;
+  border-radius: 8px;
+}
+
+%hamburger {
+  position: relative;
+  width: 24px;
+  height: 2px;
+  background-color: style.$icon_gray;
+  transition: all .2s ease 0.2s;
+
+  &::after,
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 24px;
+    height: 2px;
+    background-color: style.$icon_gray;
+    transition: all 0.4s ease;
+  }
+
+  &::after {
+    bottom: 8px;
+  }
+
+  &::before {
+    top: 8px;
+  }
+}
+
+.hamburgerBtn {
+  @extend %hamburger;
+}
+
+.closeBtn {
+  @extend %hamburger;
+  background-color: transparent;
+  transition: none;
+
+  &::after {
+    top: 0;
+    bottom: 0;
+    transform: rotate(45deg);
+  }
+
+  &::before {
+    top: 0;
+    bottom: 0;
+    transform: rotate(-45deg);
+  }
+}
+
+.mobileMenu {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 8px;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  width: 100vw;
+  height: fit-content; // 若遇到小螢幕，內容會超出100vh，所以這裡設定fit-content
+  min-height: calc(100vh - 80px); // min-height設定讓大螢幕時至少讓畫面佔滿
+  padding: 24px;
+  background-color: style.$hover_gray;
+  transition: opacity 0.3s ease;
+
+  a,
+  button,
+  div {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    bottom: 0;
+    right: 0;
+    width: 170px;
+    height: 180px;
+    background-image: url(../../public/img/news_background.png);
+    background-size: contain;
+    opacity: 0.5;
+  }
+}
+
+.closedMenu {
+  position: absolute;
+  opacity: 0;
+  transform: scale(1, 0);
+  overflow: hidden;
+
+  div,
+  button,
+  div {
+    opacity: 0;
+  }
+}
+
+.topSide {
+  display: flex;
+  flex-direction: column;
+}
+
+.entry {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  color: style.$font_gray;
+  text-decoration: none;
+  border-radius: 40px;
+}
+
+.active {
+  width: 100%;
+  padding: 16px;
+  font-size: 18px;
+  text-decoration: none;
+  border-radius: 40px;
+  color: style.$icon_gray;
+  background-color: style.$white;
+}
+
+.activeImg {
+  display: span;
+  width: 16px;
+  height: 15px;
+  margin: 0 12px 0 0;
+}
+
+.bottomSide {
+  display: flex;
+  flex-direction: column;
+}
+
+.bookBtn,
+.loginBtn {
+  padding: 16px;
+  text-align: center;
+  font-size: 18px;
+  border: 1px solid style.$dark_orange;
+  border-radius: 40px;
+}
+
+.bookBtn {
+  margin: 20px 0 20px 0;
+  color: style.$white;
+  background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+}
+
+.loginBtn {
+  margin: 0 0 32px 0;
+  color: style.$primary_orange;
+  background: style.$white;
+}
+
+
+
+@media screen and (min-width: 480px) {
+  .wrapper {
+    justify-content: space-around;
+  }
+
+  .logo {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .navbarList {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+  }
+
+  .navbarEntry:hover {
+    cursor: pointer;
+  }
+
+  .btnGroup {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    >.login:hover {
+      cursor: pointer;
+    }
+  }
+
+  .userName {
+    margin-left: 30px;
+  }
+
+  .hamburgerContainer {
+    display: none;
+  }
+
+  .closeBtn {
+    display: none;
+  }
+
+  .mobileMenu {
+    display: none;
+  }
+
+  .closedMenu {
+    display: none;
+  }
+}
