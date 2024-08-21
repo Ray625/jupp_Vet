@@ -11,6 +11,7 @@ import SignupPage from "./pages/login/signuppage";
 import ForgetPassPage from "./pages/login/forgetpasspage";
 import Layout from "./pages/layout/homepage_layout";
 import HomePage from "./pages/homepage/homepage";
+import BookingPage from "./pages/booking/bookingpage";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
                 </Route>
                 <Route path="/" element={<Layout />}>
                   <Route index element={<HomePage />} />
+                  <Route path="/booking" element={<BookingPage />} />
                 </Route>
               </Routes>
             </ThemeProvider>
