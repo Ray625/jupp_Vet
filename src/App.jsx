@@ -12,6 +12,7 @@ import ForgetPassPage from "./pages/login/forgetpasspage";
 import Layout from "./pages/layout/homepage_layout";
 import HomePage from "./pages/homepage/homepage";
 import BookingPage from "./pages/booking/bookingpage";
+import PhotoPage from "./pages/photo/photopage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
                 <Route path="/" element={<Layout />}>
                   <Route index element={<HomePage />} />
                   <Route path="/booking" element={<BookingPage />} />
+                  <Route path="/photo" element={<PhotoPage />} />
                 </Route>
               </Routes>
             </ThemeProvider>

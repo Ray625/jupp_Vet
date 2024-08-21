@@ -1,0 +1,78 @@
+@use '/src/styles/style.scss';
+
+.loading {
+  width: 100%;
+  height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: fit-content;
+}
+
+.photowall {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 124px 20px 20px 20px;
+}
+
+.img {
+  max-width: 100%;
+  width: 360px;
+  height: auto;
+  border-radius: 12px;
+}
+
+.waterfall {
+  padding: 140px 20px 20px 20px;
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+  width: 400px;
+  margin: 0 auto;
+}
+
+.gridColumn {
+  background-clip: padding-box;
+  margin: 0 8px;
+  &> img {
+    background: grey;
+    margin-bottom: 16px;
+  }
+}
+
+.pageLoading {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
+
+.loader {
+  width: 0px;
+  height: 0px;
+}
+
+@media screen and (min-width: 768px) {
+  .waterfall {
+    width: 760px;
+  }
+}
+
+@media screen and (min-width: 1140px) {
+  .waterfall {
+    width: 1120px;
+  }
+}
+
+@media screen and (min-width: 1488px) {
+  .waterfall {
+    width: 1480px;
+  }
+}
