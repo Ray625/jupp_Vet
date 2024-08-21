@@ -1,9 +1,9 @@
-import styles from './layout.module.scss';
 import Ticker from '../../components/ticker/ticker';
 import Header from "../../components/header/header";
 import Footer from '../../components/footer/footer';
 import { Outlet } from "react-router-dom";
 import useTheme from "../../hooks/useTheme";
+import styles from './homepage_layout.module.scss';
 
 const Layout = () => {
   const {tickerOpen, setTickerOpen} = useTheme()

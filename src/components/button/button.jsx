@@ -24,7 +24,7 @@ const LabelMoreButton = ({ onClick, label }) => {
     <label className={styles.moreBtnLabel}>
       {label}
       <button className={styles.labelMoreBtn} onClick={onClick}>
-          <i class="fa-solid fa-arrow-right"></i>
+          <i className="fa-solid fa-arrow-right"></i>
       </button>
     </label>
   )

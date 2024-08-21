@@ -1,0 +1,11 @@
+@use '/src/styles/style.scss';
+
+.forgetPass {
+  margin: 0;
+  color: style.$font-gray;
+  font-size: style.$point-font-size;
+  text-decoration: underline;
+  &:hover {
+    cursor: pointer;
+  }
+}

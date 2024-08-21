@@ -1,28 +1,40 @@
-import 'normalize.css'; // Reset CSS
+import "./styles/style.scss";
+import "normalize.css"; // Reset CSS
 // import './App.css'
-import { AuthProvider } from './contexts/AuthContext';
-import { DeviceProvider } from './contexts/DeviceContext';
-import { ThemeProvider } from './contexts/ThemeContext';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Layout from './pages/layout/layout';
+import { AuthProvider } from "./contexts/AuthContext";
+import { DeviceProvider } from "./contexts/DeviceContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import LoginLayout from "./pages/layout/login_layout";
+import LoginPage from "./pages/login/loginpage";
+import SignupPage from "./pages/login/signuppage";
+import ForgetPassPage from "./pages/login/forgetpasspage";
+import Layout from "./pages/layout/homepage_layout";
+import HomePage from "./pages/homepage/homepage";
 
 function App() {
-
   return (
-    <BrowserRouter>
-      <DeviceProvider>
-        <AuthProvider>
-          <ThemeProvider>
-            <Routes>
-              <Route path='/' element={<Layout/>}>
-                <Route index element={<div><p>Hello world</p></div>} />
-              </Route>
-            </Routes>
-          </ThemeProvider>
-        </AuthProvider>
-      </DeviceProvider>
-    </BrowserRouter>
-  )
+    <div className="App">
+      <BrowserRouter>
+        <DeviceProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <Routes>
+                <Route path="/" element={<LoginLayout />}>
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/signup" element={<SignupPage />} />
+                  <Route path="/forget-pass" element={<ForgetPassPage />} />
+                </Route>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<HomePage />} />
+                </Route>
+              </Routes>
+            </ThemeProvider>
+          </AuthProvider>
+        </DeviceProvider>
+      </BrowserRouter>
+    </div>
+  );
 }
 
-export default App
+export default App;

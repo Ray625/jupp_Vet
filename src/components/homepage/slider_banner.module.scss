@@ -1,0 +1,243 @@
+@use '/src/styles/style.scss';
+
+%bannerBgImg {
+  width: 100%;
+  height: 100vw;
+  min-height: fit-content;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  z-index: 1;
+
+  &::before {
+    // 做遮罩置於背景上方
+    content: '';
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7),
+        rgba(0, 0, 0, 0));
+    z-index: 2;
+  }
+}
+
+.wrapper {
+  @extend %bannerBgImg;
+  background-image: url('/public/banner/mobile_banner_1.jpg');
+}
+
+.wrapper_2 {
+  @extend %bannerBgImg;
+  background-image: url('/public/banner/banner_2.jpg');
+}
+
+
+.bannerBody {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  padding: 25px;
+}
+
+.titleGroup {
+  max-width: 650px;
+}
+
+.title {
+  color: style.$white;
+  font-size: 20px;
+}
+
+.enTitle {
+  width: 320px;
+  margin: 24px 0 40px 0;
+  color: style.$white;
+  font-size: 36px;
+  line-height: 50px;
+  font-family: 'Montserrat';
+  font-weight: 600;
+
+  span {
+    color: style.$primary_orange;
+  }
+}
+
+.footprint {
+  width: 25px;
+  height: 27px;
+  margin-left: 8px;
+}
+
+// 幻燈片上的箭頭按鈕
+
+%arrowBtn {
+  width: 52px;
+  height: 52px;
+  color: style.$white;
+  background-color: style.$dark_orange;
+  font-size: 18px;
+  border-radius: 0 50% 50% 0;
+  border: none;
+  transition: all 0.3s ease;
+  z-index: 5;
+
+  &:hover {
+    cursor: pointer;
+    color: style.$dark_orange;
+    background-color: style.$white;
+  }
+}
+
+.prevArrowBtn {
+  @extend %arrowBtn;
+  position: absolute;
+  top: 50%;
+  left: 0;
+}
+
+.nextArrowBtn {
+  @extend %arrowBtn;
+  transform: rotate(180deg);
+  position: absolute;
+  top: 50%;
+  right: 0;
+}
+
+// Banner下方分頁器點點，修改react-slick套件的樣式
+%dots {
+  position: relative;
+  background-color: transparent;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 0;
+  opacity: 1;
+}
+
+%dots_before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #FFF;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+:global(.slick-dots li) {
+  margin: 0;
+}
+
+:global(.slick-dots li button) {
+  @extend %dots;
+}
+
+:global(.slick-dots li button::before) {
+  @extend %dots_before;
+}
+
+:global(.slick-dots li.slick-active button) {
+  @extend %dots;
+  border: 1px solid style.$white;
+}
+
+:global(.slick-dots li.slick-active button::before) {
+  @extend %dots_before;
+}
+
+:global(.slick-dots) {
+  position: absolute;
+  bottom: 25px;
+}
+
+// mobile 點樣式為靠左對其，將套件原設定text-align:center調整為start，並設定padding-left與文字對齊。
+.container ul {
+  padding: 0 0 0 25px;
+  text-align: start;
+}
+
+@media screen and (min-width: 480px) {
+
+  .wrapper,
+  .wrapper_2 {
+    height: calc(100vh - 124px); // 扣掉navbar和最新消息的高度
+    background-size: cover;
+    background-position: center;
+
+    &::before {
+      content: '';
+      width: 60%;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+    }
+  }
+
+  .wrapper {
+    background-image: url('/public/banner/banner_1.jpg');
+  }
+
+  .bannerBody {
+    width: style.$wrapper_width;
+    margin: 0 auto;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .enTitle {
+    width: fit-content;
+    margin: 44px 0 50px 0;
+    font-size: 60px;
+    line-height: 80px;
+  }
+
+  .footprint {
+    width: 32px;
+    height: 35px;
+    margin-left: 24px;
+  }
+
+  :global(.slick-dots li button) {
+    width: 16px;
+    height: 16px;
+  }
+
+  :global(.slick-dots li button::before) {
+    width: 8px;
+    height: 8px;
+  }
+
+  :global(.slick-dots li.slick-active button) {
+    width: 16px;
+    height: 16px;
+  }
+
+  :global(.slick-dots li.slick-active button::before) {
+    width: 8px;
+    height: 8px;
+  }
+
+  :global(.slick-dots) {
+    position: absolute;
+    bottom: 25px;
+  }
+
+  .container ul {
+    padding: 0;
+    text-align: center;
+  }
+}

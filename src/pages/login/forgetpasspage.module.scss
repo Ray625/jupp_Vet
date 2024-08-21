@@ -1,0 +1,16 @@
+@use '/src/styles/style.scss';
+
+.describe {
+  color: style.$font-gray;
+  font-size: style.$point-font-size;
+  margin: 0 0 36px 0;
+}
+
+.back {
+  color: style.$font-gray;
+  font-size: style.$point-font-size;
+  text-decoration: underline;
+  &:hover {
+    cursor: pointer;
+  }
+}
