@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { LoginContainer, LeftSide, RightSide, TitleGroup, FormGroup,InputGroup } from '../../components/login/login';
-import styles from './forgetpasspage.module.scss'
+import styles from "./ForgetPassPage.module.scss";
 
 const ForgetPassPage = () => {
   const navigate = useNavigate()

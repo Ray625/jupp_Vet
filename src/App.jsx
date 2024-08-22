@@ -1,18 +1,16 @@
-import "./styles/style.scss";
 import "normalize.css"; // Reset CSS
-// import './App.css'
 import { AuthProvider } from "./contexts/AuthContext";
 import { DeviceProvider } from "./contexts/DeviceContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import LoginLayout from "./pages/layout/login_layout";
-import LoginPage from "./pages/login/loginpage";
-import SignupPage from "./pages/login/signuppage";
-import ForgetPassPage from "./pages/login/forgetpasspage";
-import Layout from "./pages/layout/homepage_layout";
-import HomePage from "./pages/homepage/homepage";
-import BookingPage from "./pages/booking/bookingpage";
-import PhotoPage from "./pages/photo/photopage";
+import LoginLayout from "./pages/layout/LoginLayout";
+import LoginPage from "./pages/login/LoginPage";
+import SignupPage from "./pages/login/SignupPage";
+import ForgetPassPage from "./pages/login/ForgetPassPage";
+import HomePageLayout from "./pages/layout/HomePageLayout";
+import HomePage from "./pages/homepage/HomePage";
+import BookingPage from "./pages/booking/BookingPage";
+import PhotoPage from "./pages/photo/PhotoPage";
 
 function App() {
   return (
@@ -27,7 +25,7 @@ function App() {
                   <Route path="/signup" element={<SignupPage />} />
                   <Route path="/forget-pass" element={<ForgetPassPage />} />
                 </Route>
-                <Route path="/" element={<Layout />}>
+                <Route path="/" element={<HomePageLayout />}>
                   <Route index element={<HomePage />} />
                   <Route path="/booking" element={<BookingPage />} />
                   <Route path="/photo" element={<PhotoPage />} />

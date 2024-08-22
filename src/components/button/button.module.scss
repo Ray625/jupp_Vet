@@ -76,7 +76,7 @@
 
     &:hover {
       cursor: pointer;
-      border: style.$dark_orange;
+      border-color: style.$dark_orange;
       background: style.$dark_orange;
 
       & .footprint {

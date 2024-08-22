@@ -1,4 +1,4 @@
-import styles from './bookingpage.module.scss'
+import styles from "./BookingPage.module.scss";
 import { BookingContainer, StepGroup, FormStep1, FormStep2, FormStep3, FormStep4 } from '../../components/booking/booking'
 import useTheme from '../../hooks/useTheme'
 import { useState, useEffect } from 'react'

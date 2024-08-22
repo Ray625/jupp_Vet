@@ -620,7 +620,7 @@ const FormStep4 = () => {
           <h4 className={styles.noticeTitle}>注意事項</h4>
           <ul>
             <li className={styles.note}>若過號將由現場人員依現場狀況安排看診，怒不接受指定時間</li>
-            <li className={styles.note}>若需修改預約時間，請至會員中心 > 預約記錄修改</li>
+            <li className={styles.note}>若需修改預約時間，請至會員中心 {'>'} 預約記錄修改</li>
             <li className={styles.note}>若多次無故未到場報到，本院有權取消會員之預約資格</li>
             <li className={styles.note}>若有其他疑問敬請來電 0223456789</li>
           </ul>

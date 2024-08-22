@@ -1,9 +1,9 @@
-import styles from './homepage_layout.module.scss';
-import { Outlet } from "react-router-dom"
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
-import { deviceParams } from "../../utils/const";
 import useDevice from "../../hooks/useDevice";
+import { deviceParams } from "../../utils/const";
+import styles from './Layout.module.scss';
+import { Outlet } from "react-router-dom"
 
 
 const LoginLayout = () => {

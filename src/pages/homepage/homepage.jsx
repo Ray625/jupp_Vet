@@ -1,4 +1,4 @@
-import styles from "./homepage.module.scss";
+import styles from "./HomePage.module.scss";
 import SliderBanner from "../../components/homepage/slider_banner";
 import AboutSection from "../../components/homepage/about";
 import OfferSection from "../../components/homepage/offer";

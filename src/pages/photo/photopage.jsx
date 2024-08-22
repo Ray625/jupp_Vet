@@ -1,4 +1,4 @@
-import styles from './photopage.module.scss'
+import styles from "./PhotoPage.module.scss";
 import Masonry from 'react-masonry-css'
 import useSWR from 'swr'
 import Loading from '../../components/loading/loading'

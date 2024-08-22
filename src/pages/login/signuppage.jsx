@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { LoginContainer, LeftSide, RightSide, TitleGroup, GoogleBtn, FormGroup,InputGroup } from '../../components/login/login';
-import styles from './signuppage.module.scss'
+import styles from "./SignupPage.module.scss";
 import { useState } from "react";
 import useAuth from '../../hooks/useAuth';
 import Loading from '../../components/loading/loading';
