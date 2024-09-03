@@ -622,6 +622,7 @@
   }
   &:hover {
     cursor: pointer;
+    opacity: 0.8;
   }
 }
 
@@ -683,9 +684,9 @@
   margin-right: 12px;
 }
 
-.infoBdNeuter {
+.infoBdBreed {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
 

@@ -9,7 +9,8 @@ const BookingPage = () => {
   const [selectedWeekIndex, setSelectedWeekIndex] = useState(0)
   const [reserveInfo, setReserveInfo] = useState({ date: '', time: '', doctor: '' })
   const [ownerInfo, setOwnerInfo] = useState({ lastName: '', firstName: '', gender: 'male', phone: '' })
-  const [newPetInfo, setNewPetInfo] = useState({ petName: '', gender: '', species: 'canine', birthday: '', breed: '',neuter: '', medicalHistory: '', drugAllergy: ''})
+  const [newPetInfo, setNewPetInfo] = useState({ petName: '', gender: '', species: 'canine', birthday: '', breed: '' })
+  const [selectedPets, setSelectedPets] = useState([]);
 
 
   const handleToStep2 = () => {
@@ -25,11 +26,6 @@ const BookingPage = () => {
   }
 
   const handleToStep3 = () => {
-    if (ownerInfo.lastName.length === 0) {
-      return alert('請填寫飼主姓名')
-    } else if (ownerInfo.phone.length === 0) {
-      return alert('請填寫飼主聯絡電話')
-    }
     setStep(s => s + 1)
   }
 
@@ -49,34 +45,48 @@ const BookingPage = () => {
   }, [step])
 
   return (
-    <div className={styles.container} style={{paddingTop: tickerOpen ? '124px' : '80px'}}>
+    <div
+      className={styles.container}
+      style={{ paddingTop: tickerOpen ? "124px" : "80px" }}
+    >
       <BookingContainer>
         <StepGroup step={step} />
-        {step === 1 && <FormStep1
-          handleNextStep={handleToStep2}
-          selectedWeekIndex={selectedWeekIndex}
-          setSelectedWeekIndex={setSelectedWeekIndex}
-          reserveInfo={reserveInfo}
-          setReserveInfo={setReserveInfo} />}
-        {step === 2 && <FormStep2
-          handlePrevStep={handlePrevStep}
-          handleNextStep={handleToStep3}
-          reserveInfo={reserveInfo}
-          ownerInfo={ownerInfo}
-          setOwnerInfo={setOwnerInfo}
-          newPetInfo={newPetInfo}
-          setNewPetInfo={setNewPetInfo}
-        />}
-        {step === 3 && <FormStep3
-          handlePrevStep={handlePrevStep}
-          handleSubmit={handleSubmit}
-          reserveInfo={reserveInfo}
-          ownerInfo={ownerInfo}
-        />}
+        {step === 1 && (
+          <FormStep1
+            handleNextStep={handleToStep2}
+            selectedWeekIndex={selectedWeekIndex}
+            setSelectedWeekIndex={setSelectedWeekIndex}
+            reserveInfo={reserveInfo}
+            setReserveInfo={setReserveInfo}
+          />
+        )}
+        {step === 2 && (
+          <FormStep2
+            handlePrevStep={handlePrevStep}
+            handleNextStep={handleToStep3}
+            reserveInfo={reserveInfo}
+            ownerInfo={ownerInfo}
+            setOwnerInfo={setOwnerInfo}
+            newPetInfo={newPetInfo}
+            setNewPetInfo={setNewPetInfo}
+            selectedPets={selectedPets}
+            setSelectedPets={setSelectedPets}
+          />
+        )}
+        {step === 3 && (
+          <FormStep3
+            handlePrevStep={handlePrevStep}
+            handleSubmit={handleSubmit}
+            reserveInfo={reserveInfo}
+            ownerInfo={ownerInfo}
+            selectedPets={selectedPets}
+            newPetInfo={newPetInfo}
+          />
+        )}
         {step === 4 && <FormStep4 />}
       </BookingContainer>
     </div>
-  )
+  );
 }
 
 

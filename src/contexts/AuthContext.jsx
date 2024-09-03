@@ -1,8 +1,18 @@
 import { createContext, useState, useEffect } from "react";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, GoogleAuthProvider, signOut, signInWithPopup, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signOut,
+  signInWithPopup,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 // eslint-disable-next-line
-import firebase from "../utils/firebase";
+import { firebase } from "../utils/firebase";
+import { getDatabase, set, ref } from "firebase/database";
 
 const defaultAuthContext = {
   currentUser: null,
@@ -23,6 +33,7 @@ const AuthProvider = ({ children }) => {
 
   const navigate = useNavigate()
   const auth = getAuth();
+  const db = getDatabase()
   const provider = new GoogleAuthProvider();
 
   // 讓畫面在第一次渲染時檢查是否已登入過會員，有則將會員資料存入state，並透過state改變使畫面渲染出使用者資訊。
@@ -54,9 +65,15 @@ const AuthProvider = ({ children }) => {
         try {
           setIsLoading(true)
           const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-          const newUser = userCredential.user;
-          await updateProfile(newUser, {displayName: `${lastName} ${firstName}`,})
-          const user = auth.currentUser
+          const user = userCredential.user;
+          await updateProfile(user, { displayName: `${lastName} ${firstName}` });
+          const user_id = user.uid
+          const userRef = ref(db, "users/" + user_id)
+          await set(userRef, {
+            firstName,
+            lastName,
+            email,
+          });
           setCurrentUser(user)
           setIsLoading(false)
           navigate('/')

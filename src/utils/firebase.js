@@ -8,9 +8,11 @@ const firebaseConfig = {
   messagingSenderId: import.meta.env.VITE_APP_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_APP_FIREBASE_APP_ID,
   measurementId: import.meta.env.VITE_APP_FIREBASE_MEASUREMENT_ID,
+  databaseURL: "https://my-vet-web-default-rtdb.asia-southeast1.firebasedatabase.app/",
 };
 
 const firebase = initializeApp(firebaseConfig);
+// const database = getDatabase();
 
-export default firebase;
+export { firebase };
 

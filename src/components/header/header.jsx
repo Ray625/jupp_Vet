@@ -72,7 +72,6 @@ const Header = () => {
   const navigate = useNavigate()
   const { currentUser, logout } = useAuth()
   const { tickerOpen } = useTheme()
-  console.log('hi')
 
   useEffect(() => {
     if(hamburgerOpen) {

@@ -1,6 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './booking.module.scss';
 import { doctorList, timeList } from '../../utils/const';
+import moment from 'moment';
+import { getDatabase, ref, get, query, orderByChild, equalTo, update, push } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { useEffect, useState } from 'react';
+
 
 const BookingContainer = ({ children }) => {
   return (
@@ -69,21 +74,15 @@ const WeekSelection = ({ weeks, onChange, selectedWeekIndex}) => {
 }
 
 const DaySelection = ({ weeks, selectedWeekIndex, reserveInfo, handleInfoChange }) => {
-  const formatDate = (date) => {
-    const options = { year: "numeric",month: '2-digit', day: '2-digit' };
-    const dateString = date.toLocaleDateString('zh-TW', options);
-    const weekday = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
-    return `${dateString} (${weekday})`;
-  }
-
   const selectedWeek = weeks[selectedWeekIndex];
   const [startDate, endDate] = selectedWeek.split(' ~ ');
-  const startDateObj = new Date(startDate);
-  const endDateObj = new Date(endDate);
+  const startDateObj = moment(`${startDate}`);
+  const endDateObj = moment(`${endDate}`);
   const days = [];
-  for (let date = startDateObj; date <= endDateObj; date.setDate(date.getDate() + 1)) {
-    const formattedDate = formatDate(date);
-    days.push(formattedDate);
+  for (let date = startDateObj; date <= endDateObj; date.add('1', 'day')) {
+    const formattedDate = date.format('YYYY/MM/DD');
+    const day = ['日', '一', '二', '三', '四', '五', '六'][date.day()]
+    days.push(`${formattedDate} (${day})`);
   }
 
   const compare = (value) => {
@@ -101,9 +100,11 @@ const DaySelection = ({ weeks, selectedWeekIndex, reserveInfo, handleInfoChange 
           <>
             {compare(day) && <input type="radio" name="date" id={day} value={day} onChange={(e) => handleInfoChange(e.target.value)} checked />}
             {!compare(day) && <input type="radio" name="date" id={day} value={day} onChange={(e) => handleInfoChange(e.target.value)} />}
-            <label htmlFor={day} className={styles.dateBtn}>{day.slice(5)}</label>
+            <label htmlFor={day} className={styles.dateBtn}>
+              {day.slice(5)}
+            </label>
           </>
-        )})}
+        );})}
     </div>
   )
 }
@@ -178,13 +179,17 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
     })
   }
 
-  const weeks = [
-    '2024/08/01 ~ 2024/08/07',
-    '2024/08/08 ~ 2024/08/14',
-    '2024/08/15 ~ 2024/08/21',
-    '2024/08/22 ~ 2024/08/28',
-    '2024/08/29 ~ 2024/08/31'
-  ]
+  const weeks = [];
+  const today = moment();
+  const endDay = moment().add("6", "day");
+
+  for (let i = 0; i < 4; i++) {
+    let week =
+      today.clone().add(i, "week").format("YYYY/MM/DD") +
+      " ~ " +
+      endDay.clone().add(i, "week").format("YYYY/MM/DD");
+    weeks.push(week);
+  }
 
   const timeData = [{
     title: '10:00 ~ 13:00',
@@ -216,18 +221,18 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
       <div className={styles.selectBtnGroup}>
         <input type="radio" name="selection" id="timeFirst" value="timeFirst" className={styles.selectionInput} checked/>
         <label htmlFor="timeFirst" className={styles.selectBtn}>
-          <i class="fa-regular fa-calendar"></i>
+          <i className="fa-regular fa-calendar"></i>
           依日期
         </label>
         <input type="radio" name="selection" id="doctorFirst" value="doctorFirst" className={styles.selectionInput}/>
         <label htmlFor="doctorFirst" className={styles.selectBtn}>
-          <i class="fa-solid fa-user"></i>
+          <i className="fa-solid fa-user"></i>
           依醫師
         </label>
       </div>
       <form action="post" className={styles.form}>
         <h3 className={styles.formTitle}>請選擇日期</h3>
-        <p className={styles.describe}>(僅能預約兩個月內之日期)</p>
+        <p className={styles.describe}>(僅能預約一個月內之日期)</p>
         <WeekSelection
           weeks={weeks}
           onChange={handleWeekChange}
@@ -266,91 +271,184 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
   )
 }
 
-const FormStep2 = ({ handlePrevStep, handleNextStep, reserveInfo, ownerInfo, setOwnerInfo, newPetInfo, setNewPetInfo }) => {
+const FormStep2 = ({
+  handlePrevStep,
+  handleNextStep,
+  reserveInfo,
+  ownerInfo,
+  setOwnerInfo,
+  newPetInfo,
+  setNewPetInfo,
+  selectedPets,
+  setSelectedPets,
+}) => {
+  const [haveNewPet, setHaveNewPet] = useState(false);
+  const [originalPetInfo, setOriginalPetInfo] = useState([]);
+  const db = getDatabase();
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const user_id = user.uid;
+
+  // 在渲染頁面後抓取user在資料庫的名字，自動填入表單
+  useEffect(() => {
+    async function getUserInfo() {
+      try {
+        const snap = await get(ref(db, "users/" + user_id));
+        if (snap.exists()) {
+          const userInfo = snap.val();
+          const { lastName, firstName, gender, phone } = userInfo;
+
+          const updatedInfo = { ...ownerInfo };
+          if (lastName) updatedInfo.lastName = lastName;
+          if (firstName) updatedInfo.firstName = firstName;
+          if (gender) updatedInfo.gender = gender;
+          if (phone) updatedInfo.phone = phone;
+          setOwnerInfo(updatedInfo);
+        } else {
+          return;
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getUserInfo();
+    // eslint-disable-next-line
+  }, []);
+
+  // 在渲染頁面後抓取user在資料庫內原有寵物資料，放入選項供勾選
+  useEffect(() => {
+    async function getUserPetInfo() {
+      try {
+        const snap = await get(
+          query(ref(db, "pets/"), orderByChild("owner_id"), equalTo(user_id))
+        );
+        if (snap.exists()) {
+          const userPetInfo = snap.val();
+          const petData = [];
+          for (const [key, value] of Object.entries(userPetInfo)) {
+            petData.push({
+              ...value,
+              id: key,
+            });
+          }
+          setOriginalPetInfo(petData);
+        } else {
+          setHaveNewPet(true);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getUserPetInfo();
+    // eslint-disable-next-line
+  }, []);
 
   const handleLastNameChange = (value) => {
     setOwnerInfo({
       ...ownerInfo,
-      lastName: value
-    })
-  }
+      lastName: value,
+    });
+  };
 
   const handleFirstNameChange = (value) => {
     setOwnerInfo({
       ...ownerInfo,
-      firstName: value
-    })
-  }
+      firstName: value,
+    });
+  };
 
   const handlePhoneChange = (value) => {
     setOwnerInfo({
       ...ownerInfo,
-      phone: value
-    })
-  }
+      phone: value,
+    });
+  };
 
   const handleGenderChange = (value) => {
     setOwnerInfo({
       ...ownerInfo,
-      gender: value
-    })
-  }
+      gender: value,
+    });
+  };
 
   const handlePetNameChange = (value) => {
     setNewPetInfo({
       ...newPetInfo,
-      petName: value
-    })
-  }
+      petName: value,
+    });
+  };
 
   const handlePetGenderChange = (value) => {
     setNewPetInfo({
       ...newPetInfo,
-      gender: value
-    })
-  }
+      gender: value,
+    });
+  };
 
   const handlePetSpeciesChange = (value) => {
     setNewPetInfo({
       ...newPetInfo,
-      species: value
-    })
-  }
+      species: value,
+    });
+  };
 
   const handlePetBirthdayChange = (value) => {
     setNewPetInfo({
       ...newPetInfo,
-      birthday: value
-    })
-  }
+      birthday: value,
+    });
+  };
 
   const handlePetBreedChange = (value) => {
     setNewPetInfo({
       ...newPetInfo,
-      breed: value
-    })
-  }
+      breed: value,
+    });
+  };
 
-  const handlePetNeuterChange = (value) => {
-    setNewPetInfo({
-      ...newPetInfo,
-      neuter: value
-    })
-  }
+  const handleNextStepAndUpdateData = async () => {
+    if (ownerInfo.lastName.length === 0) {
+      return alert("請填寫飼主姓名");
+    } else if (ownerInfo.phone.length === 0) {
+      return alert("請填寫飼主聯絡電話");
+    }
 
-  const handlePetMedicalHistoryChange = (value) => {
-    setNewPetInfo({
-      ...newPetInfo,
-      medicalHistory: value
-    })
-  }
+    try {
+      await update(ref(db, "users/" + user_id), ownerInfo);
+    } catch (error) {
+      console.log(error);
+    }
 
-  const handlePetDrugAllergyChange = (value) => {
-    setNewPetInfo({
-      ...newPetInfo,
-      drugAllergy: value
-    })
-  }
+    if (!haveNewPet) {
+      handleNextStep();
+    } else if (haveNewPet) {
+      try {
+        const newPetKey = push(ref(db, "pets/"), newPetInfo).key;
+        await update(ref(db, "pets/" + newPetKey), {
+          owner_id: user_id,
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      handleNextStep();
+    }
+  };
+
+  const handleExistingPetSelection = (originalPet) => {
+    setSelectedPets((prevSelectedPets) => {
+      const isSeleted = prevSelectedPets.some(pet=> pet.id === originalPet.id)
+      if (isSeleted) {
+        return prevSelectedPets.filter((pet) => pet.id !== originalPet.id);
+      } else if (prevSelectedPets.length >= 3 || (haveNewPet && prevSelectedPets.length >= 2)) {
+        alert("一次最多預約3隻寵物");
+        return prevSelectedPets;
+      } else {
+        return [...prevSelectedPets, originalPet];
+      }
+    });
+  };
 
   return (
     <div className={styles.formContainer}>
@@ -372,131 +470,265 @@ const FormStep2 = ({ handlePrevStep, handleNextStep, reserveInfo, ownerInfo, set
         <h3 className={styles.formTitle}>飼主資料</h3>
         <div className={styles.nameGroup}>
           <div className={styles.inputGroup}>
-            <label htmlFor="lastName" className={styles.inputTitle}>姓氏 *</label>
-            <input name="lastName" id="lastName" type="lastName" autocomplete="family-name" className={styles.nameInput} value={ownerInfo.lastName} onChange={(e) => handleLastNameChange(e.target.value)}/>
+            <label htmlFor="lastName" className={styles.inputTitle}>
+              姓氏 *
+            </label>
+            <input
+              name="lastName"
+              id="lastName"
+              type="lastName"
+              autoComplete="family-name"
+              className={styles.nameInput}
+              value={ownerInfo.lastName}
+              onChange={(e) => handleLastNameChange(e.target.value)}
+            />
           </div>
           <div className={styles.inputGroup}>
-            <label htmlFor="firstName" className={styles.inputTitle}>名字</label>
-            <input name="firstName" id="firstName" type="firstName" autocomplete="given-name" className={styles.nameInput} value={ownerInfo.firstName} onChange={(e) => handleFirstNameChange(e.target.value)}/>
+            <label htmlFor="firstName" className={styles.inputTitle}>
+              名字
+            </label>
+            <input
+              name="firstName"
+              id="firstName"
+              type="firstName"
+              autoComplete="given-name"
+              className={styles.nameInput}
+              value={ownerInfo.firstName}
+              onChange={(e) => handleFirstNameChange(e.target.value)}
+            />
           </div>
           <div className={styles.gender}>
-            <input type="radio" name="gender" id="male" value={"male"} className={styles.genderInput} onChange={(e) => handleGenderChange(e.target.value)} checked={ownerInfo.gender === 'male' } />
-            <label htmlFor="male" className={styles.genderLabel}>先生</label>
-            <input type="radio" name="gender" id="female" value={"female"} className={styles.genderInput} onChange={(e) => handleGenderChange(e.target.value)} checked={ownerInfo.gender === 'female' }/>
-            <label htmlFor="female" className={styles.genderLabel}>小姐</label>
+            <input
+              type="radio"
+              name="gender"
+              id="male"
+              value={"male"}
+              className={styles.genderInput}
+              onChange={(e) => handleGenderChange(e.target.value)}
+              checked={ownerInfo.gender === "male"}
+            />
+            <label htmlFor="male" className={styles.genderLabel}>
+              先生
+            </label>
+            <input
+              type="radio"
+              name="gender"
+              id="female"
+              value={"female"}
+              className={styles.genderInput}
+              onChange={(e) => handleGenderChange(e.target.value)}
+              checked={ownerInfo.gender === "female"}
+            />
+            <label htmlFor="female" className={styles.genderLabel}>
+              小姐
+            </label>
           </div>
         </div>
         <div className={styles.phone}>
-          <label htmlFor="phone" className={styles.inputTitle}>手機號碼 *</label>
-          <input name="phone" id="phone" type="tel" autocomplete="tel" placeholder='請輸入您的手機號碼' maxLength={'13'} className={styles.phoneInput} value={ownerInfo.phone} onChange={(e) => handlePhoneChange(e.target.value)} />
+          <label htmlFor="phone" className={styles.inputTitle}>
+            手機號碼 *
+          </label>
+          <input
+            name="phone"
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            placeholder="請輸入您的手機號碼"
+            maxLength={"13"}
+            className={styles.phoneInput}
+            value={ownerInfo.phone}
+            onChange={(e) => handlePhoneChange(e.target.value)}
+          />
         </div>
         <h3 className={styles.formTitle}>寵物資料</h3>
-        <p className={styles.describe}>已選擇 2/3 (一個時段最多預約三隻寵物)</p>
-        <div className={styles.petInfo}>
-          <h4 className={styles.petInfoTitle}>現有寵物</h4>
-          <div className={styles.petInfoInputGroup}>
-            <div className={styles.petInfoGroup}>
-              <input type="checkbox" name="pet1" id="pet1" className={styles.petInfoInput} />
-              <label htmlFor="pet1" className={styles.petInfoLabel}>
-              <object data="/svg/booking_cat.svg" className={styles.petInfoIcon} aria-label="petIcon"> </object>
-              豬皮
-              </label>
-            </div>
-            <div className={styles.petInfoGroup}>
-            <input type="checkbox" name="pet2" id="pet2" className={styles.petInfoInput} />
-            <label htmlFor="pet2" className={styles.petInfoLabel}>
-              <object data="/svg/booking_cat.svg" className={styles.petInfoIcon} aria-label="petIcon"> </object>
-              阿啾
-              </label>
-            </div>
-            <div className={styles.petInfoGroup}>
-            <input type="checkbox" name="pet3" id="pet3" className={styles.petInfoInput} />
-            <label htmlFor="pet3" className={styles.petInfoLabel}>
-              <object data="/svg/booking_dog.svg" className={styles.petInfoIcon} aria-label="petIcon"> </object>
-              波比
-              </label>
-            </div>
-          </div>
-        </div>
-        <button className={styles.addNewPet} onClick={(e) => {
-          e.preventDefault()
-          alert('add new pet')
-        }}>新增寵物</button>
-        <div className={styles.newPetInfo}>
-          <div className={styles.infoHeader}>
-            <h4 className={styles.petInfoTitle}>新寵物</h4>
-            <div className={styles.deleteBtn} onClick={()=>{alert('delete pet info')}}>移除</div>
-          </div>
-          <div className={styles.infoBody}>
-            <div className={styles.nameGroup}>
-              <div className={styles.inputGroup}>
-                <label htmlFor="petName" className={styles.inputTitle}>寵物名</label>
-                <input name="petName" id="petName" type="text" autocomplete="auto" className={styles.petNameInput} value={newPetInfo.petName} onChange={(e) => handlePetNameChange(e.target.value)} />
-              </div>
-              <div className={`${styles.inputGroup} ${styles.petGenderInput}`}>
-                <label htmlFor="petGender" className={styles.inputTitle}>性別</label>
-                <select name="petGender" id="petGender" className={styles.selection} onChange={(e)=> handlePetGenderChange(e.target.value)} value={newPetInfo.gender}>
-                  <option value="null">請選擇</option>
-                  <option value="male">公</option>
-                  <option value="female">母</option>
-                </select>
-              </div>
-              <div className={styles.species}>
-                <input type="radio" name="species" id="canine" value={"canine"} className={styles.speciesInput} onChange={e => handlePetSpeciesChange(e.target.value)} checked={newPetInfo.species === 'canine'} />
-                <label htmlFor="canine" className={styles.speciesLabel}>
-                  <object data="/svg/booking_dog.svg" className={styles.petInfoIcon} aria-label="petIcon"> </object>
-                  狗
-                </label>
-                <input type="radio" name="species" id="feline" value={"feline"} className={styles.speciesInput} onChange={e => handlePetSpeciesChange(e.target.value)} checked={newPetInfo.species === 'feline'}/>
-                <label htmlFor="feline" className={styles.speciesLabel}>
-                  <object data="/svg/booking_cat.svg" className={styles.petInfoIcon} aria-label="petIcon"> </object>
-                  貓
-                </label>
-              </div>
-            </div>
-            <div className={styles.infoBdNeuter}>
-              <div className={styles.inputGroup}>
-                <label htmlFor="bd" className={styles.inputTitle}>出生年</label>
-                <input name="bd" id="bd" type="number" placeholder='西元年' autocomplete="auto" max="2024" className={styles.bdayInput} onChange={(e) => handlePetBirthdayChange(e.target.value)} value={newPetInfo.birthday} />
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="birth" className={styles.inputTitle}>品種</label>
-                <input name="breed" id="breed" type="text" autocomplete="auto" className={styles.bdayInput} onChange={(e) => handlePetBreedChange(e.target.value)} value={newPetInfo.breed}/>
-              </div>
-              <div className={styles.inputGroup}>
-                <label htmlFor="neuter" className={styles.inputTitle}>絕育狀態</label>
-                <select name="neuter" id="neuter" className={styles.selection} onChange={e=>handlePetNeuterChange(e.target.value)} value={newPetInfo.neuter}>
-                  <option value="null">請選擇</option>
-                  <option value="unneutered">未絕育</option>
-                  <option value="neutered">已絕育</option>
-                </select>
-              </div>
-            </div>
-            <div className={styles.inputGroup}>
-              <label htmlFor="history" className={styles.inputTitle}>過去病史</label>
-              <textarea name="history" id="history" rows={3} className={styles.infoTextarea} onInput={e => handlePetMedicalHistoryChange(e.target.value)}>{newPetInfo.medicalHistory}</textarea>
-            </div>
-            <div className={styles.inputGroup}>
-              <label htmlFor="drug" className={styles.inputTitle}>藥物過敏</label>
-              <textarea name="drug" id="drug" rows={3} className={styles.infoTextarea} onInput={e => handlePetDrugAllergyChange(e.target.value)}>{newPetInfo.drugAllergy}</textarea>
+        <p
+          className={styles.describe}
+        >{`已選擇 ${selectedPets.length + haveNewPet}/3 (一個時段最多預約三隻寵物)`}</p>
+        {originalPetInfo.length !== 0 && (
+          <div className={styles.petInfo}>
+            <h4 className={styles.petInfoTitle}>原有寵物</h4>
+            <div className={styles.petInfoInputGroup}>
+              {originalPetInfo.map(info => {
+                return (
+                  <div className={styles.petInfoGroup} key={info.id}>
+                    <input
+                      type="checkbox"
+                      name="pet"
+                      id={info.id.slice(1, 6)}
+                      className={styles.petInfoInput}
+                      onChange={() => handleExistingPetSelection(info)}
+                      checked={selectedPets.some(pet=> pet.id === info.id)}
+                    />
+                    <label
+                      htmlFor={info.id.slice(1, 6)}
+                      className={styles.petInfoLabel}
+                    >
+                      {info.species === "feline" && (
+                        <img
+                          src="/svg/booking_cat.svg"
+                          alt="icon"
+                          className={styles.petInfoIcon}
+                        />
+                      )}
+                      {info.species === "canine" && (
+                        <img
+                          src="/svg/booking_dog.svg"
+                          alt="icon"
+                          className={styles.petInfoIcon}
+                        />
+                      )}
+                      {info.petName}
+                    </label>
+                  </div>
+                );
+              })}
             </div>
           </div>
-        </div>
+        )}
+        {!haveNewPet && (
+          <button
+            className={styles.addNewPet}
+            onClick={(e) => {
+              e.preventDefault();
+              if (selectedPets.length >= 3) {
+                return alert("一次最多預約3隻寵物");
+              }
+              setHaveNewPet(true);
+            }}
+          >
+            新增寵物
+          </button>
+        )}
+        {haveNewPet && (
+          <>
+            <div className={styles.newPetInfo}>
+              <div className={styles.infoHeader}>
+                <h4 className={styles.petInfoTitle}>新增寵物</h4>
+                <div
+                  className={styles.deleteBtn}
+                  onClick={() => {
+                    setHaveNewPet(false);
+                  }}
+                >
+                  移除
+                </div>
+              </div>
+              <div className={styles.infoBody}>
+                <div className={styles.nameGroup}>
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="petName" className={styles.inputTitle}>
+                      寵物名
+                    </label>
+                    <input
+                      name="petName"
+                      id="petName"
+                      type="text"
+                      autoComplete="auto"
+                      className={styles.petNameInput}
+                      value={newPetInfo.petName}
+                      onChange={(e) => handlePetNameChange(e.target.value)}
+                    />
+                  </div>
+                  <div
+                    className={`${styles.inputGroup} ${styles.petGenderInput}`}
+                  >
+                    <label htmlFor="petGender" className={styles.inputTitle}>
+                      性別
+                    </label>
+                    <select
+                      name="petGender"
+                      id="petGender"
+                      className={styles.selection}
+                      onChange={(e) => handlePetGenderChange(e.target.value)}
+                      value={newPetInfo.gender}
+                    >
+                      <option value="null">請選擇</option>
+                      <option value="male">公</option>
+                      <option value="female">母</option>
+                    </select>
+                  </div>
+                  <div className={styles.species}>
+                    <input
+                      type="radio"
+                      name="species"
+                      id="canine"
+                      value={"canine"}
+                      className={styles.speciesInput}
+                      onChange={(e) => handlePetSpeciesChange(e.target.value)}
+                      checked={newPetInfo.species === "canine"}
+                    />
+                    <label htmlFor="canine" className={styles.speciesLabel}>
+                      <img
+                        src="/svg/booking_dog.svg"
+                        alt="icon"
+                        className={styles.petInfoIcon}
+                      />
+                      狗
+                    </label>
+                    <input
+                      type="radio"
+                      name="species"
+                      id="feline"
+                      value={"feline"}
+                      className={styles.speciesInput}
+                      onChange={(e) => handlePetSpeciesChange(e.target.value)}
+                      checked={newPetInfo.species === "feline"}
+                    />
+                    <label htmlFor="feline" className={styles.speciesLabel}>
+                      <img
+                        src="/svg/booking_cat.svg"
+                        alt="icon"
+                        className={styles.petInfoIcon}
+                      />
+                      貓
+                    </label>
+                  </div>
+                </div>
+                <div className={styles.infoBdBreed}>
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="bd" className={styles.inputTitle}>
+                      出生年
+                    </label>
+                    <input
+                      name="bd"
+                      id="bd"
+                      type="number"
+                      placeholder="西元年"
+                      autoComplete="auto"
+                      max="2024"
+                      className={styles.bdayInput}
+                      onChange={(e) => handlePetBirthdayChange(e.target.value)}
+                      value={newPetInfo.birthday}
+                    />
+                  </div>
+                  <div className={styles.inputGroup}>
+                    <label htmlFor="birth" className={styles.inputTitle}>
+                      品種
+                    </label>
+                    <input
+                      name="breed"
+                      id="breed"
+                      type="text"
+                      autoComplete="auto"
+                      className={styles.bdayInput}
+                      onChange={(e) => handlePetBreedChange(e.target.value)}
+                      value={newPetInfo.breed}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
         <p className={styles.point}>以上資料將同步至會員中心</p>
       </form>
       <div className={styles.submitBtnGroup}>
-        <PrevBtn
-          title={'上一步'}
-          onClick={handlePrevStep}
-        />
-        <NextBtn
-          title={'下一步'}
-          onClick={handleNextStep}
-        />
+        <PrevBtn title={"上一步"} onClick={handlePrevStep} />
+        <NextBtn title={"下一步"} onClick={handleNextStepAndUpdateData} />
       </div>
     </div>
-  )
-}
+  );
+};
 
 const InfotableGroup = ({title, info, mark, icon}) => {
   return (
@@ -509,93 +741,97 @@ const InfotableGroup = ({title, info, mark, icon}) => {
   )
 }
 
-const FormStep3 = ({ handlePrevStep, handleSubmit, reserveInfo, ownerInfo }) => {
-  const date = reserveInfo.date.slice(0, 10)
-  const day = '(星期' + reserveInfo.date.slice(12, 14)
-  const reserveTime = timeList[reserveInfo.time]
-  const reserveDoctor = doctorList[reserveInfo.doctor].slice(0, 6)
-  const clinicNum = doctorList[reserveInfo.doctor].slice(6, 10)
-  const name = ownerInfo.lastName + ' ' + ownerInfo.firstName
-  let gender = ''
+const FormStep3 = ({
+  handlePrevStep,
+  handleSubmit,
+  reserveInfo,
+  ownerInfo,
+  selectedPets,
+  newPetInfo,
+}) => {
+  const date = reserveInfo.date.slice(0, 10);
+  const day = "(星期" + reserveInfo.date.slice(12, 14);
+  const reserveTime = timeList[reserveInfo.time];
+  const reserveDoctor = doctorList[reserveInfo.doctor].slice(0, 6);
+  const clinicNum = doctorList[reserveInfo.doctor].slice(6, 10);
+  const name = ownerInfo.lastName + " " + ownerInfo.firstName;
+  let gender = "";
   switch (ownerInfo.gender) {
-    case 'male':
-      gender = '(先生)'
-      break
-    case 'female':
-      gender = '(小姐)'
-      break
+    case "male":
+      gender = "(先生)";
+      break;
+    case "female":
+      gender = "(小姐)";
+      break;
     default:
-      gender = ''
+      gender = "";
   }
-  const phone = ownerInfo.phone
+  const phone = ownerInfo.phone;
+  const newPetAge = moment().format("YYYY") - newPetInfo.birthday
+  const getIcon = (species) => {
+    let icon = "";
+    switch (species) {
+      case "feline":
+        icon = "/svg/booking_cat.svg";
+        break;
+      default:
+        icon = "/svg/booking_dog.svg";
+    }
+    return icon
+  }
+
 
   return (
     <div className={styles.formContainer}>
       <div className={styles.form}>
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>預約門診</h3>
+          <InfotableGroup title={"日期"} info={date} mark={day} />
+          <InfotableGroup title={"時段"} info={reserveTime} />
           <InfotableGroup
-            title={'日期'}
-            info={date}
-            mark={day}
-          />
-          <InfotableGroup
-            title={'時段'}
-            info={reserveTime}
-          />
-          <InfotableGroup
-            title={'醫師'}
+            title={"醫師"}
             info={reserveDoctor}
             mark={clinicNum}
           />
         </div>
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>飼主資料</h3>
-          <InfotableGroup
-            title={'姓名'}
-            info={name}
-            mark={gender}
-          />
-          <InfotableGroup
-            title={'手機號碼'}
-            info={phone}
-          />
+          <InfotableGroup title={"姓名"} info={name} mark={gender} />
+          <InfotableGroup title={"手機號碼"} info={phone} />
         </div>
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>寵物資料</h3>
-          <InfotableGroup
-            title={'寵物1'}
-            info={'豬皮'}
-            mark={'(6歲 · 米克斯)'}
-            icon={'/svg/booking_cat.svg'}
-          />
-          <InfotableGroup
-            title={'寵物2'}
-            info={'阿啾'}
-            mark={'(12歲 · 波斯貓)'}
-            icon={'/svg/booking_cat.svg'}
-          />
-          <InfotableGroup
-            title={'寵物3'}
-            info={'球球'}
-            mark={'(4歲 · 貴賓犬)'}
-            icon={'/svg/booking_dog.svg'}
-          />
+          {selectedPets.map((pet, index) => {
+            const age = moment().format("YYYY") - pet.birthday;
+            const icon = getIcon(pet.species);
+            return (
+              <>
+                <InfotableGroup
+                  title={`寵物${index + 1}`}
+                  info={pet.petName}
+                  mark={`(${age}歲 · ${pet.breed})`}
+                  icon={icon}
+                />
+              </>
+            );
+          })}
+          {newPetInfo.petName && (
+            <InfotableGroup
+              title={"新寵物"}
+              info={newPetInfo.petName}
+              mark={`(${newPetAge}歲 · ${newPetInfo.breed})`}
+              icon={getIcon(newPetInfo.species)}
+            />
+          )}
         </div>
       </div>
       <div className={styles.submitBtnGroup}>
-        <PrevBtn
-          title={'上一步'}
-          onClick={handlePrevStep}
-        />
-        <NextBtn
-          title={'確認預約'}
-          onClick={handleSubmit}
-        />
+        <PrevBtn title={"上一步"} onClick={handlePrevStep} />
+        <NextBtn title={"確認預約"} onClick={handleSubmit} />
       </div>
     </div>
-  )
-}
+  );
+};
 
 const FormStep4 = () => {
   const navigate = useNavigate()
