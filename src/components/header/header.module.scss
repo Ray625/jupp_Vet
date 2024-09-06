@@ -13,7 +13,7 @@
   position: relative;
   width: 100%;
   height: 80px;
-  padding: 8px 24px;
+  padding: 0px 24px;
   background-color: style.$white;
   box-shadow: 0px 4px 20px 0px #00000014;
 }
@@ -29,7 +29,6 @@
 // navbar 連結共用樣式
 %link {
   padding: 8px 16px;
-  text-decoration: none;
   color: style.$dark_gray;
   font-size: style.$font-size;
   position: relative;
@@ -44,36 +43,89 @@
     left: -6px;
     top: 50%;
     transform: translate(0, -50%);
-    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
   }
 
   &:hover::after {
-    display: block;
+    opacity: 1;
   }
 }
 
 .navbarList {
   height: 100%; // 把下面推出去讓滑鼠hover向下移動的過程不會讓下拉選單消失
   display: none; // mobile時隱藏
+}
 
-  >.navbarEntry {
-    @extend %link;
-    height: 100%;
+.navbarEntry {
+  @extend %link;
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    & .dropdownMenu {
+      display: flex;
+    }
+  }
+}
+
+.userCenter {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 84px;
+  user-select: none;
+
+  &:hover {
+    & .userMenu {
+      display: flex;
+    }
+  }
+}
+
+.userMenu {
+  border-radius: 0 0 16px 16px;
+  background-color: style.$white;
+  margin: 0;
+  padding: 12px;
+  width: 84px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  box-shadow: 0px 10px 12px 0px #00000014;
+
+  &:hover {
     display: flex;
+  }
+
+  div {
+    width: 60px;
+    padding: 8px 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
     align-items: center;
+    text-align: center;
+    color: style.$dark_gray;
 
     &:hover {
-      & .dropdownMenu {
-        display: flex;
-      }
+      background-color: style.$hover_gray;
     }
   }
 }
 
 .btnGroup {
   display: none;
+  height: 100%;
 
-  >.login {
+  >.login,
+  >.logout {
     @extend %link;
     margin-left: 20px;
   }
@@ -309,14 +361,24 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-
-    >.login:hover {
-      cursor: pointer;
-    }
   }
 
-  .userName {
-    margin-left: 30px;
+  .userMenu div:hover {
+    cursor: pointer;
+  }
+
+  .userCenterIcon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 4px;
+    border-radius: 50%;
+  }
+
+  .login:hover {
+    cursor: pointer;
   }
 
   .hamburgerContainer {

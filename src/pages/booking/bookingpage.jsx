@@ -1,5 +1,5 @@
 import styles from "./BookingPage.module.scss";
-import { BookingContainer, StepGroup, FormStep1, FormStep2, FormStep3, FormStep4 } from '../../components/booking/booking'
+import { Container, StepGroup, FormStep1, FormStep2, FormStep3, FormStep4 } from '../../components/booking/booking'
 import useTheme from '../../hooks/useTheme'
 import { useState, useEffect } from 'react'
 
@@ -49,7 +49,12 @@ const BookingPage = () => {
       className={styles.container}
       style={{ paddingTop: tickerOpen ? "124px" : "80px" }}
     >
-      <BookingContainer>
+      <Container
+        title="Booking Now"
+        subitle="線上預約"
+        titleBgClassName={styles.bookingBg}
+        containerBgClassName={styles.containerBg}
+      >
         <StepGroup step={step} />
         {step === 1 && (
           <FormStep1
@@ -84,7 +89,7 @@ const BookingPage = () => {
           />
         )}
         {step === 4 && <FormStep4 />}
-      </BookingContainer>
+      </Container>
     </div>
   );
 }

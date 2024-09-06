@@ -1,0 +1,162 @@
+@use '/src/styles/style.scss';
+
+.menu {
+  width: 240px;
+  height: fit-content;
+  padding: 8px;
+  background-color: style.$white;
+  border-radius: 16px;
+}
+
+.title {
+  margin: 0;
+  padding: 20px;
+  font-size: style.$title-font-size;
+  font-weight: 400;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+
+.entry {
+  width: 100%;
+  margin: 0;
+  padding: 16px;
+  list-style: none;
+  border-radius: 8px;
+  font-size: style.$font-size;
+  font-weight: 400;
+  &:hover {
+    background-color: style.$info_gray;
+    cursor: pointer;
+    .footprint {
+      transform: rotate(30deg);
+      transition: transform .3s ease;
+    }
+  }
+}
+
+.active {
+  background-color: style.$icon_blue;
+  color: style.$white;
+
+  &:hover {
+    background-color: style.$icon_blue;
+  }
+
+  .footprint {
+    background-image: url('/public/svg/footprint_white.svg');
+    transform: rotate(30deg);
+    transition: transform 0.3s ease;
+  }
+}
+
+.footprint {
+  width: 14px;
+  height: 13px;
+  margin-right: 10px;
+  background-image: url('/public/svg/footprint.svg');
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: top right;
+  transition: transform .3s ease;
+}
+
+.item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+
+.wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 56px;
+  margin-bottom: 84px;
+  width: style.$wrapper_width;
+  height: fit-content;
+}
+
+.btn {
+  width: fit-content;
+  margin-top: 34px;
+  padding: 16px 32px;
+  color: style.$white;
+  background-color: style.$icon_orange;
+  border: 1px solid style.$icon_orange;
+  border-radius: 100px;
+  &:hover {
+    color: style.$icon_orange;
+    background-color: style.$white;
+    cursor: pointer;
+  }
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 500px;
+}
+
+.tableTitle {
+  font-size: style.$form-title-size;
+  font-weight: 400;
+  margin: 0;
+}
+
+.tableBody {
+  width: 100%;
+  margin-top: 34px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.inputTitle {
+  margin-bottom: 12px;
+  font-size: style.$point-font-size;
+}
+
+%input {
+  height: 48px;
+  padding: 16px;
+  border: 1px solid style.$light_gray;
+  border-radius: 8px;
+  font-size: style.$font-size;
+}
+
+.emailInput {
+  @extend %input;
+  width: 100%;
+  background-color: style.$light_gray;
+}
+
+
+.userInfoTable {
+  background-color: style.$white;
+}
+
+@media screen and (min-width: 480px) {
+}

@@ -110,51 +110,88 @@ const Header = () => {
   }
 
   return (
-    <div className={styles.container} style={{top: tickerOpen ? '44px' : '0'}}>
+    <div
+      className={styles.container}
+      style={{ top: tickerOpen ? "44px" : "0" }}
+    >
       <div className={styles.wrapper}>
         <div className={styles.logo} onClick={handleLogeClick}></div>
         <div className={styles.navbarList}>
-          <div onClick={() => navigate('/')} className={styles.navbarEntry}>首頁</div>
-          <div onClick={() => navigate('/about')} className={styles.navbarEntry}>
+          <div onClick={() => navigate("/")} className={styles.navbarEntry}>
+            首頁
+          </div>
+          <div
+            onClick={() => navigate("/about")}
+            className={styles.navbarEntry}
+          >
             關於我們
             <DropdownMenu
-              linkTo={'about'}
-              menuList={['經營理念','專業團隊','診所資訊']} />
+              linkTo={"about"}
+              menuList={["經營理念", "專業團隊", "診所資訊"]}
+            />
           </div>
-          <div onClick={() => navigate('/service')} className={styles.navbarEntry}>
+          <div
+            onClick={() => navigate("/service")}
+            className={styles.navbarEntry}
+          >
             服務項目
             <DropdownMenu
-              linkTo={'service'}
-              menuList={['內科','外科','其他專科']} />
+              linkTo={"service"}
+              menuList={["內科", "外科", "其他專科"]}
+            />
           </div>
-          <div onClick={() => navigate('/photo')} className={styles.navbarEntry}>照片牆</div>
-          <div onClick={() => navigate('/contact-us')} className={styles.navbarEntry}>
+          <div
+            onClick={() => navigate("/photo")}
+            className={styles.navbarEntry}
+          >
+            照片牆
+          </div>
+          <div
+            onClick={() => navigate("/contact-us")}
+            className={styles.navbarEntry}
+          >
             聯絡我們
             <DropdownMenu
-              linkTo={'contact-us'}
-              menuList={['交通指南','聯絡表單']} />
+              linkTo={"contact-us"}
+              menuList={["交通指南", "聯絡表單"]}
+            />
           </div>
         </div>
         <div className={styles.btnGroup}>
-          <PrimaryButton title={'立即預約'} onClick={handleBookingeBtnClick}/>
+          <PrimaryButton title={"立即預約"} onClick={handleBookingeBtnClick} />
           {currentUser ? (
-          <>
-            <div className={styles.userName}>{currentUser?.displayName}</div>
-            <div onClick={handleSignOut} className={styles.login}>登出</div>
-          </>
+              <div className={styles.userCenter}>
+              <img src="/img/user.png" alt="user_icon" className={styles.userCenterIcon } />
+              <div className={styles.userMenu} >
+                  <div onClick={() => {
+                    navigate("/user");
+                  }}>會員中心</div>
+                  <div onClick={handleSignOut} className={styles.logout}>
+                    登出
+                  </div>
+                </div>
+              </div>
           ) : (
-            <div onClick={() => {
-              navigate('/login')
-            }} className={styles.login}>登入</div>
+            <div
+              onClick={() => {
+                navigate("/login");
+              }}
+              className={styles.login}
+            >
+              登入
+            </div>
           )}
         </div>
-        <div className={styles.hamburgerContainer} onClick={handleHamburgerClick}>
-          <div className={styles.hamburgerBtn} ref={hamburgerRef} ></div>
+        <div
+          className={styles.hamburgerContainer}
+          onClick={handleHamburgerClick}
+        >
+          <div className={styles.hamburgerBtn} ref={hamburgerRef}></div>
         </div>
-        <MobileMenu ref={menuRef}/>
+        <MobileMenu ref={menuRef} />
       </div>
     </div>
-  )
+  );
 }
 
 export default Header;

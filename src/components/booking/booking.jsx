@@ -7,22 +7,26 @@ import { getAuth } from "firebase/auth";
 import { useEffect, useState } from 'react';
 
 
-const BookingContainer = ({ children }) => {
+const Container = ({ children, title, subitle, titleBgClassName, containerBgClassName  }) => {
   return (
-    <div className={styles.container}>
+    <div className={`${styles.container} ${containerBgClassName}`}>
       <div className={styles.wrapper}>
         <div className={styles.titleGroup}>
-          <div className={styles.titleBackground}></div>
-          <object data="/svg/home_footprint_white.svg" className={styles.footprint} aria-label="footprint"> </object>
-          <h2 className={styles.title}>Booking Now</h2>
-          <h3 className={styles.subtitle}>線上預約</h3>
+          <div
+            className={`${styles.titleBackground} ${titleBgClassName} `}
+          ></div>
+          <img
+            src="/svg/home_footprint_white.svg"
+            alt="icon"
+            className={styles.footprint}
+          />
+          <h2 className={styles.title}>{title}</h2>
+          <h3 className={styles.subtitle}>{subitle}</h3>
         </div>
-        <div className={styles.body}>
-          {children}
-        </div>
+        <div className={styles.body}>{children}</div>
       </div>
     </div>
-  )
+  );
 };
 
 const StepGroup = ({step}) => {
@@ -271,6 +275,88 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
   )
 }
 
+const NameInput = ({lastName, firstName, gender, handleLastNameChange, handleFirstNameChange, handleGenderChange}) => {
+  return (
+    <div className={styles.nameGroup}>
+      <div className={styles.inputGroup}>
+        <label htmlFor="lastName" className={styles.inputTitle}>
+          姓氏 *
+        </label>
+        <input
+          name="lastName"
+          id="lastName"
+          type="lastName"
+          autoComplete="family-name"
+          className={styles.nameInput}
+          value={lastName}
+          onChange={(e) => handleLastNameChange(e.target.value)}
+        />
+      </div>
+      <div className={styles.inputGroup}>
+        <label htmlFor="firstName" className={styles.inputTitle}>
+          名字
+        </label>
+        <input
+          name="firstName"
+          id="firstName"
+          type="firstName"
+          autoComplete="given-name"
+          className={styles.nameInput}
+          value={firstName}
+          onChange={(e) => handleFirstNameChange(e.target.value)}
+        />
+      </div>
+      <div className={styles.gender}>
+        <input
+          type="radio"
+          name="gender"
+          id="male"
+          value={"male"}
+          className={styles.genderInput}
+          onChange={(e) => handleGenderChange(e.target.value)}
+          checked={gender === "male"}
+        />
+        <label htmlFor="male" className={styles.genderLabel}>
+          先生
+        </label>
+        <input
+          type="radio"
+          name="gender"
+          id="female"
+          value={"female"}
+          className={styles.genderInput}
+          onChange={(e) => handleGenderChange(e.target.value)}
+          checked={gender === "female"}
+        />
+        <label htmlFor="female" className={styles.genderLabel}>
+          小姐
+        </label>
+      </div>
+    </div>
+  );
+}
+
+const PhoneInput = ({phone, handlePhoneChange}) => {
+  return (
+    <div className={styles.phone}>
+      <label htmlFor="phone" className={styles.inputTitle}>
+        手機號碼 *
+      </label>
+      <input
+        name="phone"
+        id="phone"
+        type="tel"
+        autoComplete="tel"
+        placeholder="請輸入您的手機號碼"
+        maxLength={"13"}
+        className={styles.phoneInput}
+        value={phone}
+        onChange={(e) => handlePhoneChange(e.target.value)}
+      />
+    </div>
+  );
+}
+
 const FormStep2 = ({
   handlePrevStep,
   handleNextStep,
@@ -468,87 +554,29 @@ const FormStep2 = ({
       </div>
       <form action="post" className={styles.form}>
         <h3 className={styles.formTitle}>飼主資料</h3>
-        <div className={styles.nameGroup}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="lastName" className={styles.inputTitle}>
-              姓氏 *
-            </label>
-            <input
-              name="lastName"
-              id="lastName"
-              type="lastName"
-              autoComplete="family-name"
-              className={styles.nameInput}
-              value={ownerInfo.lastName}
-              onChange={(e) => handleLastNameChange(e.target.value)}
+        <div className={styles.ownerInfo}>
+          <NameInput
+            lastName={ownerInfo.lastName}
+            firstName={ownerInfo.firstName}
+            gender={ownerInfo.gender}
+            handleLastNameChange={handleLastNameChange}
+            handleFirstNameChange={handleFirstNameChange}
+            handleGenderChange={handleGenderChange}
             />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="firstName" className={styles.inputTitle}>
-              名字
-            </label>
-            <input
-              name="firstName"
-              id="firstName"
-              type="firstName"
-              autoComplete="given-name"
-              className={styles.nameInput}
-              value={ownerInfo.firstName}
-              onChange={(e) => handleFirstNameChange(e.target.value)}
-            />
-          </div>
-          <div className={styles.gender}>
-            <input
-              type="radio"
-              name="gender"
-              id="male"
-              value={"male"}
-              className={styles.genderInput}
-              onChange={(e) => handleGenderChange(e.target.value)}
-              checked={ownerInfo.gender === "male"}
-            />
-            <label htmlFor="male" className={styles.genderLabel}>
-              先生
-            </label>
-            <input
-              type="radio"
-              name="gender"
-              id="female"
-              value={"female"}
-              className={styles.genderInput}
-              onChange={(e) => handleGenderChange(e.target.value)}
-              checked={ownerInfo.gender === "female"}
-            />
-            <label htmlFor="female" className={styles.genderLabel}>
-              小姐
-            </label>
-          </div>
-        </div>
-        <div className={styles.phone}>
-          <label htmlFor="phone" className={styles.inputTitle}>
-            手機號碼 *
-          </label>
-          <input
-            name="phone"
-            id="phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder="請輸入您的手機號碼"
-            maxLength={"13"}
-            className={styles.phoneInput}
-            value={ownerInfo.phone}
-            onChange={(e) => handlePhoneChange(e.target.value)}
+          <PhoneInput
+          phone={ownerInfo.phone}
+          handlePhoneChange={handlePhoneChange}
           />
         </div>
         <h3 className={styles.formTitle}>寵物資料</h3>
-        <p
-          className={styles.describe}
-        >{`已選擇 ${selectedPets.length + haveNewPet}/3 (一個時段最多預約三隻寵物)`}</p>
+        <p className={styles.describe}>{`已選擇 ${
+          selectedPets.length + haveNewPet
+        }/3 (一個時段最多預約三隻寵物)`}</p>
         {originalPetInfo.length !== 0 && (
           <div className={styles.petInfo}>
             <h4 className={styles.petInfoTitle}>原有寵物</h4>
             <div className={styles.petInfoInputGroup}>
-              {originalPetInfo.map(info => {
+              {originalPetInfo.map((info) => {
                 return (
                   <div className={styles.petInfoGroup} key={info.id}>
                     <input
@@ -557,7 +585,7 @@ const FormStep2 = ({
                       id={info.id.slice(1, 6)}
                       className={styles.petInfoInput}
                       onChange={() => handleExistingPetSelection(info)}
-                      checked={selectedPets.some(pet=> pet.id === info.id)}
+                      checked={selectedPets.some((pet) => pet.id === info.id)}
                     />
                     <label
                       htmlFor={info.id.slice(1, 6)}
@@ -730,15 +758,15 @@ const FormStep2 = ({
   );
 };
 
-const InfotableGroup = ({title, info, mark, icon}) => {
+const InfoTableGroup = ({title, info, mark, icon, className}) => {
   return (
-    <div className={styles.infoTableGroup}>
+    <div className={`${styles.infoTableGroup} ${className}`}>
       <div className={styles.tableTitle}>{title}</div>
       <div className={styles.tableInfo}>{info}</div>
       {mark && <div className={styles.tableMark}>{mark}</div>}
-      {icon && <object data={icon} className={styles.infoTableIcon} aria-label="petIcon"> </object>}
+      {icon && <img src={icon} alt="icon" className={styles.infoTableIcon} />}
     </div>
-  )
+  );
 }
 
 const FormStep3 = ({
@@ -786,18 +814,37 @@ const FormStep3 = ({
       <div className={styles.form}>
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>預約門診</h3>
-          <InfotableGroup title={"日期"} info={date} mark={day} />
-          <InfotableGroup title={"時段"} info={reserveTime} />
-          <InfotableGroup
+          <InfoTableGroup
+            title={"日期"}
+            info={date}
+            mark={day}
+            className={styles.bookingInfo}
+          />
+          <InfoTableGroup
+            title={"時段"}
+            info={reserveTime}
+            className={styles.bookingInfo}
+          />
+          <InfoTableGroup
             title={"醫師"}
             info={reserveDoctor}
             mark={clinicNum}
+            className={styles.bookingInfo}
           />
         </div>
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>飼主資料</h3>
-          <InfotableGroup title={"姓名"} info={name} mark={gender} />
-          <InfotableGroup title={"手機號碼"} info={phone} />
+          <InfoTableGroup
+            title={"姓名"}
+            info={name}
+            mark={gender}
+            className={styles.bookingInfo}
+          />
+          <InfoTableGroup
+            title={"手機號碼"}
+            info={phone}
+            className={styles.bookingInfo}
+          />
         </div>
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>寵物資料</h3>
@@ -806,21 +853,23 @@ const FormStep3 = ({
             const icon = getIcon(pet.species);
             return (
               <>
-                <InfotableGroup
+                <InfoTableGroup
                   title={`寵物${index + 1}`}
                   info={pet.petName}
                   mark={`(${age}歲 · ${pet.breed})`}
                   icon={icon}
+                  className={styles.bookingInfo}
                 />
               </>
             );
           })}
           {newPetInfo.petName && (
-            <InfotableGroup
+            <InfoTableGroup
               title={"新寵物"}
               info={newPetInfo.petName}
               mark={`(${newPetAge}歲 · ${newPetInfo.breed})`}
               icon={getIcon(newPetInfo.species)}
+              className={styles.bookingInfo}
             />
           )}
         </div>
@@ -876,4 +925,14 @@ const FormStep4 = () => {
   )
 }
 
-export { BookingContainer, StepGroup, FormStep1, FormStep2, FormStep3, FormStep4 };
+export {
+  Container,
+  StepGroup,
+  FormStep1,
+  FormStep2,
+  FormStep3,
+  FormStep4,
+  InfoTableGroup,
+  NameInput,
+  PhoneInput
+};

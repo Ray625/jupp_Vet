@@ -17,10 +17,8 @@
   right: 0;
   width: 100%;
   height: 150px;
-  background-image: url('/public/img/bookingpage_background.jpg');
   background-repeat: no-repeat;
   background-size: cover;
-  background-position: bottom 50% center;
   &::after {
     content: '';
     position: absolute;
@@ -46,6 +44,7 @@
     background-size: cover;
   }
 }
+
 
 .footprint {
   display: none;
@@ -119,7 +118,7 @@
 .step2 > .stepNum,
 .step3 > .stepNum   {
   @extend %stepLine;
-} 
+}
 
 .stepNum {
   display: flex;
@@ -243,6 +242,12 @@
   font-size: style.$title-font-size;
   line-height: 28px;
   font-weight: 400;
+}
+
+.ownerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .describe {
@@ -405,7 +410,6 @@
   flex-direction: column;
   gap: 16px;
   width: 308px;
-  margin-bottom: 44px;
 }
 
 .inputGroup {
@@ -490,7 +494,7 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 64px;
+  margin-bottom: 44px;
 }
 
 .phoneInput {
@@ -534,7 +538,7 @@
   margin-right: 12px;
   border-radius: 4px;
   border: 1px solid style.$light-gray;
-  
+
   &:hover {
     cursor: pointer;
   }
@@ -739,15 +743,19 @@
   height: 50px;
   padding: 20px 16px;
   border-radius: 8px;
-  background-color: style.$info_gray;
   &:not(:last-child) {
     margin-bottom: 16px;
   }
 }
 
+.bookingInfo {
+  background-color: style.$info_gray;
+}
+
 .tableTitle {
   display: flex;
   justify-content: flex-start;
+  color: style.$font_gray;
 }
 
 .tableMark {
@@ -826,22 +834,6 @@
 }
 
 @media screen and (min-width: 480px) {
-  .container {
-    &::after {
-      content: '';
-      position: absolute;
-      z-index: -1;
-      top: 350px;
-      left: 0;
-      right: 0;
-      width: 100%;
-      height: 500%;
-      background-image: url(/public/img/bookingpage_background3.png);
-      background-repeat: no-repeat;
-      background-size: contain;
-    }
-  }
-
   .titleBackground {
     height: 450px;
     background-position: bottom 50% center;
@@ -986,7 +978,6 @@
     flex-direction: row;
     gap: 16px;
     width: 456px;
-    margin-bottom: 24px;
   }
 
   .nameInput {

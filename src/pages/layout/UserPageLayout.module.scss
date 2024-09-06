@@ -9,9 +9,14 @@
   text-align: center;
 }
 
-.bookingBg {
-  background-image: url('/public/img/bookingpage_background.jpg');
-  background-position: bottom 50% center;
+.userBg {
+  background-image: url('/public/img/userpage_background.jpg');
+  background-position: bottom 60% center;
+}
+
+.test {
+  height: 70vh;
+  width: 100vw;
 }
 
 @media screen and (min-width: 480px) {
@@ -20,11 +25,11 @@
       content: '';
       position: absolute;
       z-index: -1;
-      top: 350px;
-      left: 0;
-      width: 100%;
-      height: 500%;
-      background-image: url(/public/img/bookingpage_background3.png);
+      top: 35%;
+      right: 10%;
+      width: 390px;
+      height: 380px;
+      background-image: url('/public/img/userpage_background2.png');
       background-repeat: no-repeat;
       background-size: contain;
     }
