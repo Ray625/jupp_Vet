@@ -357,6 +357,120 @@ const PhoneInput = ({phone, handlePhoneChange}) => {
   );
 }
 
+const PetInfoForm = ({ petInfo, func }) => {
+  const {
+    handlePetNameChange,
+    handlePetGenderChange,
+    handlePetSpeciesChange,
+    handlePetBirthdayChange,
+    handlePetBreedChange,
+  } = func;
+
+  return (
+    <div className={styles.infoBody}>
+      <div className={styles.nameGroup}>
+        <div className={styles.inputGroup}>
+          <label htmlFor="petName" className={styles.inputTitle}>
+            寵物名
+          </label>
+          <input
+            name="petName"
+            id="petName"
+            type="text"
+            autoComplete="auto"
+            className={styles.petNameInput}
+            value={petInfo.petName}
+            onChange={(e) => handlePetNameChange(e.target.value)}
+          />
+        </div>
+        <div className={`${styles.inputGroup} ${styles.petGenderInput}`}>
+          <label htmlFor="petGender" className={styles.inputTitle}>
+            性別
+          </label>
+          <select
+            name="petGender"
+            id="petGender"
+            className={styles.selection}
+            onChange={(e) => handlePetGenderChange(e.target.value)}
+            value={petInfo.gender}
+          >
+            <option value="null">請選擇</option>
+            <option value="male">公</option>
+            <option value="female">母</option>
+          </select>
+        </div>
+        <div className={styles.species}>
+          <input
+            type="radio"
+            name="species"
+            id="canine"
+            value={"canine"}
+            className={styles.speciesInput}
+            onChange={(e) => handlePetSpeciesChange(e.target.value)}
+            checked={petInfo.species === "canine"}
+          />
+          <label htmlFor="canine" className={styles.speciesLabel}>
+            <img
+              src="/svg/booking_dog.svg"
+              alt="icon"
+              className={styles.petInfoIcon}
+            />
+            狗
+          </label>
+          <input
+            type="radio"
+            name="species"
+            id="feline"
+            value={"feline"}
+            className={styles.speciesInput}
+            onChange={(e) => handlePetSpeciesChange(e.target.value)}
+            checked={petInfo.species === "feline"}
+          />
+          <label htmlFor="feline" className={styles.speciesLabel}>
+            <img
+              src="/svg/booking_cat.svg"
+              alt="icon"
+              className={styles.petInfoIcon}
+            />
+            貓
+          </label>
+        </div>
+      </div>
+      <div className={styles.infoBdBreed}>
+        <div className={styles.inputGroup}>
+          <label htmlFor="bd" className={styles.inputTitle}>
+            出生年份
+          </label>
+          <input
+            name="bd"
+            id="bd"
+            type="number"
+            placeholder="西元年"
+            autoComplete="auto"
+            className={styles.bdayInput}
+            onChange={(e) => handlePetBirthdayChange(e.target.value)}
+            value={petInfo.birthday}
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label htmlFor="birth" className={styles.inputTitle}>
+            品種
+          </label>
+          <input
+            name="breed"
+            id="breed"
+            type="text"
+            autoComplete="auto"
+            className={styles.bdayInput}
+            onChange={(e) => handlePetBreedChange(e.target.value)}
+            value={petInfo.breed}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const FormStep2 = ({
   handlePrevStep,
   handleNextStep,
@@ -373,13 +487,13 @@ const FormStep2 = ({
   const db = getDatabase();
   const auth = getAuth();
   const user = auth.currentUser;
-  const user_id = user.uid;
+  const userId = user.uid;
 
   // 在渲染頁面後抓取user在資料庫的名字，自動填入表單
   useEffect(() => {
     async function getUserInfo() {
       try {
-        const snap = await get(ref(db, "users/" + user_id));
+        const snap = await get(ref(db, "users/" + userId));
         if (snap.exists()) {
           const userInfo = snap.val();
           const { lastName, firstName, gender, phone } = userInfo;
@@ -407,7 +521,7 @@ const FormStep2 = ({
     async function getUserPetInfo() {
       try {
         const snap = await get(
-          query(ref(db, "pets/"), orderByChild("owner_id"), equalTo(user_id))
+          query(ref(db, "pets/"), orderByChild("owner_id"), equalTo(userId))
         );
         if (snap.exists()) {
           const userPetInfo = snap.val();
@@ -494,6 +608,14 @@ const FormStep2 = ({
     });
   };
 
+  const func = {
+    handlePetNameChange,
+    handlePetGenderChange,
+    handlePetSpeciesChange,
+    handlePetBirthdayChange,
+    handlePetBreedChange,
+  };
+
   const handleNextStepAndUpdateData = async () => {
     if (ownerInfo.lastName.length === 0) {
       return alert("請填寫飼主姓名");
@@ -502,7 +624,7 @@ const FormStep2 = ({
     }
 
     try {
-      await update(ref(db, "users/" + user_id), ownerInfo);
+      await update(ref(db, "users/" + userId), ownerInfo);
     } catch (error) {
       console.log(error);
     }
@@ -513,7 +635,7 @@ const FormStep2 = ({
       try {
         const newPetKey = push(ref(db, "pets/"), newPetInfo).key;
         await update(ref(db, "pets/" + newPetKey), {
-          owner_id: user_id,
+          owner_id: userId,
         });
       } catch (error) {
         console.log(error);
@@ -562,10 +684,10 @@ const FormStep2 = ({
             handleLastNameChange={handleLastNameChange}
             handleFirstNameChange={handleFirstNameChange}
             handleGenderChange={handleGenderChange}
-            />
+          />
           <PhoneInput
-          phone={ownerInfo.phone}
-          handlePhoneChange={handlePhoneChange}
+            phone={ownerInfo.phone}
+            handlePhoneChange={handlePhoneChange}
           />
         </div>
         <h3 className={styles.formTitle}>寵物資料</h3>
@@ -641,110 +763,7 @@ const FormStep2 = ({
                   移除
                 </div>
               </div>
-              <div className={styles.infoBody}>
-                <div className={styles.nameGroup}>
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="petName" className={styles.inputTitle}>
-                      寵物名
-                    </label>
-                    <input
-                      name="petName"
-                      id="petName"
-                      type="text"
-                      autoComplete="auto"
-                      className={styles.petNameInput}
-                      value={newPetInfo.petName}
-                      onChange={(e) => handlePetNameChange(e.target.value)}
-                    />
-                  </div>
-                  <div
-                    className={`${styles.inputGroup} ${styles.petGenderInput}`}
-                  >
-                    <label htmlFor="petGender" className={styles.inputTitle}>
-                      性別
-                    </label>
-                    <select
-                      name="petGender"
-                      id="petGender"
-                      className={styles.selection}
-                      onChange={(e) => handlePetGenderChange(e.target.value)}
-                      value={newPetInfo.gender}
-                    >
-                      <option value="null">請選擇</option>
-                      <option value="male">公</option>
-                      <option value="female">母</option>
-                    </select>
-                  </div>
-                  <div className={styles.species}>
-                    <input
-                      type="radio"
-                      name="species"
-                      id="canine"
-                      value={"canine"}
-                      className={styles.speciesInput}
-                      onChange={(e) => handlePetSpeciesChange(e.target.value)}
-                      checked={newPetInfo.species === "canine"}
-                    />
-                    <label htmlFor="canine" className={styles.speciesLabel}>
-                      <img
-                        src="/svg/booking_dog.svg"
-                        alt="icon"
-                        className={styles.petInfoIcon}
-                      />
-                      狗
-                    </label>
-                    <input
-                      type="radio"
-                      name="species"
-                      id="feline"
-                      value={"feline"}
-                      className={styles.speciesInput}
-                      onChange={(e) => handlePetSpeciesChange(e.target.value)}
-                      checked={newPetInfo.species === "feline"}
-                    />
-                    <label htmlFor="feline" className={styles.speciesLabel}>
-                      <img
-                        src="/svg/booking_cat.svg"
-                        alt="icon"
-                        className={styles.petInfoIcon}
-                      />
-                      貓
-                    </label>
-                  </div>
-                </div>
-                <div className={styles.infoBdBreed}>
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="bd" className={styles.inputTitle}>
-                      出生年
-                    </label>
-                    <input
-                      name="bd"
-                      id="bd"
-                      type="number"
-                      placeholder="西元年"
-                      autoComplete="auto"
-                      max="2024"
-                      className={styles.bdayInput}
-                      onChange={(e) => handlePetBirthdayChange(e.target.value)}
-                      value={newPetInfo.birthday}
-                    />
-                  </div>
-                  <div className={styles.inputGroup}>
-                    <label htmlFor="birth" className={styles.inputTitle}>
-                      品種
-                    </label>
-                    <input
-                      name="breed"
-                      id="breed"
-                      type="text"
-                      autoComplete="auto"
-                      className={styles.bdayInput}
-                      onChange={(e) => handlePetBreedChange(e.target.value)}
-                      value={newPetInfo.breed}
-                    />
-                  </div>
-                </div>
-              </div>
+              <PetInfoForm func={func} petInfo={newPetInfo} />
             </div>
           </>
         )}
@@ -795,7 +814,8 @@ const FormStep3 = ({
       gender = "";
   }
   const phone = ownerInfo.phone;
-  const newPetAge = moment().format("YYYY") - newPetInfo.birthday
+  let newPetAge = moment().format("YYYY") - newPetInfo.birthday
+  if (newPetAge <= 0) newPetAge = '未滿1'
   const getIcon = (species) => {
     let icon = "";
     switch (species) {
@@ -849,7 +869,8 @@ const FormStep3 = ({
         <div className={styles.infoTable}>
           <h3 className={styles.formTitle}>寵物資料</h3>
           {selectedPets.map((pet, index) => {
-            const age = moment().format("YYYY") - pet.birthday;
+            let age = moment().format("YYYY") - pet.birthday;
+            if (age <= 0) age = '未滿1'
             const icon = getIcon(pet.species);
             return (
               <>
@@ -934,5 +955,6 @@ export {
   FormStep4,
   InfoTableGroup,
   NameInput,
-  PhoneInput
+  PhoneInput,
+  PetInfoForm,
 };

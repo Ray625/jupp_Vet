@@ -91,7 +91,7 @@
 
 .btn {
   width: fit-content;
-  margin-top: 34px;
+  margin: 34px auto 0px auto;
   padding: 16px 32px;
   color: style.$white;
   background-color: style.$icon_orange;
@@ -104,7 +104,7 @@
   }
 }
 
-.userInfo {
+.infoTable {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -158,5 +158,146 @@
   background-color: style.$white;
 }
 
+.gap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 48px;
+  background-color: style.$white;
+  border-radius: 8px;
+}
+
+.petInfo {
+  display: grid;
+  grid-template-columns: 90px auto auto 1fr auto;
+  width: 100%;
+  height: 48px;
+  padding: 8px 16px;
+  background-color: style.$white;
+  border-radius: 8px;
+  font-size: style.$font-size;
+  place-content: center;
+  line-height: 24px;
+}
+
+.rightAngle {
+  border-radius: 8px 8px 0 0;
+}
+
+.petInfoTitle {
+  text-align: start;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  margin: 2px 8px;
+}
+
+.petInfoGroup {
+  text-align: start;
+  color: style.$disabled_gray;
+}
+
+.openArrow {
+  width: 24px;
+  height: 24px;
+  background-color: transparent;
+  border: none;
+  background-image: url('/public/svg/open_arrow.svg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  transition: transform 0.3s ease;
+}
+
+.invert {
+  transform: rotate(180deg);
+}
+
+.btnGroup {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: fit-content;
+  padding: 8px;
+  background-color: style.$white;
+  border-radius: 0 0 8px 8px;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 8px;
+    width: 484px;
+    height: 1px;
+    background-color: style.$light_gray;
+  }
+}
+
+.deleteBtn,
+.editBtn {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: fit-content;
+  padding: 6px;
+  border: none;
+  border-radius: 4px;
+  line-height: normal;
+}
+
+.deleteBtn {
+  background-color: rgba(105, 105, 105, 0.2);
+  color: style.$font_gray;
+}
+
+.editBtn {
+  background-color: rgba(58, 134, 186, 0.2);
+  color: style.$icon_blue;
+}
+
+.editPetForm {
+  margin-top: 34px;
+}
+
 @media screen and (min-width: 480px) {
+  .wrapper {
+    min-height: 45vh;
+  }
+
+  .tableField:hover {
+    cursor: pointer;
+    & .openArrow {
+      opacity: 0.8;
+    }
+  }
+
+  .openArrow:hover {
+    cursor: pointer;
+    opacity: 0.8;
+  }
+
+  .deleteBtn:hover {
+    cursor: pointer;
+    background-color: rgba(50, 50, 50, 0.2);
+    color: style.$dark_gray;
+  }
+
+  .editBtn:hover {
+    cursor: pointer;
+    background-color: rgba(0, 59, 99, 0.2);
+    color: style.$icon_gray;
+  }
 }
