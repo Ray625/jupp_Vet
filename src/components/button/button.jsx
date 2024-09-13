@@ -5,18 +5,26 @@ const PrimaryButton = ({ title, onClick }) => {
   return (
     <button className={styles.primaryBtn} onClick={onClick}>
       {title}
-      <object data="/svg/footprint_white.svg" className={styles.footprint} aria-label="footprint"> </object>
+      <img
+        src="/svg/footprint_white.svg"
+        alt="icon"
+        className={styles.footprint}
+      />
     </button>
-  )
+  );
 }
 
 const OutlineButton = ({ title, onClick }) => {
   return (
     <button className={styles.outlineBtn} onClick={onClick}>
       {title}
-      <object data="/svg/footprint_white.svg" className={styles.footprint} aria-label="footprint"> </object>
+      <img
+        src="/svg/footprint_white.svg"
+        alt="icon"
+        className={styles.footprint}
+      />
     </button>
-  )
+  );
 }
 
 const LabelMoreButton = ({ onClick, label }) => {

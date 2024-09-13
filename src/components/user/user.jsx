@@ -69,7 +69,11 @@ const Menu = () => {
 };
 
 const Wrapper = ({ children }) => {
-  return <div className={styles.wrapper}>{children}</div>;
+  return (
+    <div className={styles.wrapper}>
+      {children}
+    </div>
+  )
 };
 
 const Button = ({ onClick, text }) => {

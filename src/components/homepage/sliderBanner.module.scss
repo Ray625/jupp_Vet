@@ -68,6 +68,10 @@
   span {
     color: style.$primary_orange;
   }
+  
+  img.footprint {
+    display: inline-block;
+  }
 }
 
 .footprint {
@@ -203,6 +207,9 @@
     margin: 44px 0 50px 0;
     font-size: 60px;
     line-height: 80px;
+    img.footprint {
+      display: inline-block;
+    }
   }
 
   .footprint {

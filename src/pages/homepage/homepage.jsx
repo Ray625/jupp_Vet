@@ -1,5 +1,5 @@
 import styles from "./HomePage.module.scss";
-import SliderBanner from "../../components/homepage/slider_banner";
+import SliderBanner from "../../components/homepage/sliderBanner";
 import AboutSection from "../../components/homepage/about";
 import OfferSection from "../../components/homepage/offer";
 import ReasonSection from "../../components/homepage/reason";

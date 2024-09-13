@@ -1,6 +1,6 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import styles from './slider_banner.module.scss';
+import styles from './sliderBanner.module.scss';
 import Slider from "react-slick";
 import { OutlineButton } from "../button/button";
 import useTheme from '../../hooks/useTheme';
@@ -66,13 +66,11 @@ const SliderBanner = () => {
               <p className={styles.title}>像家人一樣呵護您的寵物</p>
               <p className={styles.enTitle}>
                 Caring for your pets like <span>family</span>
-                <object
-                  data="/svg/home_footprint.svg"
+                <img
+                  src="/svg/home_footprint.svg"
+                  alt="icon"
                   className={styles.footprint}
-                  aria-label="footprint"
-                >
-                  {" "}
-                </object>
+                />
               </p>
             </div>
             <OutlineButton title={"瞭解更多"} onClick={handleMoreBtnClick} />
@@ -83,14 +81,12 @@ const SliderBanner = () => {
             <div className={styles.titleGroup}>
               <p className={styles.title}>寵物的健康是我們的首要任務</p>
               <p className={styles.enTitle}>
-                Your pet's health is our priority
-                <object
-                  data="/svg/home_footprint_white.svg"
+                {`Your pet's health is our priority`}
+                <img
+                  src="/svg/home_footprint_white.svg"
+                  alt="icon"
                   className={styles.footprint}
-                  aria-label="footprint"
-                >
-                  {" "}
-                </object>
+                />
               </p>
             </div>
             <OutlineButton title={"瞭解更多"} onClick={handleMoreBtnClick} />
