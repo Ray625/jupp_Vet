@@ -9,19 +9,13 @@ import {
 import {
   getDatabase,
   ref,
-  get,
-  onValue,
-  query,
-  orderByChild,
-  equalTo,
   update,
   remove,
-  off,
   push
 } from "firebase/database";
-import { getAuth } from "firebase/auth";
-import { useState, useEffect } from "react";
+import { useState, useEffect, } from "react";
 import moment from "moment";
+import useAuth from "../../hooks/useAuth";
 
 const list = [
   {
@@ -45,30 +39,8 @@ const list = [
 const Menu = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const db = getDatabase();
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userId = user.uid;
-  const [userName, setUserName] = useState("");
-
-  useEffect(() => {
-    const userRef = ref(db, "users/" + userId);
-    onValue(userRef, (snap) => {
-      if (snap.exists()) {
-        const userInfo = snap.val();
-        const { lastName, firstName } = userInfo;
-        const fullName = `${lastName} ${firstName}`;
-        setUserName(fullName);
-      } else {
-        return;
-      }
-    });
-
-    return () => {
-      off(userRef);
-    }
-    // eslint-disable-next-line
-  }, []);
+  const { userInfo } = useAuth()
+  const userName = userInfo ? userInfo.lastName + " " + userInfo.firstName : "";
 
   return (
     <div className={styles.menu}>
@@ -114,49 +86,33 @@ const Button = ({ onClick, text }) => {
 };
 
 const UserInfo = () => {
-  const [ownerInfo, setOwnerInfo] = useState({
-    email: "",
-    lastName: "",
-    firstName: "",
-    gender: "male",
-    phone: "",
-    location: "",
-  });
+  const { userInfo, currentUser } = useAuth()
+  const [ownerInfo, setOwnerInfo] = useState(
+    {
+      email: "",
+      lastName: "",
+      firstName: "",
+      gender: "male",
+      phone: "",
+      location: "",
+    }
+  );
+  const [userId, setUserId] = useState('')
   const [editing, setEditing] = useState(false);
-
-  const db = getDatabase();
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userId = user.uid;
+  const db = getDatabase()
 
   useEffect(() => {
-    async function getUserInfo() {
-      try {
-        const snap = await get(ref(db, "users/" + userId));
-        if (snap.exists()) {
-          const userInfo = snap.val();
-          const { lastName, firstName, gender, phone } = userInfo;
-          const email = user.email;
-
-          const updatedInfo = { ...ownerInfo };
-          if (lastName) updatedInfo.lastName = lastName;
-          if (firstName) updatedInfo.firstName = firstName;
-          if (gender) updatedInfo.gender = gender;
-          if (phone) updatedInfo.phone = phone;
-          if (email) updatedInfo.email = email;
-
-          setOwnerInfo(updatedInfo);
-        } else {
-          return;
-        }
-      } catch (error) {
-        console.log(error);
-      }
+    if (userInfo) {
+      setOwnerInfo(userInfo)
     }
+  }, [userInfo])
 
-    getUserInfo();
-    // eslint-disable-next-line
-  }, [editing]);
+  useEffect(() => {
+    if (currentUser) {
+      setUserId(currentUser.uid);
+    }
+  }, [currentUser])
+
 
   let gender = "";
   switch (ownerInfo.gender) {
@@ -295,41 +251,19 @@ const UserInfo = () => {
 
 const PetsInfo = () => {
   const [selectedIndex, setSelectedIndex] = useState(1);
-  const [petsInfo, setPetsInfo] = useState([]);
   const [editPet, setEditPet] = useState({});
   const [editing, setEditing] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [userId, setUserId] = useState('')
 
+  const {currentUser, petsInfo} = useAuth()
   const db = getDatabase();
-  const auth = getAuth();
-  const user = auth.currentUser;
-  const userId = user.uid;
 
   useEffect(() => {
-    const petRef = ref(db, "pets/")
-    const petsQuery = query(petRef, orderByChild("owner_id"), equalTo(userId))
-
-    onValue(petsQuery, snap => {
-      if (snap.exists()) {
-        const userPetsInfo = snap.val();
-        const petData = [];
-        for (const [key, value] of Object.entries(userPetsInfo)) {
-          petData.push({
-            ...value,
-            id: key,
-          });
-        }
-        setPetsInfo(petData);
-      } else {
-        setPetsInfo([]);
-      }
-    })
-
-    return () => {
-      off(petsQuery);
+    if (currentUser) {
+      setUserId(currentUser.uid);
     }
-    // eslint-disable-next-line
-  }, [])
+  }, [currentUser]);
 
   const handleDeletePetInfo = ( petId, petName ) => {
     const resulf = confirm(`刪除 ${petName} 的寵物資料?`);
@@ -380,10 +314,17 @@ const PetsInfo = () => {
     handlePetBreedChange,
   };
 
-  const handleSavePet = async (petId) => {
+  const handleSavePet = async (petId, pet) => {
+    console.log("pet", pet);
+    if (pet.petName.length === 0) return alert("請填寫寵物姓名");
+    if (pet.gender.length === 0) return alert("請選擇寵物性別");
+    if (pet.species.length === 0) return alert("請選擇寵物種類");
+    if (pet.birthday.length === 0) return alert("請填寫寵物生日");
+    if (pet.breed.length === 0) return alert("請選擇寵物品種");
+
     const petRef = ref(db, "pets/" + petId)
     try {
-      update(petRef, editPet)
+      update(petRef, pet);
     } catch (error) {
       console.log(error)
     }
@@ -391,10 +332,17 @@ const PetsInfo = () => {
   }
 
   const handleAddNewPet = async (pet) => {
+    if (pet.petName.length === 0) return alert('請填寫寵物姓名')
+    if (pet.gender.length === 0) return alert("請選擇寵物性別")
+    if (pet.species.length === 0) return alert("請選擇寵物種類");
+    if (pet.birthday.length === 0) return alert("請填寫寵物生日");
+    if (pet.breed.length === 0) return alert("請選擇寵物品種");
+
     try {
       const newPetKey = push(ref(db, "pets/"), pet).key;
       await update(ref(db, "pets/" + newPetKey), {
         owner_id: userId,
+        petId: newPetKey,
       });
     } catch (error) {
       console.log(error);
@@ -412,7 +360,7 @@ const PetsInfo = () => {
             {petsInfo.length === 0 && (
               <div className={styles.noData}>尚無資料</div>
             )}
-            {petsInfo.map((pet, index) => {
+            {petsInfo && petsInfo.map((pet, index) => {
               let speciesIcon = "";
               switch (pet.species) {
                 case "feline":
@@ -444,7 +392,7 @@ const PetsInfo = () => {
                   >
                     <div
                       className={`${styles.petInfo} ${
-                        selectedIndex === index + 1 && styles.rightAngle
+                        selectedIndex === key && styles.rightAngle
                       }`}
                     >
                       <div className={styles.petInfoTitle}>寵物 {key}</div>
@@ -469,7 +417,7 @@ const PetsInfo = () => {
                           className={styles.deleteBtn}
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleDeletePetInfo(pet.id, pet.petName);
+                            handleDeletePetInfo(pet.petId, pet.petName);
                           }}
                         >
                           刪除
@@ -497,7 +445,13 @@ const PetsInfo = () => {
             text="新增寵物"
             onClick={() => {
               setAdding(true);
-              setEditPet({});
+              setEditPet({
+                petName: "",
+                gender: "",
+                breed: "",
+                species: "",
+                birthday: "",
+              });
             }}
           />
         </>
@@ -507,7 +461,7 @@ const PetsInfo = () => {
           <h4 className={styles.tableTitle}>編輯寵物資料</h4>
           <div className={styles.editPetForm}>
             <PetInfoForm petInfo={editPet} func={func} />
-            <Button text="儲存" onClick={() => handleSavePet(editPet.id)} />
+            <Button text="儲存" onClick={() => handleSavePet(editPet.petId, editPet)} />
           </div>
         </>
       )}
@@ -529,7 +483,7 @@ const Record = () => {
 };
 
 const Password = () => {
-  return <div>修改密碼</div>;
+  return <h4 className={styles.tableTitle}>變更密碼</h4>;
 };
 
 export { Menu, Wrapper, UserInfo, PetsInfo, Record, Password };

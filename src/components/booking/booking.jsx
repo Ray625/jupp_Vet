@@ -394,7 +394,7 @@ const PetInfoForm = ({ petInfo, func }) => {
             onChange={(e) => handlePetGenderChange(e.target.value)}
             value={petInfo.gender}
           >
-            <option value="null">請選擇</option>
+            <option value="">請選擇</option>
             <option value="male">公</option>
             <option value="female">母</option>
           </select>

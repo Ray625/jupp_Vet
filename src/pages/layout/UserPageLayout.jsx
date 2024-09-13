@@ -4,7 +4,6 @@ import { Menu, Wrapper } from "../../components/user/user";
 import useTheme from "../../hooks/useTheme";
 import { Outlet } from "react-router-dom";
 
-
 const UserPage = () => {
   const { tickerOpen } = useTheme();
 
@@ -20,8 +19,8 @@ const UserPage = () => {
         containerBgClassName={styles.containerBg}
       >
         <Wrapper>
-          <Menu/>
-          <Outlet/>
+          <Menu />
+          <Outlet />
         </Wrapper>
       </Container>
     </div>
