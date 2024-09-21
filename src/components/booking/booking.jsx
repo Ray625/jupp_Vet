@@ -199,10 +199,10 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
     title: '10:00 ~ 13:00',
     value: 'time1'
   }, {
-    title: '14:00 ~ 17:30',
+    title: '14:00 ~ 18:00',
     value: 'time2'
   }, {
-    title: '18:30 ~ 21:00',
+    title: '19:00 ~ 21:00',
     value: 'time3'
   }]
 

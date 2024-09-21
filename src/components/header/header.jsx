@@ -160,17 +160,36 @@ const Header = () => {
         <div className={styles.btnGroup}>
           <PrimaryButton title={"立即預約"} onClick={handleBookingeBtnClick} />
           {currentUser ? (
-              <div className={styles.userCenter}>
-              <img src="/img/user.png" alt="user_icon" className={styles.userCenterIcon } />
-              <div className={styles.userMenu} >
-                  <div onClick={() => {
-                    navigate("/user");
-                  }}>會員中心</div>
-                  <div onClick={handleSignOut} className={styles.logout}>
-                    登出
+            <div className={styles.userCenter}>
+              <img
+                src="/img/user.png"
+                alt="user_icon"
+                className={styles.userCenterIcon}
+              />
+              <div className={styles.userMenu}>
+                {currentUser.email === "admin001@gmail.com" && (
+                  <div
+                    onClick={() => {
+                      navigate("/backstage");
+                    }}
+                  >
+                    後台
                   </div>
+                )}
+                {currentUser.email !== "admin001@gmail.com" && (
+                  <div
+                    onClick={() => {
+                      navigate("/user");
+                    }}
+                  >
+                    會員中心
+                  </div>
+                )}
+                <div onClick={handleSignOut} className={styles.logout}>
+                  登出
                 </div>
               </div>
+            </div>
           ) : (
             <div
               onClick={() => {

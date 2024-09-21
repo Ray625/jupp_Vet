@@ -11,6 +11,8 @@ import HomePageLayout from "./pages/layout/HomePageLayout";
 import HomePage from "./pages/homepage/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
 import PhotoPage from "./pages/photo/PhotoPage";
+import BackstageLayout from "./pages/layout/backstageLayout";
+import { Doctors } from "./components/backstage/backstage";
 import UserPageLayout from "./pages/layout/UserPageLayout";
 import { UserInfo, PetsInfo, Record, Password } from "./components/user/user";
 
@@ -22,6 +24,11 @@ function App() {
           <AuthProvider>
             <ThemeProvider>
               <Routes>
+                <Route path="backstage" element={<BackstageLayout />}>
+                  <Route index element={<Doctors/>} />
+                  <Route path="schedule" element={<h1>班表</h1>} />
+                  <Route path="records" element={<h1>約診</h1>} />
+                </Route>
                 <Route path="/" element={<LoginLayout />}>
                   <Route path="login" element={<LoginPage />} />
                   <Route path="signup" element={<SignupPage />} />

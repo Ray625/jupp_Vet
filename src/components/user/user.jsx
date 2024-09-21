@@ -131,31 +131,31 @@ const UserInfo = () => {
   }
 
   const handleLastNameChange = (value) => {
-    setOwnerInfo({
-      ...ownerInfo,
+    setOwnerInfo((prev) => ({
+      ...prev,
       lastName: value,
-    });
+    }));
   };
 
   const handleFirstNameChange = (value) => {
-    setOwnerInfo({
-      ...ownerInfo,
+    setOwnerInfo((prev) => ({
+      ...prev,
       firstName: value,
-    });
+    }));
   };
 
   const handlePhoneChange = (value) => {
-    setOwnerInfo({
-      ...ownerInfo,
+    setOwnerInfo((prev) => ({
+      ...prev,
       phone: value,
-    });
+    }));
   };
 
   const handleGenderChange = (value) => {
-    setOwnerInfo({
-      ...ownerInfo,
+    setOwnerInfo((prev) => ({
+      ...prev,
       gender: value,
-    });
+    }));
   };
 
   const handleUpdateInfo = async ({ userId, ownerInfo }) => {
@@ -276,38 +276,38 @@ const PetsInfo = () => {
   }
 
   const handlePetNameChange = (value) => {
-    setEditPet({
-      ...editPet,
+    setEditPet((prev) => ({
+      ...prev,
       petName: value,
-    });
+    }));
   };
 
   const handlePetGenderChange = (value) => {
-    setEditPet({
-      ...editPet,
+    setEditPet((prev) => ({
+      ...prev,
       gender: value,
-    });
+    }));
   };
 
   const handlePetSpeciesChange = (value) => {
-    setEditPet({
-      ...editPet,
+    setEditPet((prev) => ({
+      ...prev,
       species: value,
-    });
+    }));
   };
 
   const handlePetBirthdayChange = (value) => {
-    setEditPet({
-      ...editPet,
+    setEditPet((prev) => ({
+      ...prev,
       birthday: value,
-    });
+    }));
   };
 
   const handlePetBreedChange = (value) => {
-    setEditPet({
-      ...editPet,
+    setEditPet((prev) => ({
+      ...prev,
       breed: value,
-    });
+    }));
   };
 
   const func = {
