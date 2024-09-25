@@ -11,6 +11,23 @@ export default {
         "bg-gray": "#ececec",
         "icon-orange": "#FE7E62",
       },
+      keyframes: {
+        fadeIn: {
+          "0%": {
+            opacity: 0,
+            width: '0px',
+            hight: '0px'
+          },
+          "100%": {
+            opacity: 1,
+            width: 'auto',
+            hight: 'auto'
+          },
+        },
+      },
+      animation: {
+        fadeIn: "fadeIn 0s ease 200ms forwards",
+      },
     },
   },
   plugins: [],

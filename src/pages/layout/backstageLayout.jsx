@@ -1,5 +1,7 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation,  } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getDatabase, ref, onValue, off, get, query, orderByChild, equalTo } from "firebase/database";
 
 const navList = [
   {
@@ -34,7 +36,64 @@ const NavBtn = ({ props }) => {
 };
 
 const BackstageLayout = () => {
+  const [doctorsList, setDoctorsList] = useState([]);
+  const [schedule, setSchedule] = useState([]);
+
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const db = getDatabase();
+    const doctorRef = ref(db, "doctors");
+    onValue(doctorRef, (snap) => {
+      if (snap.exists()) {
+        const list = snap.val();
+        const docData = [];
+        for (const [key, value] of Object.entries(list)) {
+          docData.push({
+            ...value,
+            id: key,
+          });
+        }
+        setDoctorsList(docData);
+      }
+    });
+
+    return () => {
+      off(doctorRef);
+    };
+  }, []);
+
+  useEffect(() => {
+    const db = getDatabase()
+    const scheduleRef = ref(db, "schedule")
+    const monthSchedule = query(scheduleRef, orderByChild("month"), equalTo("2024-09"));
+    get(monthSchedule).then((snap) => {
+      if (snap.exists()) {
+        const data = snap.val();
+        // const shiftList = [];
+        // for (const [date, room] of Object.entries(data)) {
+        //   const dayData = {
+        //     date,
+        //     shift: [],
+        //   };
+        //   Object.values(room).forEach((item) => {
+        //     if (item.name) {
+        //       dayData.shift.push({
+        //         doc: item.name,
+        //         time: item.time,
+        //         room: item.room,
+        //       });
+        //     }
+        //   });
+        //   shiftList.push(dayData);
+        // }
+        setSchedule(data);
+      }
+    });
+  }, [])
+
+  console.log(schedule);
+
 
   return (
     <div className="container-none h-screen flex flex-col">
@@ -57,7 +116,7 @@ const BackstageLayout = () => {
             ))}
           </div>
           <div className="w-full">
-            <Outlet />
+            <Outlet context={{ doctorsList, schedule }} />
           </div>
         </div>
       </div>
