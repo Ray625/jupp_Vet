@@ -207,9 +207,6 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
   }]
 
   const doctorData = [{
-    title: '不指定',
-    value: 'doctor0'
-  }, {
     title: '王豬皮 醫師(1診)',
     value: 'doctor1'
   }, {
@@ -222,7 +219,7 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
 
   return (
     <div className={styles.formContainer}>
-      <div className={styles.selectBtnGroup}>
+      {/* <div className={styles.selectBtnGroup}>
         <input type="radio" name="selection" id="timeFirst" value="timeFirst" className={styles.selectionInput} checked/>
         <label htmlFor="timeFirst" className={styles.selectBtn}>
           <i className="fa-regular fa-calendar"></i>
@@ -233,7 +230,7 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
           <i className="fa-solid fa-user"></i>
           依醫師
         </label>
-      </div>
+      </div> */}
       <form action="post" className={styles.form}>
         <h3 className={styles.formTitle}>請選擇日期</h3>
         <p className={styles.describe}>(僅能預約一個月內之日期)</p>

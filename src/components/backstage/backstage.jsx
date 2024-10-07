@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   getDatabase,
   ref,
@@ -10,6 +10,7 @@ import {
 } from "firebase/database";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
+import useThrottle from "../../hooks/useThrottle";
 
 const week = ["mon", "tue", "wed", "thu", "fri", "sat"];
 const weekCh = ["一", "二", "三", "四", "五", "六"];
@@ -86,7 +87,7 @@ const EditInput = ({
 const NewBtn = ({ onClick, text }) => {
   return (
     <button
-      className="w-fit mx-auto mt-4 px-8 py-4 border border-icon-orange border-solid rounded-full bg-icon-orange text-white hover:bg-white hover:text-icon-orange"
+      className="w-fit mx-auto px-8 py-4 border border-icon-orange border-solid rounded-full bg-icon-orange text-white hover:bg-white hover:text-icon-orange shadow"
       onClick={onClick}
     >
       {text}
@@ -210,9 +211,8 @@ const Doctors = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 w-8/12 h-full">
-      <h3 className="text-black text-2xl font-medium">醫師名單</h3>
-      <div className="flex flex-col mt-8 px-4 py-8 gap-4 bg-white rounded-lg">
+    <div className="flex flex-col mx-auto py-8 w-8/12 h-fit">
+      <div className="flex flex-col px-4 py-8 gap-4 bg-white rounded-lg shadow-lg">
         <div className="flex flex-row gap-4">
           <p className="text-xl font-medium px-4 w-20">醫師</p>
           <p className="text-xl font-medium flex-grow pr-20 text-center">
@@ -277,14 +277,607 @@ const Doctors = () => {
   );
 };
 
-const Schedule = () => {
-  const { doctorsList, schedule } = useOutletContext();
-  const [newSchedule, setNewSchedule] = useState({})
-  const [emptyBox, setEmptyBox] = useState(0)
-  const nextMonth = moment().add(1, "months").format("YYYY-MM");
-  const monthAfterNext = moment().add(2, "months").format("YYYY-MM");
+const MonthSchedule = () => {
+  const {
+    schedule,
+    selectMonth,
+    setSelectMonth,
+    prevMonthSchedule,
+    nextMonthSchedule,
+  } = useOutletContext();
+  const [newSchedule, setNewSchedule] = useState({});
 
+  useEffect(() => {
+    setNewSchedule(schedule);
+    // eslint-disable-next-line
+  }, []);
+
+  const firstDayOfWeek = moment(`${selectMonth}-01`).format("d");
+  const lastDayOfWeek = moment(`${selectMonth}-01`)
+    .add(1, "month")
+    .subtract(1, "days")
+    .format("d");
+
+  // 月曆佔未符，前面格數
+  const placeholderArrayBefore = Array.from(
+    { length: Number(firstDayOfWeek) },
+    (_, i) => (
+      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+    )
+  );
+
+  // 月曆佔未符，後面格數
+  const placeholderArrayAfter = Array.from(
+    { length: 6 - Number(lastDayOfWeek) },
+    (_, i) => (
+      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+    )
+  );
+
+  const handleSubtractSelectMonth = () => {
+    setNewSchedule(prevMonthSchedule)
+    setSelectMonth((prev) => {
+      const newMonth = moment(prev).subtract(1, "M").format("YYYY-MM");
+      return newMonth;
+    });
+  }
+
+  const throttleSubtractSelect = useThrottle(handleSubtractSelectMonth, 300);
+
+  const handleAddSelectMonth = () => {
+    setNewSchedule(nextMonthSchedule)
+    setSelectMonth((prev) => {
+      const newMonth = moment(prev).add(1, "M").format("YYYY-MM")
+      return newMonth
+    })
+  }
+
+  const throttleAddSelect = useThrottle(handleAddSelectMonth, 300);
+
+  const handleUpdateSchedule = async () => {
+    const db = getDatabase()
+
+    const scheduleRef = ref(db, "schedule");
+    try {
+      await update(scheduleRef, newSchedule);
+      alert("資料已更新");
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  return (
+    <>
+      <div className="w-full">
+        <div className="flex flex-row justify-between items-center mx-auto w-52 mb-2">
+          <button className="hover:opacity-80" onClick={throttleSubtractSelect}>
+            <i className="fa-solid fa-chevron-left"></i>
+          </button>
+          <div className="font-medium text-2xl">{`${selectMonth}月`}</div>
+          <button className="hover:opacity-80" onClick={throttleAddSelect}>
+            <i className="fa-solid fa-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+      {Object.keys(newSchedule).length === 0 && (
+        <div className="w-full mt-6 text-center text-xl text-gray-700">
+          當月資料尚未上傳至資料庫，請先至上方「批次產生班表」執行操作
+        </div>
+      )}
+      {Object.keys(newSchedule).length !== 0 && (
+        <div className="relative w-fit h-fit">
+          <div className="relative w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
+            <div className="flex flex-row w-fit gap-1 bg-white rounded mb-1">
+              <div className="flex items-center justify-center w-32 h-8 ">
+                日
+              </div>
+              <div className="flex items-center justify-center w-32 h-8">
+                一
+              </div>
+              <div className="flex items-center justify-center w-32 h-8">
+                二
+              </div>
+              <div className="flex items-center justify-center w-32 h-8">
+                三
+              </div>
+              <div className="flex items-center justify-center w-32 h-8">
+                四
+              </div>
+              <div className="flex items-center justify-center w-32 h-8">
+                五
+              </div>
+              <div className="flex items-center justify-center w-32 h-8">
+                六
+              </div>
+            </div>
+            <div className="grid grid-cols-7 auto-rows-min gap-1 w-fit h-fit">
+              {placeholderArrayBefore}
+              {Object.entries(newSchedule).map(([key, value]) => {
+                return (
+                  <DayFrame
+                    time={key}
+                    key={key}
+                    data={value}
+                    setNewSchedule={setNewSchedule}
+                  />
+                );
+              })}
+              {placeholderArrayAfter}
+            </div>
+            <div className="bg-white mt-1 p-1 rounded">
+              <p className="w-full pr-1 text-end text-sm text-gray-700">
+                點選格子可逐日編輯，編輯後按下更新班表，資料才會確實上傳
+              </p>
+              <div className="flex justify-center w-full mb-2">
+                <NewBtn onClick={handleUpdateSchedule} text="更新班表" />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
   const db = getDatabase();
+
+  // 月曆佔未符，前面格數
+  const placeholderArrayBefore = Array.from(
+    { length: Number(emptyBox[0]) },
+    (_, i) => (
+      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+    )
+  );
+
+  // 月曆佔未符，後面格數
+  const placeholderArrayAfter = Array.from(
+    { length: 6 - Number(emptyBox[1]) },
+    (_, i) => (
+      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+    )
+  );
+
+  const handleNewSchedule = async ({ e, newSchedule }) => {
+    e.stopPropagation()
+    const scheduleRef = ref(db, "schedule");
+    try {
+      await update(scheduleRef, newSchedule);
+      alert("上傳成功");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <>
+      {Object.keys(newSchedule).length !== 0 && (
+        <div className="relative w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
+          <div className="flex flex-row w-fit gap-1 bg-white rounded mb-1">
+            <div className="flex items-center justify-center w-32 h-8 ">日</div>
+            <div className="flex items-center justify-center w-32 h-8">一</div>
+            <div className="flex items-center justify-center w-32 h-8">二</div>
+            <div className="flex items-center justify-center w-32 h-8">三</div>
+            <div className="flex items-center justify-center w-32 h-8">四</div>
+            <div className="flex items-center justify-center w-32 h-8">五</div>
+            <div className="flex items-center justify-center w-32 h-8">六</div>
+          </div>
+          <div className="grid grid-cols-7 auto-rows-min gap-1 w-fit h-fit">
+            {placeholderArrayBefore}
+            {Object.entries(newSchedule).map(([key, value]) => {
+              return (
+                <DayFrame
+                  time={key}
+                  key={key}
+                  data={value}
+                  setNewSchedule={setNewSchedule}
+                />
+              );
+            })}
+            {placeholderArrayAfter}
+          </div>
+          <div className="bg-white mt-1 p-1 rounded">
+            <p className="w-full pr-1 text-end text-sm text-gray-700">
+              點選格子可逐日編輯，此處僅為預覽，按下新增將資料上傳
+            </p>
+            <div className="flex justify-center w-full mb-2">
+              <NewBtn
+                onClick={(e) => handleNewSchedule({ e, newSchedule })}
+                text="新增班表"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+const DayFrame = ({ time, data, setNewSchedule }) => {
+  const [enlarge, setEnlarge] = useState(false);
+  const date = moment(time).format("D");
+  const month = moment(time).format("YYYY / M");
+  const day = "日一二三四五六"[moment(time).format("d")];
+  const { r1s1, r1s2, r1s3, r2s1, r2s2, r2s3, r3s1, r3s2, r3s3 } = data
+
+  const handleSaveDaySchedule = (e) => {
+    e.stopPropagation()
+
+    const isSameDoctor = (s1, s2) => {
+      return s1?.name && s2?.name && s1.name === s2.name;
+    };
+
+    // 檢查每個時段是否有相同醫生，避免手動填入產生錯誤
+    if (
+      isSameDoctor(r1s1, r2s1) ||
+      isSameDoctor(r1s1, r3s1) ||
+      isSameDoctor(r2s1, r3s1) ||
+      isSameDoctor(r1s2, r2s2) ||
+      isSameDoctor(r1s2, r3s2) ||
+      isSameDoctor(r2s2, r3s2) ||
+      isSameDoctor(r1s3, r2s3) ||
+      isSameDoctor(r1s3, r3s3) ||
+      isSameDoctor(r2s3, r3s3)
+    ) {
+      alert("一時段不同診間，不可為同一醫師");
+      return;
+    }
+
+    setEnlarge(false);
+  }
+
+  const initialsName = (data) => {
+    if (!data) {
+      return ''
+    } else {
+      return `${data.name[0]} `;
+    }
+  }
+
+  return (
+    <>
+      <div
+        className="flex flex-col bg-white cursor-pointer w-32 h-32 rounded p-2 relative hover:opacity-80"
+        onClick={() => setEnlarge(true)}
+      >
+        <div className="text-right">{date}</div>
+        {!(
+          r1s1?.name ||
+          r1s2?.name ||
+          r1s3?.name ||
+          r2s1?.name ||
+          r2s2?.name ||
+          r2s3?.name ||
+          r3s1?.name ||
+          r3s2?.name ||
+          r3s3?.name
+        ) && (
+          <div className="absolute top-0 left-0 flex justify-center items-center w-full h-full ">
+            休
+          </div>
+        )}
+        {(r1s1?.name || r2s1?.name || r3s1?.name) && (
+          <div className="">{`早：${initialsName(r1s1)}${initialsName(
+            r2s1
+          )}${initialsName(r3s1)}`}</div>
+        )}
+        {(r1s2?.name || r2s2?.name || r3s2?.name) && (
+          <div className="">{`午：${initialsName(r1s2)}${initialsName(
+            r2s2
+          )}${initialsName(r3s2)}`}</div>
+        )}
+        {(r1s3?.name || r2s3?.name || r3s3?.name) && (
+          <div className="">{`晚：${initialsName(r1s3)}${initialsName(
+            r2s3
+          )}${initialsName(r3s3)}`}</div>
+        )}
+      </div>
+      {enlarge && (
+        <div className="flex flex-col w-full h-full py-6 px-4 bg-white absolute top-0 left-0 rounded z-10">
+          <div className="flex flex-row justify-between items-center">
+            <button
+              className="flex justify-center items-center w-8 p-2 rounded hover:opacity-80"
+              onClick={handleSaveDaySchedule}
+            >
+              <i className="fa-solid fa-chevron-left"></i>
+            </button>
+            <div className={"flex w-full justify-end text-xl"}>
+              <div className="font-medium">{`${month} / ${date} (${day})`}</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-[48px_repeat(3,_minmax(0,_1fr))] grid-rows-[48px_repeat(3,_minmax(0,_1fr))] w-full h-full mt-2 py-2 border-t border-solid border-black text-lg">
+            <div className="flex justify-center items-center w-full h-full col-start-2 col-end-3">
+              1診
+            </div>
+            <div className="flex justify-center items-center w-full h-full">
+              2診
+            </div>
+            <div className="flex justify-center items-center w-full h-full">
+              3診
+            </div>
+            <div className="flex justify-center items-center w-full h-full row-start-2 row-end-2">
+              早
+            </div>
+            <div className="flex justify-center items-center w-full h-full row-start-3 row-end-4">
+              午
+            </div>
+            <div className="flex justify-center items-center w-full h-full row-start-4 row-end-5">
+              晚
+            </div>
+            <div className="col-start-2 col-end-5 row-start-2 row-end-5 grid grid-cols-3 grid-rows-3 gap-1 p-1 bg-bg-gray rounded">
+              <ShiftFrame
+                data={r1s1}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r1s1"}
+              />
+              <ShiftFrame
+                data={r2s1}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r2s1"}
+              />
+              <ShiftFrame
+                data={r3s1}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r3s1"}
+              />
+              <ShiftFrame
+                data={r1s2}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r1s2"}
+              />
+              <ShiftFrame
+                data={r2s2}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r2s2"}
+              />
+              <ShiftFrame
+                data={r3s2}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r3s2"}
+              />
+              <ShiftFrame
+                data={r1s3}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r1s3"}
+              />
+              <ShiftFrame
+                data={r2s3}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r2s3"}
+              />
+              <ShiftFrame
+                data={r3s3}
+                setNewSchedule={setNewSchedule}
+                time={time}
+                shift={"r3s3"}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
+  const { doctorsList } = useOutletContext();
+  const [isEditing, setIsEditing] = useState(false)
+  const [isAdding, setIsAdding] = useState(false)
+
+  const handleNameSelectChange = (e) => {
+    const value = e.target.value
+    setNewSchedule((prev) => {
+      return {
+        ...prev,
+        [time]: {
+          ...prev[time],
+          [shift]: {
+            ...prev[time][shift],
+            'name': value
+          },
+        },
+      };
+    })
+  }
+
+  const handleNumInputChange = (e) => {
+    const value = e.target.value;
+    setNewSchedule((prev) => {
+      return {
+        ...prev,
+        [time]: {
+          ...prev[time],
+          [shift]: {
+            ...prev[time][shift],
+            maxAppointments: value,
+          }
+        }
+      }
+    })
+  }
+
+  const handleShiftDelete = () => {
+    setNewSchedule((prev) => {
+      const newData = { ...prev }
+      delete newData[time][shift];
+      return newData
+    })
+  }
+
+  const handleNewNameInputChange = (e) => {
+    const value = e.target.value;
+    setNewSchedule((prev) => {
+      return {
+        ...prev,
+        [time]: {
+          ...prev[time],
+          [shift]: {
+            ...prev[time][shift],
+            name: value,
+            currentAppointments: 0,
+            room: shift[1],
+            shift: `shift${shift[3]}`,
+          },
+        },
+      };
+    });
+  };
+
+  const handleSaveNewShift = (e) => {
+    e.stopPropagation();
+    if (!data) {
+      alert('請選擇值班醫師')
+      return
+    }
+
+    if (!data.maxAppointments) {
+      alert('請填選最大門診數')
+      return
+    }
+
+    setIsAdding(false);
+  }
+
+  return (
+    <div className={`relative w-full h-full p-2 bg-white rounded text-base}`}>
+      {!isEditing && !data?.name && !isAdding && (
+        <div className="relative w-full h-full">
+          <p className="absolute text-gray-500">休診</p>
+          <button
+            className="flex justify-center items-center w-full h-full opacity-0 transition-opacity hover:opacity-80"
+            onClick={() => setIsAdding(true)}
+          >
+            <i className="fa-solid fa-plus fa-lg"></i>
+          </button>
+        </div>
+      )}
+      {!isEditing && !isAdding && data?.name && (
+        <div>{`醫師: ${data?.name}`}</div>
+      )}
+      {!isEditing && !isAdding && data?.maxAppointments && (
+        <div className="mt-1">{`可約診人數: ${data?.maxAppointments}`}</div>
+      )}
+      {!isEditing && !isAdding && data?.name && (
+        <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
+          <button
+            className="hover:opacity-80"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
+          >
+            <i className="fa-solid fa-pen-to-square"></i>
+          </button>
+          <button className="hover:opacity-80 ml-2" onClick={handleShiftDelete}>
+            <i className="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      )}
+      {isEditing && (
+        <div className="flex flex-row">
+          <p>醫師:</p>
+          <select
+            name="name"
+            className="ml-1 bg-bg-gray rounded"
+            value={data?.name}
+            onChange={handleNameSelectChange}
+          >
+            {doctorsList.map((doc) => (
+              <option value={doc.name} key={doc.id}>
+                {doc.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+      {isEditing && (
+        <div className="flex flex-row items-center mt-1">
+          <p>可約診人數:</p>
+          <input
+            type="number"
+            max="20"
+            min="0"
+            value={data?.maxAppointments}
+            className="w-10 h-6 ml-1 pl-1 bg-bg-gray rounded"
+            onChange={handleNumInputChange}
+            required
+          />
+        </div>
+      )}
+      {isEditing && (
+        <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(false);
+            }}
+          >
+            <i className="fa-solid fa-check"></i>
+          </button>
+        </div>
+      )}
+      {isAdding && (
+        <div className="flex flex-row">
+          <p>醫師:</p>
+          <select
+            name="name"
+            className="ml-1 bg-bg-gray rounded"
+            value={data?.name}
+            onChange={handleNewNameInputChange}
+          >
+            <option value="">請選擇</option>
+            {doctorsList.map((doc) => (
+              <option value={doc.name} key={doc.id}>
+                {doc.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+      {isAdding && data && (
+        <div className="flex flex-row items-center mt-1">
+          <p>可約診人數:</p>
+          <input
+            type="number"
+            max="20"
+            min="0"
+            value={data?.maxAppointments}
+            className="w-10 h-6 ml-1 pl-1 bg-bg-gray rounded"
+            onChange={handleNumInputChange}
+            required
+          />
+        </div>
+      )}
+      {isAdding && (
+        <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
+          <button onClick={handleSaveNewShift}>
+            <i className="fa-solid fa-check"></i>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+const Schedule = () => {
+  const { doctorsList } = useOutletContext();
+  const [newSchedule, setNewSchedule] = useState({});
+  const [emptyBox, setEmptyBox] = useState([]);
+  const [action, setAction] = useState('view')
+  const monthOption = [];
+
+  for (let i = 0; i <= 3; i++) {
+    const data = moment().add(i, "months").format("YYYY-MM");
+    monthOption.push(<option value={data} key={data}>{data}月</option>);
+  }
 
   // 依照醫師名單之設定產生單日班表
   const handleGetDateSchedule = (time) => {
@@ -296,38 +889,20 @@ const Schedule = () => {
 
     for (let [index, item] of doctorsList.entries()) {
       if (!item.work[day]) continue;
+
       const room = index + 1;
-      if (item.work[day] === "早") {
-        schedule[`room${room}-shift1`] = {};
-        schedule[`room${room}-shift1`]["name"] = item.name;
-        schedule[`room${room}-shift1`]["room"] = room;
-        schedule[`room${room}-shift1`]["shift"] = "shift1";
-        schedule[`room${room}-shift1`]["currentAppointments"] = 0;
-        schedule[`room${room}-shift1`]["maxAppointments"] = 6;
 
-        schedule[`room${room}-shift2`] = {};
-        schedule[`room${room}-shift2`]["name"] = item.name;
-        schedule[`room${room}-shift2`]["room"] = room;
-        schedule[`room${room}-shift2`]["shift"] = "shift2";
-        schedule[`room${room}-shift2`]["currentAppointments"] = 0;
-        schedule[`room${room}-shift2`]["maxAppointments"] = 6;
-      }
+      const shifts = item.work[day] === "早" ? ["s1", "s2"] : ["s2", "s3"];
 
-      if (item.work[day] === "晚") {
-        schedule[`room${room}-shift2`] = {};
-        schedule[`room${room}-shift2`]["name"] = item.name;
-        schedule[`room${room}-shift2`]["room"] = room;
-        schedule[`room${room}-shift2`]["shift"] = "shift2";
-        schedule[`room${room}-shift2`]["currentAppointments"] = 0;
-        schedule[`room${room}-shift2`]["maxAppointments"] = 6;
-
-        schedule[`room${room}-shift3`] = {};
-        schedule[`room${room}-shift3`]["name"] = item.name;
-        schedule[`room${room}-shift3`]["room"] = room;
-        schedule[`room${room}-shift3`]["shift"] = "shift3";
-        schedule[`room${room}-shift3`]["currentAppointments"] = 0;
-        schedule[`room${room}-shift3`]["maxAppointments"] = 6;
-      }
+      shifts.forEach((shift) => {
+        schedule[`r${room}${shift}`] = {
+          name: item.name,
+          room: `${room}診`,
+          shift: `shift${shift[1]}`,
+          currentAppointments: 0,
+          maxAppointments: 6,
+        };
+      });
     }
 
     const updates = {
@@ -346,12 +921,15 @@ const Schedule = () => {
       .add(1, "month")
       .subtract(1, "days")
       .format("DD");
-    const dayOfWeek = moment(`${time}-01`).format('d')
+    const firstDayOfWeek = moment(`${time}-01`).format("d");
+    const lastDayOfWeek = moment(`${time}-01`)
+      .add(1, "month")
+      .subtract(1, "days")
+      .format("d");
+    const dayOfWeek = [firstDayOfWeek, lastDayOfWeek];
 
     const list = {};
     for (let i = 1; i <= Number(monthLastDay); i++) {
-      const dayOfWeek = moment(`${time}-${i}`).format("d");
-      if (dayOfWeek === "0") continue;
       const day = moment(`${time}-${i}`).format("YYYY-MM-DD");
       const { updates } = handleGetDateSchedule(day);
       list[day] = updates[day];
@@ -360,163 +938,85 @@ const Schedule = () => {
     return { list, dayOfWeek };
   };
 
-  const handleNewSchedule = async (time) => {
-    const { updates } = handleGetDateSchedule(time);
-    const scheduleRef = ref(db, "schedule");
-    try {
-      await update(scheduleRef, updates);
-    } catch (error) {
-      console.log(error);
-    }
-    alert(`已建置${time}`);
-  };
-
   const handleTimeSelect = (e) => {
     const time = e.target.value;
-    if (time === 'none') {
+    if (time === "none") {
       setNewSchedule({});
-      return
+      return;
     } else {
       const { list, dayOfWeek } = handleNewOneMonthSchedule(time);
       setNewSchedule(list);
       setEmptyBox(dayOfWeek);
-    };
-  }
+    }
+  };
 
   return (
-    <div className="flex flex-col mx-auto py-8 w-8/12 h-full">
-      <h3 className="text-black text-2xl font-medium">批次產生班表</h3>
-      <select
-        name="time"
-        id="time"
-        className="w-fit h-8 mt-4 px-1 rounded"
-        onChange={handleTimeSelect}
-      >
-        <option value={"none"}>請選擇</option>
-        <option value={nextMonth}>{nextMonth}月</option>
-        <option value={monthAfterNext}>{monthAfterNext}月</option>
-      </select>
-      <PreviewSchedule
-        newSchedule={newSchedule}
-        setNewSchedule={setNewSchedule}
-        emptyBox={emptyBox}
-      />
-      <NewBtn onClick={() => handleNewSchedule()} text="新增班表" />
-    </div>
-  );
-};
-
-const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
-  const placeholderArray = Array.from({ length: Number(emptyBox) }, (_, i) => (
-    <div className="w-20 h-20 rounded bg-white" key={`empty-${i}`}></div>
-  ));
-
-  return (
-    <>
-      {Object.keys(newSchedule).length !== 0 && (
-        <div className="relative w-fit h-fit mt-1">
-          <div className="flex flex-row w-fit gap-1 bg-white rounded my-1">
-            <div className="flex items-center justify-center w-20 h-8 ">日</div>
-            <div className="flex items-center justify-center w-20 h-8">一</div>
-            <div className="flex items-center justify-center w-20 h-8">二</div>
-            <div className="flex items-center justify-center w-20 h-8">三</div>
-            <div className="flex items-center justify-center w-20 h-8">四</div>
-            <div className="flex items-center justify-center w-20 h-8">五</div>
-            <div className="flex items-center justify-center w-20 h-8">六</div>
-          </div>
-          <div className="grid grid-cols-7 auto-rows-min gap-1 w-fit h-fit">
-            {placeholderArray}
-            {Object.entries(newSchedule).map(([key, value]) => {
-              return (
-                <DayFrame
-                  time={key}
-                  key={key}
-                  data={value}
-                  setNewSchedule={setNewSchedule}
-                />
-              );
-            })}
-          </div>
+    <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
+      <div className="w-fit">
+        <div className="flex flex-row w-full">
+          <button
+            className={`${action === "view" ? "bg-white" : ""} p-3 rounded-t`}
+            onClick={() => {
+              setAction("view");
+              setNewSchedule({});
+            }}
+          >
+            <h3
+              className={`${
+                action === "view" ? " font-medium" : "font-light "
+              } text-2xl text-black`}
+            >
+              檢視與編輯
+            </h3>
+          </button>
+          <button
+            className={`${action === "build" ? "bg-white" : ""} p-3 rounded-t`}
+            onClick={() => setAction("build")}
+          >
+            <h3
+              className={`${
+                action === "build" ? "font-medium" : "font-light "
+              } text-2xl text-black`}
+            >
+              批次產生班表
+            </h3>
+          </button>
         </div>
-      )}
-    </>
-  );
-}
-
-const DayFrame = ({ time, data, setNewSchedule }) => {
-  const [enlarge, setEnlarge] = useState(false);
-  const date = moment(time).format("D");
-  const month = moment(time).format("YYYY / M");
-  const day = "日一二三四五六"[moment(time).format("d")];
-  // console.log("data:", date, data);
-
-  return (
-    <>
-      <div
-        className="flex flex-col bg-white cursor-pointer w-20 h-20 rounded p-2 relative"
-        onClick={() => setEnlarge(true)}
-      >
-        <div className="text-right">{date}</div>
       </div>
-      {enlarge && (
-        <div
-          className="flex flex-col w-full h-full py-6 px-4 bg-white absolute top-0 left-0 rounded z-10"
-          // onClick={() => setEnlarge(false)}
-        >
-          <div className={"flex flex-row text-end w-full justify-end text-xl"}>
-            <div className="mr-1">{`${month} /`}</div>
-            <div className="">{date}</div>
-            <div className="ml-1">{`(${day})`}</div>
+      <div
+        className={`bg-white w-full p-4 rounded-b-md ${
+          action === "view" ? "rounded-tr-md" : "rounded-t-md"
+        } `}
+      >
+        {action === "view" && (
+          <div className="w-full">
+            <MonthSchedule />
           </div>
-          <div className="grid grid-cols-[48px_repeat(3,_minmax(0,_1fr))] grid-rows-[48px_repeat(3,_minmax(0,_1fr))] w-full h-full mt-2 py-4 border-t border-solid border-black text-lg">
-            <div className="w-full h-full text-center col-start-2 col-end-3">
-              1診
+        )}
+        {action === "build" && (
+          <div>
+            <div className="flex flex-row items-center">
+              <p className="">將次月班表新增至資料庫，供使用者約診。 月份：</p>
+              <select
+                name="time"
+                id="time"
+                className="bg-bg-gray p-2 w-fit h-8px-1 rounded"
+                onChange={handleTimeSelect}
+              >
+                <option value={"none"}>請選擇</option>
+                {monthOption}
+              </select>
             </div>
-            <div className="w-full h-full text-center">2診</div>
-            <div className="w-full h-full text-center">3診</div>
-            <div className="flex justify-center items-center w-full h-full row-start-2 row-end-2">
-              早
-            </div>
-            <div className="flex justify-center items-center w-full h-full row-start-3 row-end-4">
-              午
-            </div>
-            <div className="flex justify-center items-center w-full h-full row-start-4 row-end-5">
-              晚
-            </div>
-            <div className="col-start-2 col-end-5 row-start-2 row-end-5 grid grid-cols-3 grid-rows-3 gap-1 p-1 bg-bg-gray rounded">
-              <ShiftFrame />
-            </div>
+            <PreviewSchedule
+              newSchedule={newSchedule}
+              setNewSchedule={setNewSchedule}
+              emptyBox={emptyBox}
+            />
           </div>
-          <p className="text-end text-sm text-gray-500">點擊格子編輯</p>
-        </div>
-      )}
-    </>
-  );
-};
-
-const ShiftFrame = ({ props }) => {
-  const [isEditing, setIsEditing] = useState(false)
-
-  return (
-    <div
-      className="w-full h-full p-1 bg-white rounded text-base cursor-pointer"
-      onClick={() => setIsEditing(true)}
-    >
-      {!isEditing && <div className="">醫師: 王豬皮</div>}
-      {!isEditing && <div className="">最多可約診人數: 6</div>}
-      {isEditing && (
-        <div className="flex flex-row">
-          <p className="">醫師:</p>
-          <select name="" id="" className="bg-bg-gray rounded">
-            <option value="">王豬皮</option>
-            <option value="">陳花乾</option>
-            <option value="">許嘟嘟</option>
-            <option value="">休診</option>
-          </select>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export { Doctors, Schedule };

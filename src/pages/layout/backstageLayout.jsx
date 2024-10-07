@@ -2,6 +2,7 @@ import { useNavigate, useLocation,  } from "react-router-dom";
 import { Outlet } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getDatabase, ref, onValue, off, get, query, orderByChild, equalTo } from "firebase/database";
+import moment from "moment";
 
 const navList = [
   {
@@ -37,7 +38,10 @@ const NavBtn = ({ props }) => {
 
 const BackstageLayout = () => {
   const [doctorsList, setDoctorsList] = useState([]);
-  const [schedule, setSchedule] = useState([]);
+  const [schedule, setSchedule] = useState({});
+  const [prevMonthSchedule, setPrevMonthSchedule] = useState({})
+  const [nextMonthSchedule, setNextMonthSchedule] = useState({})
+  const [selectMonth, setSelectMonth] = useState("")
 
   const navigate = useNavigate()
 
@@ -64,35 +68,64 @@ const BackstageLayout = () => {
   }, []);
 
   useEffect(() => {
-    const db = getDatabase()
-    const scheduleRef = ref(db, "schedule")
-    const monthSchedule = query(scheduleRef, orderByChild("month"), equalTo("2024-09"));
-    get(monthSchedule).then((snap) => {
+    const db = getDatabase();
+    const scheduleRef = ref(db, "schedule");
+    const monthSchedule = query(
+      scheduleRef,
+      orderByChild("month"),
+      equalTo(selectMonth)
+    );
+    const nextMonth = moment(selectMonth).add(1, "M").format("YYYY-MM");
+    const nextMonthSchedule = query(
+      scheduleRef,
+      orderByChild("month"),
+      equalTo(nextMonth)
+    );
+    const prevMonth = moment(selectMonth).subtract(1, "M").format("YYYY-MM");
+    const prevMonthSchedule = query(
+      scheduleRef,
+      orderByChild("month"),
+      equalTo(prevMonth)
+    );
+
+    onValue(monthSchedule, (snap) => {
       if (snap.exists()) {
         const data = snap.val();
-        // const shiftList = [];
-        // for (const [date, room] of Object.entries(data)) {
-        //   const dayData = {
-        //     date,
-        //     shift: [],
-        //   };
-        //   Object.values(room).forEach((item) => {
-        //     if (item.name) {
-        //       dayData.shift.push({
-        //         doc: item.name,
-        //         time: item.time,
-        //         room: item.room,
-        //       });
-        //     }
-        //   });
-        //   shiftList.push(dayData);
-        // }
         setSchedule(data);
+      } else {
+        setSchedule({});
       }
     });
-  }, [])
 
-  console.log(schedule);
+    onValue(prevMonthSchedule, (snap) => {
+      if (snap.exists()) {
+        const data = snap.val();
+        setPrevMonthSchedule(data);
+      } else {
+        setPrevMonthSchedule({});
+      }
+    });
+
+    onValue(nextMonthSchedule, (snap) => {
+      if (snap.exists()) {
+        const data = snap.val();
+        setNextMonthSchedule(data);
+      } else {
+        setNextMonthSchedule({});
+      }
+    });
+
+    return () => {
+      off(monthSchedule);
+      off(prevMonthSchedule);
+      off(nextMonthSchedule);
+    };
+  }, [selectMonth]);
+
+  useEffect(() => {
+    const currentMonth = moment().format("YYYY-MM")
+    setSelectMonth(currentMonth);
+  }, [])
 
 
   return (
@@ -116,7 +149,16 @@ const BackstageLayout = () => {
             ))}
           </div>
           <div className="w-full">
-            <Outlet context={{ doctorsList, schedule }} />
+            <Outlet
+              context={{
+                doctorsList,
+                schedule,
+                selectMonth,
+                setSelectMonth,
+                prevMonthSchedule,
+                nextMonthSchedule
+              }}
+            />
           </div>
         </div>
       </div>
