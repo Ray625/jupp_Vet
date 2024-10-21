@@ -195,20 +195,13 @@ const UserInfo = () => {
               info={ownerInfo.phone}
               className={styles.userInfoTable}
             />
-            {ownerInfo.location && (
-              <InfoTableGroup
-                title={"現居地區"}
-                info={"location"}
-                className={styles.userInfoTable}
-              />
-            )}
+          </div>
             <Button
               text="編輯飼主資料"
               onClick={() => {
                 setEditing(true);
               }}
             />
-          </div>
         </>
       )}
       {editing && (
@@ -361,7 +354,7 @@ const PetsInfo = () => {
         <>
           <h4 className={styles.tableTitle}>寵物資料</h4>
           <div className={`${styles.tableBody} ${styles.gap}`}>
-            {petsInfo.length === 0 && (
+            {petsInfo?.length === 0 && (
               <div className={styles.noData}>尚無資料</div>
             )}
             {petsInfo && petsInfo.map((pet, index) => {
@@ -483,7 +476,26 @@ const PetsInfo = () => {
 };
 
 const Record = () => {
-  return <div>約診紀錄</div>;
+  const { currentUser, petsInfo, reserveInfo } = useAuth();
+
+  console.log("reserveInfo", reserveInfo);
+
+  return (
+    <div className={styles.infoTable}>
+      <h4 className={styles.tableTitle}>約診紀錄</h4>
+      <div className={styles.tableBody}>
+        {reserveInfo?.length === 0 && (
+          <div className={styles.noData}>尚無資料</div>
+        )}
+      </div>
+      <Button
+        text="預約門診"
+        onClick={() => {
+          navigator('/booking')
+        }}
+      />
+    </div>
+  );
 };
 
 const Password = () => {

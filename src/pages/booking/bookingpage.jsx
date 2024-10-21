@@ -2,15 +2,19 @@ import styles from "./BookingPage.module.scss";
 import { Container, StepGroup, FormStep1, FormStep2, FormStep3, FormStep4 } from '../../components/booking/booking'
 import useTheme from '../../hooks/useTheme'
 import { useState, useEffect } from 'react'
+import { getDatabase, onValue, update, ref, query, orderByChild, equalTo, off } from "firebase/database";
+import moment from "moment";
 
 const BookingPage = () => {
   const { tickerOpen } = useTheme()
   const [step, setStep] = useState(1)
   const [selectedWeekIndex, setSelectedWeekIndex] = useState(0)
-  const [reserveInfo, setReserveInfo] = useState({ date: '', time: '', doctor: '' })
+  const [reserveInfo, setReserveInfo] = useState({ date: '', time: '', doctor: '', key: '', last:null })
   const [ownerInfo, setOwnerInfo] = useState({ lastName: '', firstName: '', gender: 'male', phone: '' })
   const [newPetInfo, setNewPetInfo] = useState({ petName: '', gender: '', species: 'canine', birthday: '', breed: '' })
-  const [selectedPets, setSelectedPets] = useState([]);
+  const [selectedPets, setSelectedPets] = useState([])
+  const [reserveData, setReserveData] = useState({})
+  const [reserveNum,setReserveNum] = useState([])
 
 
   const handleToStep2 = () => {
@@ -34,7 +38,6 @@ const BookingPage = () => {
   }
 
   const handleSubmit = () => {
-    alert('submit')
     setStep(s => s + 1)
   }
 
@@ -43,6 +46,31 @@ const BookingPage = () => {
       window.scrollTo(0, 0);
     }
   }, [step])
+
+  // 依使用者所選時段，至資料庫抓取對應的門診
+  useEffect(() => {
+    const db = getDatabase()
+    if (reserveInfo.date.length === 0) return
+    if (reserveInfo.time.length === 0) return
+    const date = moment(reserveInfo.date).format("YYYY-MM-DD")
+    const shift = reserveInfo.time
+    const queryRef = query(
+      ref(db, "schedule/" + date),
+      orderByChild("shift"),
+      equalTo(shift)
+    );
+    onValue(queryRef, (snap) => {
+      if (snap.exists()) {
+        const data = snap.val();
+        setReserveData(data)
+      }
+    });
+
+    return () => {
+      off(queryRef);
+    }
+
+  }, [reserveInfo]);
 
   return (
     <div
@@ -62,6 +90,7 @@ const BookingPage = () => {
             selectedWeekIndex={selectedWeekIndex}
             setSelectedWeekIndex={setSelectedWeekIndex}
             reserveInfo={reserveInfo}
+            reserveData={reserveData}
             setReserveInfo={setReserveInfo}
           />
         )}
@@ -70,6 +99,7 @@ const BookingPage = () => {
             handlePrevStep={handlePrevStep}
             handleNextStep={handleToStep3}
             reserveInfo={reserveInfo}
+            reserveData={reserveData}
             ownerInfo={ownerInfo}
             setOwnerInfo={setOwnerInfo}
             newPetInfo={newPetInfo}
@@ -86,9 +116,14 @@ const BookingPage = () => {
             ownerInfo={ownerInfo}
             selectedPets={selectedPets}
             newPetInfo={newPetInfo}
+            setReserveNum={setReserveNum}
           />
         )}
-        {step === 4 && <FormStep4 />}
+        {step === 4 && (
+          <FormStep4
+            reserveNum={reserveNum}
+            reserveInfo={reserveInfo} />
+        )}
       </Container>
     </div>
   );

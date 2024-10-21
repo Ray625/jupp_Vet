@@ -5,17 +5,10 @@ const deviceParams = {
   pc: 3,
 }
 
-const doctorList = {
-  doctor0: "不指定",
-  doctor1: "王豬皮 醫師(1診)",
-  doctor2: "陳花乾 醫師(2診)",
-  doctor3: "許嘟嘟 醫師(3診)",
-};
-
 const timeList = {
-  time1: "10:00 ~ 13:00",
-  time2: "14:00 ~ 17:30",
-  time3: "18:30 ~ 21:00",
+  shift1: "10:00 ~ 13:00",
+  shift2: "14:00 ~ 18:00",
+  shift3: "19:00 ~ 21:00",
 };
 
-export { deviceParams, doctorList, timeList };
+export { deviceParams, timeList };

@@ -248,6 +248,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  margin-bottom: 64px;
 }
 
 .describe {
@@ -328,6 +329,10 @@
   background-color: style.$light_gray;
 }
 
+.disableGray {
+  color: style.$disabled_gray;
+}
+
 
 .timeBtn {
   @extend %selectBtn;
@@ -338,6 +343,14 @@
   @extend %selectBtn;
   width: fit-content;
   padding: 16px 14px 16px 14px;
+}
+
+.disable {
+  color: style.$disabled_gray;
+  &:hover {
+    cursor: auto;
+    box-shadow: none;
+  }
 }
 
 %submitBtn {
@@ -494,7 +507,6 @@
   flex-direction: column;
   align-items: flex-start;
   width: 100%;
-  margin-bottom: 44px;
 }
 
 .phoneInput {

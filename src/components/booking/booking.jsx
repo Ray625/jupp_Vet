@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import styles from './booking.module.scss';
-import { doctorList, timeList } from '../../utils/const';
+import { timeList } from '../../utils/const';
 import moment from 'moment';
-import { getDatabase, ref, get, query, orderByChild, equalTo, update, push } from "firebase/database";
+import { getDatabase, ref, get, query, orderByChild, equalTo, update, push, runTransaction,limitToLast } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from 'react';
 
@@ -113,11 +113,48 @@ const DaySelection = ({ weeks, selectedWeekIndex, reserveInfo, handleInfoChange 
   )
 }
 
-const BtnGroup = ({ name, className, datas, handleInfoChange, reserveInfo }) => {
+const TimeBtnGroup = ({ handleInfoChange, reserveInfo }) => {
   const compare = (value) => {
     if (reserveInfo.time === value) {
       return true
-    } else if (reserveInfo.doctor === value) {
+    } else {
+      return false
+    }
+  }
+
+  const timeData = [
+    {
+      title: "10:00 ~ 13:00",
+      value: "shift1",
+    },
+    {
+      title: "14:00 ~ 18:00",
+      value: "shift2",
+    },
+    {
+      title: "19:00 ~ 21:00",
+      value: "shift3",
+    },
+  ];
+
+  return (
+    <div className={styles.btnGroup}>
+      {timeData.map((data) => {
+        return (
+          <>
+            {compare(data.value) && <input type="radio" name='time' id={data.value} value={data.value} onChange={e => handleInfoChange(e.target.value)} checked />}
+            {!compare(data.value) && <input type="radio" name='time' id={data.value} value={data.value} onChange={e => handleInfoChange(e.target.value)} />}
+            <label htmlFor={data.value} className={styles.timeBtn}>{data.title}</label>
+          </>
+        )
+      })}
+    </div>
+  )
+}
+
+const DoctorBtnGroup = ({ datas ,handleInfoChange, reserveInfo }) => {
+  const compare = (value) => {
+    if (reserveInfo.doctor === value) {
       return true
     } else {
       return false
@@ -129,11 +166,53 @@ const BtnGroup = ({ name, className, datas, handleInfoChange, reserveInfo }) => 
       {datas.map((data) => {
         return (
           <>
-            {compare(data.value) && <input type="radio" name={name} id={data.value} value={data.value} onChange={e => handleInfoChange(e.target.value)} checked />}
-            {!compare(data.value) && <input type="radio" name={name} id={data.value} value={data.value} onChange={e => handleInfoChange(e.target.value)} />}
-            <label htmlFor={data.value} className={className}>{data.title}</label>
+            {compare(data.value) && (
+              <input
+                type="radio"
+                name="doctor"
+                id={data.value}
+                value={data.title}
+                data-time_shift={data.value}
+                onChange={(e) =>
+                  handleInfoChange(e.target.value, e.target.dataset.time_shift)
+                }
+                checked
+              />
+            )}
+            {!compare(data.value) && (
+              <input
+                type="radio"
+                name="doctor"
+                id={data.value}
+                value={data.title}
+                data-time_shift={data.value}
+                data-last={data.last}
+                onChange={(e) =>
+                  handleInfoChange(
+                    e.target.value,
+                    e.target.dataset.time_shift,
+                    e.target.dataset.last
+                  )
+                }
+                disabled={data.last <= 0}
+              />
+            )}
+            <label
+              htmlFor={data.value}
+              className={`${styles.doctorBtn} ${
+                data.last <= 0 ? styles.disable : ""
+              }`}
+            >
+              {data.title}
+              {0 < data.last && data.last <= 3 && (
+                <span className={styles.disableGray}>
+                  &nbsp;{`(剩餘${data.last}位)`}
+                </span>
+              )}
+              {data.last <= 0 && <span>&nbsp;{"(已額滿)"}</span>}
+            </label>
           </>
-        )
+        );
       })}
     </div>
   )
@@ -157,7 +236,7 @@ const PrevBtn = ({ title, onClick }) => {
   )
 }
 
-const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIndex, setSelectedWeekIndex}) => {
+const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, selectedWeekIndex, setSelectedWeekIndex }) => {
   const handleWeekChange = (event) => {
     setSelectedWeekIndex(event.target.value)
   }
@@ -176,11 +255,13 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
     })
   }
 
-  const handleDoctorChange = (value) => {
+  const handleDoctorChange = (value, timeShift, last) => {
     setReserveInfo({
       ...reserveInfo,
-      doctor: value
-    })
+      doctor: value,
+      key: timeShift,
+      last: last,
+    });
   }
 
   const weeks = [];
@@ -195,42 +276,18 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
     weeks.push(week);
   }
 
-  const timeData = [{
-    title: '10:00 ~ 13:00',
-    value: 'time1'
-  }, {
-    title: '14:00 ~ 18:00',
-    value: 'time2'
-  }, {
-    title: '19:00 ~ 21:00',
-    value: 'time3'
-  }]
-
-  const doctorData = [{
-    title: '王豬皮 醫師(1診)',
-    value: 'doctor1'
-  }, {
-    title: '陳花乾 醫師(2診)',
-    value: 'doctor2'
-  },{
-    title: '許嘟嘟 醫師(3診)',
-    value: 'doctor3'
-  }]
+  const doctorData = []
+  Object.entries(reserveData).forEach(([key, value]) => {
+    const data = {
+      title: `${value.name} 醫師 (${value.room})`,
+      value: key,
+      last: value.maxAppointments - value.currentAppointments,
+    };
+    doctorData.push(data);
+  })
 
   return (
     <div className={styles.formContainer}>
-      {/* <div className={styles.selectBtnGroup}>
-        <input type="radio" name="selection" id="timeFirst" value="timeFirst" className={styles.selectionInput} checked/>
-        <label htmlFor="timeFirst" className={styles.selectBtn}>
-          <i className="fa-regular fa-calendar"></i>
-          依日期
-        </label>
-        <input type="radio" name="selection" id="doctorFirst" value="doctorFirst" className={styles.selectionInput}/>
-        <label htmlFor="doctorFirst" className={styles.selectBtn}>
-          <i className="fa-solid fa-user"></i>
-          依醫師
-        </label>
-      </div> */}
       <form action="post" className={styles.form}>
         <h3 className={styles.formTitle}>請選擇日期</h3>
         <p className={styles.describe}>(僅能預約一個月內之日期)</p>
@@ -245,31 +302,31 @@ const FormStep1 = ({ handleNextStep, reserveInfo, setReserveInfo, selectedWeekIn
           reserveInfo={reserveInfo}
           handleInfoChange={handleDateChange}
         />
-        <h3 className={styles.formTitle}>請選擇時段</h3>
-        <BtnGroup
-          name={'time'}
-          className={styles.timeBtn}
-          datas={timeData}
-          handleInfoChange={handleTimeChange}
-          reserveInfo={reserveInfo}
-          />
-        <h3 className={styles.formTitle}>請選擇門診</h3>
-        <BtnGroup
-          name={'doctor'}
-          className={styles.doctorBtn}
-          datas={doctorData}
-          handleInfoChange={handleDoctorChange}
-          reserveInfo={reserveInfo}
-          />
+        {reserveInfo.date.length !== 0 && (
+          <>
+            <h3 className={styles.formTitle}>請選擇時段</h3>
+            <TimeBtnGroup
+              handleInfoChange={handleTimeChange}
+              reserveInfo={reserveInfo}
+            />
+          </>
+        )}
+        {reserveInfo.time.length !== 0 && (
+          <>
+            <h3 className={styles.formTitle}>請選擇門診</h3>
+            <DoctorBtnGroup
+              datas={doctorData}
+              handleInfoChange={handleDoctorChange}
+              reserveInfo={reserveInfo}
+            />
+          </>
+        )}
       </form>
       <div className={styles.submitBtnGroup}>
-        <NextBtn
-          title={'下一步'}
-          onClick={handleNextStep}
-        />
+        <NextBtn title={"下一步"} onClick={handleNextStep} />
       </div>
     </div>
-  )
+  );
 }
 
 const NameInput = ({lastName, firstName, gender, handleLastNameChange, handleFirstNameChange, handleGenderChange}) => {
@@ -646,7 +703,16 @@ const FormStep2 = ({
       const isSeleted = prevSelectedPets.some(pet=> pet.id === originalPet.id)
       if (isSeleted) {
         return prevSelectedPets.filter((pet) => pet.id !== originalPet.id);
-      } else if (prevSelectedPets.length >= 3 || (haveNewPet && prevSelectedPets.length >= 2)) {
+      } else if (
+        prevSelectedPets.length >= reserveInfo.last ||
+        (haveNewPet && prevSelectedPets.length >= (reserveInfo.last - 1))
+      ) {
+        alert(`目前該時段剩餘${reserveInfo.last}個空位`);
+        return prevSelectedPets;
+      } else if (
+        prevSelectedPets.length >= 3 ||
+        (haveNewPet && prevSelectedPets.length >= 2)
+      ) {
         alert("一次最多預約3隻寵物");
         return prevSelectedPets;
       } else {
@@ -668,7 +734,7 @@ const FormStep2 = ({
         </div>
         <div className={styles.infoGroup}>
           <h4 className={styles.infoTitle}>醫師</h4>
-          <p className={styles.info}>{doctorList[reserveInfo.doctor]}</p>
+          <p className={styles.info}>{reserveInfo.doctor}</p>
         </div>
       </div>
       <form action="post" className={styles.form}>
@@ -688,9 +754,16 @@ const FormStep2 = ({
           />
         </div>
         <h3 className={styles.formTitle}>寵物資料</h3>
-        <p className={styles.describe}>{`已選擇 ${
-          selectedPets.length + haveNewPet
-        }/3 (一個時段最多預約三隻寵物)`}</p>
+        {reserveInfo.last > 2 && (
+          <p className={styles.describe}>{`已選擇 ${
+            selectedPets.length + haveNewPet
+          }/3 (一個時段最多預約三隻寵物)`}</p>
+        )}
+        {reserveInfo.last <= 2 && (
+          <p className={styles.describe}>{`已選擇 ${
+            selectedPets.length + haveNewPet
+          }/${reserveInfo.last} (目前該時段剩餘${reserveInfo.last}個空位)`}</p>
+        )}
         {originalPetInfo.length !== 0 && (
           <div className={styles.petInfo}>
             <h4 className={styles.petInfoTitle}>原有寵物</h4>
@@ -739,6 +812,8 @@ const FormStep2 = ({
               e.preventDefault();
               if (selectedPets.length >= 3) {
                 return alert("一次最多預約3隻寵物");
+              } else if (selectedPets.length >= reserveInfo.last) {
+                return alert(`目前該時段剩餘${reserveInfo.last}個空位`);
               }
               setHaveNewPet(true);
             }}
@@ -792,12 +867,15 @@ const FormStep3 = ({
   ownerInfo,
   selectedPets,
   newPetInfo,
+  setReserveNum,
 }) => {
-  const date = reserveInfo.date.slice(0, 10);
-  const day = "(星期" + reserveInfo.date.slice(12, 14);
+  const db = getDatabase();
+
+  const date = reserveInfo.date.slice(0, -4);
+  const day = `(星期${reserveInfo.date.slice(-2)}`;
   const reserveTime = timeList[reserveInfo.time];
-  const reserveDoctor = doctorList[reserveInfo.doctor].slice(0, 6);
-  const clinicNum = doctorList[reserveInfo.doctor].slice(6, 10);
+  const reserveDoctor = reserveInfo.doctor.slice(0, -5);
+  const clinicNum = reserveInfo.doctor.slice(-4);
   const name = ownerInfo.lastName + " " + ownerInfo.firstName;
   let gender = "";
   switch (ownerInfo.gender) {
@@ -811,8 +889,8 @@ const FormStep3 = ({
       gender = "";
   }
   const phone = ownerInfo.phone;
-  let newPetAge = moment().format("YYYY") - newPetInfo.birthday
-  if (newPetAge <= 0) newPetAge = '未滿1'
+  let newPetAge = moment().format("YYYY") - newPetInfo.birthday;
+  if (newPetAge <= 0) newPetAge = "未滿1";
   const getIcon = (species) => {
     let icon = "";
     switch (species) {
@@ -822,9 +900,79 @@ const FormStep3 = ({
       default:
         icon = "/svg/booking_dog.svg";
     }
-    return icon
-  }
+    return icon;
+  };
 
+  const handleReserve = async () => {
+    const date = moment(reserveInfo.date).format("YYYY-MM-DD");
+    const key = reserveInfo.key;
+    const dateKey = `${date}_${key}`;
+    const scheduleRef = ref(db, `schedule/${date}/${key}`);
+    const petCount = Object.keys(selectedPets).length;
+
+    try {
+      // 確認資料庫內可預約空位足夠
+      await runTransaction(scheduleRef, (schedule) => {
+        if (schedule) {
+          if (
+            schedule.currentAppointments + petCount >
+            schedule.maxAppointments
+          ) {
+            throw new Error("空位不足");
+          }
+          schedule.currentAppointments += petCount;
+        }
+        return schedule;
+      });
+
+      const appointmentsRef = ref(db, "appointments");
+      let reserveCount = 0;
+      const queryAppointmentsRef = query(
+        appointmentsRef,
+        orderByChild("date_key"),
+        equalTo(dateKey),
+        limitToLast(1)
+      );
+
+      // 查詢當日該診之前約診號，如果有之前的約診，則約診號碼繼續遞增
+      const snap = await get(queryAppointmentsRef);
+      if (snap.exists()) {
+        const data = snap.val();
+        reserveCount = Object.values(data)[0].number
+      }
+
+      const numberList = []
+
+      await Promise.all(
+        Object.values(selectedPets).map(async (pet) => {
+          reserveCount += 1;
+          numberList.push(reserveCount);
+          const now = Date.now();
+          const reserveData = {
+            owner_id: pet.owner_id,
+            pet_id: pet.id,
+            number: reserveCount,
+            create_at: now,
+            date_key: dateKey,
+            doctor: reserveInfo.doctor,
+          };
+          await push(appointmentsRef, reserveData);
+        })
+      );
+
+      setReserveNum(numberList)
+
+      alert("預約成功");
+      handleSubmit();
+    } catch (error) {
+      if (error.message === "空位不足") {
+        alert("預約失敗:位子不足");
+      } else {
+        console.error("預約失敗:", error);
+        alert("預約失敗，請稍後再試");
+      }
+    }
+  };
 
   return (
     <div className={styles.formContainer}>
@@ -867,7 +1015,7 @@ const FormStep3 = ({
           <h3 className={styles.formTitle}>寵物資料</h3>
           {selectedPets.map((pet, index) => {
             let age = moment().format("YYYY") - pet.birthday;
-            if (age <= 0) age = '未滿1'
+            if (age <= 0) age = "未滿1";
             const icon = getIcon(pet.species);
             return (
               <>
@@ -894,54 +1042,72 @@ const FormStep3 = ({
       </div>
       <div className={styles.submitBtnGroup}>
         <PrevBtn title={"上一步"} onClick={handlePrevStep} />
-        <NextBtn title={"確認預約"} onClick={handleSubmit} />
+        <NextBtn title={"確認預約"} onClick={handleReserve} />
       </div>
     </div>
   );
 };
 
-const FormStep4 = () => {
-  const navigate = useNavigate()
+const FormStep4 = ({ reserveNum, reserveInfo }) => {
+  const navigate = useNavigate();
+  const date = reserveInfo.date
+  const reserveTime = timeList[reserveInfo.time];
+  const endTime = reserveTime.split(" ~ ")[1]
+  const deadlineTime = moment(endTime, "HH:mm")
+    .subtract(30, "minutes")
+    .format("HH:mm");
 
   const handleToHomepage = () => {
-    navigate('/')
-  }
+    navigate("/");
+  };
 
   const handleToRecord = () => {
-    alert('to record')
-  }
+    navigate("/user/records");
+  };
 
   return (
     <div className={styles.formContainer}>
       <div className={styles.confirmForm}>
         <h3 className={styles.confirmFormTitle}>你的看診號碼為</h3>
-        <div className={styles.bookingNum}>13.14.15</div>
+        <div className={styles.bookingNum}>{reserveNum.join(". ")}</div>
         <div className={styles.remind}>
-          請於 <span className={styles.bookingTime}>2024/04/03 (三) 下午 15:00 </span> 前至現場報到等候。<br/>實際看診時間依現場狀況為主，謝謝您的預約！
+          已預約於{" "}
+          <span className={styles.bookingTime}>
+            {date} {reserveTime}{" "}
+          </span>
+          時段
+          <br />
+          值班醫師
+          <span className={styles.bookingTime}> {reserveInfo.doctor}</span>
+          <br />
+          截止報到時間為當日
+          <span className={styles.bookingTime}> {deadlineTime}</span>
+          <br />
+          實際看診時間依現場狀況為主，謝謝您的預約！
         </div>
         <div className={styles.notice}>
           <h4 className={styles.noticeTitle}>注意事項</h4>
           <ul>
-            <li className={styles.note}>若過號將由現場人員依現場狀況安排看診，怒不接受指定時間</li>
-            <li className={styles.note}>若需修改預約時間，請至會員中心 {'>'} 預約記錄修改</li>
-            <li className={styles.note}>若多次無故未到場報到，本院有權取消會員之預約資格</li>
+            <li className={styles.note}>
+              若過號將由現場人員依現場狀況安排看診，怒不接受指定時間
+            </li>
+            <li className={styles.note}>
+              若需修改預約時間，請至會員中心 {">"} 預約記錄修改
+            </li>
+            <li className={styles.note}>
+              若多次無故未到場報到，本院有權取消會員之預約資格
+            </li>
             <li className={styles.note}>若有其他疑問敬請來電 0223456789</li>
           </ul>
         </div>
       </div>
       <div className={styles.submitBtnGroup}>
-        <PrevBtn
-          title={'返回首頁'}
-          onClick={handleToHomepage}
-        />
-        <NextBtn
-          title={'查看預約紀錄'}
-          onClick={handleToRecord}
-        />
+        <PrevBtn title={"返回首頁"} onClick={handleToHomepage} />
+        <NextBtn title={"查看預約紀錄"} onClick={handleToRecord} />
       </div>
     </div>
-  )
-}
+  );
+};
 
 export {
   Container,

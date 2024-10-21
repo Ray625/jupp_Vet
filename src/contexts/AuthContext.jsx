@@ -33,6 +33,7 @@ const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
   const [petsInfo, setPetsInfo] = useState([]);
+  const [reserveInfo, setReserveInfo] = useState([])
   const { pathname } = useLocation();
   const navigate = useNavigate()
   const auth = getAuth();
@@ -60,6 +61,7 @@ const AuthProvider = ({ children }) => {
     if (currentUser) {
       const userId = currentUser.uid;
 
+      // 擷取飼主資料
       const userRef = ref(db, "users/" + userId);
       onValue(userRef, (snap) => {
         if (snap.exists()) {
@@ -69,7 +71,8 @@ const AuthProvider = ({ children }) => {
         }
       });
 
-      const petRef = ref(db, "pets/");
+      // 擷取飼主擁有之寵物資料
+      const petRef = ref(db, "pets");
       const petsQuery = query(
         petRef,
         orderByChild("owner_id"),
@@ -91,9 +94,29 @@ const AuthProvider = ({ children }) => {
         }
       });
 
+      // 擷取飼主約診紀錄
+      const reserveRef = ref(db, "appointments")
+      const reserveQuery = query(reserveRef, orderByChild("owner_id"), equalTo(userId));
+      onValue(reserveQuery, (snap) => {
+        if (snap.exists()) {
+          const userReserveInfo = snap.val();
+          const reserveData = [];
+          for (const [key, value] of Object.entries(userReserveInfo)) {
+            reserveData.push({
+              ...value,
+              key: key,
+            });
+          }
+          setReserveInfo(reserveData);
+        } else {
+          setReserveInfo([]);
+        }
+      })
+
       return () => {
         off(userRef);
         off(petsQuery);
+        off(reserveQuery);
       };
     }
   }, [currentUser, db]);
@@ -109,6 +132,7 @@ const AuthProvider = ({ children }) => {
         currentUser,
         userInfo,
         petsInfo,
+        reserveInfo,
         isLoading,
         emailRegister: async ({ email, password, firstName, lastName }) => {
           try {
