@@ -13,8 +13,30 @@
 
 .primaryBtn {
   @extend %btn;
+  position: relative;
   color: style.$white;
   background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+  overflow: hidden;
+}
+
+.primaryBtnText {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.primaryBtnBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  background-color: style.$dark_orange;
+  transition: opacity 0.2s ease-out;
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .outlineBtn {
@@ -73,7 +95,6 @@
 @media screen and (min-width: 480px) {
   .primaryBtn:hover {
     cursor: pointer;
-    background: style.$dark_orange;
 
     & .footprint {
       transform: rotate(45deg);
@@ -85,6 +106,7 @@
     color: style.$white;
     background: transparent;
     border: 1px solid style.$white;
+    transition: all 0.2s ease-out;
 
     &:hover {
       cursor: pointer;

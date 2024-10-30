@@ -220,6 +220,7 @@
 }
 
 .submitBtn {
+  position: relative;
   width: 100%;
   height: 48px;
   margin: 12px 0 36px 0;
@@ -227,10 +228,31 @@
   border-radius: 26px;
   background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
   color:style.$white;
+  overflow: hidden;
   &:hover {
       cursor: pointer;
-      background: style.$dark_orange;
     }
+}
+
+.submitBtnText {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.submitBtnBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  background-color: style.$dark_orange;
+  transition: opacity 0.2s ease-out;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .forget {

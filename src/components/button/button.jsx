@@ -4,7 +4,8 @@ import { useNavigate } from 'react-router-dom';
 const PrimaryButton = ({ title, onClick }) => {
   return (
     <button className={styles.primaryBtn} onClick={onClick}>
-      {title}
+      <span className={styles.primaryBtnText}>{title}</span>
+      <span className={styles.primaryBtnBg}></span>
       <img
         src="/svg/footprint_white.svg"
         alt="icon"

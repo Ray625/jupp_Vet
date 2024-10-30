@@ -5,8 +5,6 @@ import {
   update,
   remove,
   push,
-  set,
-  get,
 } from "firebase/database";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
@@ -87,7 +85,7 @@ const EditInput = ({
 const NewBtn = ({ onClick, text }) => {
   return (
     <button
-      className="w-fit mx-auto px-8 py-4 border border-icon-orange border-solid rounded-full bg-icon-orange text-white hover:bg-white hover:text-icon-orange shadow"
+      className="w-fit mx-auto px-8 py-4 border border-icon-orange border-solid rounded-full bg-icon-orange text-white hover:bg-white hover:text-icon-orange shadow transition-all duration-200 ease-out"
       onClick={onClick}
     >
       {text}
@@ -289,8 +287,7 @@ const MonthSchedule = () => {
 
   useEffect(() => {
     setNewSchedule(schedule);
-    // eslint-disable-next-line
-  }, []);
+  }, [schedule]);
 
   const firstDayOfWeek = moment(`${selectMonth}-01`).format("d");
   const lastDayOfWeek = moment(`${selectMonth}-01`)
@@ -723,7 +720,7 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
             ...prev[time][shift],
             name: value,
             currentAppointments: 0,
-            room: shift[1],
+            room: `${shift[1]}診`,
             shift: `shift${shift[3]}`,
           },
         },

@@ -175,9 +175,8 @@
   border-radius: 8px;
 }
 
-.petInfo {
+%info {
   display: grid;
-  grid-template-columns: 90px auto auto 1fr auto;
   width: 100%;
   height: 48px;
   padding: 8px 16px;
@@ -188,11 +187,25 @@
   line-height: 24px;
 }
 
+.petInfo {
+  @extend %info;
+  grid-template-columns: 90px auto auto 1fr auto;
+}
+
+.reserveInfo {
+  @extend %info;
+  grid-template-columns: 90px 98px 1fr auto;
+}
+
 .rightAngle {
   border-radius: 8px 8px 0 0;
 }
 
 .petInfoTitle {
+  text-align: start;
+}
+
+.infoDate {
   text-align: start;
 }
 
@@ -223,6 +236,47 @@
   transform: rotate(180deg);
 }
 
+.infoRow {
+  display: grid;
+  grid-template-columns: 90px auto;
+  width: 100%;
+  height: 36px;
+  padding: 8px 16px;
+  background-color: style.$white;
+  font-size: style.$font-size;
+  align-items: start;
+  line-height: 24px;
+}
+
+
+.dividerBg {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  background-color: style.$white;
+  padding: 2px 0;
+}
+
+.divider {
+  height: 1px;
+  width: 466px;
+  background-color: style.$light_gray;
+}
+
+.infoTitle {
+  text-align: start;
+}
+
+.info {
+  text-align: start;
+}
+
+.numInfo {
+  text-align: start;
+  font-weight: 700;
+  color: style.$icon_blue;
+}
+
 .btnGroup {
   position: relative;
   display: flex;
@@ -243,6 +297,18 @@
     height: 1px;
     background-color: style.$light_gray;
   }
+}
+
+.reserveBtnGroup {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: fit-content;
+  padding: 8px;
+  background-color: style.$white;
+  border-radius: 0 0 8px 8px;
 }
 
 .deleteBtn,

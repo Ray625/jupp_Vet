@@ -74,7 +74,10 @@ const FormGroup = ({ children, btnText, onSubmit}) => {
   return (
     <form action="post" className={styles.form}>
       {children}
-      <button type="submit" className={styles.submitBtn} onClick={onSubmit}>{btnText}</button>
+      <button type="submit" className={styles.submitBtn} onClick={onSubmit}>
+        <span className={styles.submitBtnText}>{btnText}</span>
+        <span className={styles.submitBtnBg}></span>
+      </button>
     </form>
   )
 }
@@ -83,7 +86,7 @@ const InputGroup = ({ title, name, type, placeholder, autocomplete, value, onCha
   return (
     <div className={styles.inputGroup}>
       <label htmlFor={name} className={styles.inputLabel}>{title}</label>
-      <input type={type} name={name} id={name} placeholder={placeholder} className={styles.input} autocomplete={autocomplete} value={value} onChange={onChange} />
+      <input type={type} name={name} id={name} placeholder={placeholder} className={styles.input} autoComplete={autocomplete} value={value} onChange={onChange} />
     </div>
   )
 }

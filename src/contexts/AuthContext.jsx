@@ -10,7 +10,17 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom";
-import { getDatabase, set, ref, onValue, query, orderByChild, equalTo, off } from "firebase/database";
+import {
+  getDatabase,
+  set,
+  ref,
+  onValue,
+  query,
+  orderByChild,
+  equalTo,
+  off,
+} from "firebase/database";
+import { OneBtnAlert } from "../components/alert/alert"; 
 // eslint-disable-next-line
 import { firebase } from "../utils/firebase";
 
@@ -34,6 +44,8 @@ const AuthProvider = ({ children }) => {
   const [userInfo, setUserInfo] = useState(null);
   const [petsInfo, setPetsInfo] = useState([]);
   const [reserveInfo, setReserveInfo] = useState([])
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
   const { pathname } = useLocation();
   const navigate = useNavigate()
   const auth = getAuth();
@@ -83,10 +95,17 @@ const AuthProvider = ({ children }) => {
           const userPetsInfo = snap.val();
           const petData = [];
           for (const [key, value] of Object.entries(userPetsInfo)) {
-            petData.push({
+            const pet = {
               ...value,
               petId: key,
-            });
+            };
+
+            console.log(value)
+
+            if (!value.isDeleted) {
+              petData.push(pet);
+            }
+
           }
           setPetsInfo(petData);
         } else {
@@ -96,17 +115,32 @@ const AuthProvider = ({ children }) => {
 
       // 擷取飼主約診紀錄
       const reserveRef = ref(db, "appointments")
-      const reserveQuery = query(reserveRef, orderByChild("owner_id"), equalTo(userId));
+      const reserveQuery = query(
+        reserveRef,
+        orderByChild("owner_id"),
+        equalTo(userId),
+      );
       onValue(reserveQuery, (snap) => {
         if (snap.exists()) {
           const userReserveInfo = snap.val();
           const reserveData = [];
           for (const [key, value] of Object.entries(userReserveInfo)) {
-            reserveData.push({
+            const data = {
               ...value,
-              key: key,
-            });
+              key: key
+            }
+            if (!value.isCanceled) {
+              reserveData.push(data)
+            }
           }
+
+          // 將資料按照預約日期排序
+          reserveData.sort((a, b) => {
+            return (
+              new Date(b.date_key.split("_")[0]) -
+              new Date(a.date_key.split("_")[0])
+            );
+          });
           setReserveInfo(reserveData);
         } else {
           setReserveInfo([]);
@@ -159,7 +193,8 @@ const AuthProvider = ({ children }) => {
           } catch (error) {
             const errorCode = error.code;
             if (errorCode === "auth/email-already-in-use") {
-              alert("此Email已註冊");
+              setAlertText("此Email已註冊");
+              setAlertOpen(true);
             }
             setIsLoading(false);
           }
@@ -190,9 +225,10 @@ const AuthProvider = ({ children }) => {
           } catch (error) {
             const errorCode = error.code;
             if (errorCode === "auth/invalid-credential") {
-              alert(
-                "帳號或密碼錯誤，請再試一次，或按一下「忘記密碼」以重設密碼。"
+              setAlertText(
+                "帳號或密碼錯誤，請再試一次，或按下「忘記密碼」以重設密碼。"
               );
+              setAlertOpen(true);
             }
             setIsLoading(false);
           }
@@ -201,13 +237,22 @@ const AuthProvider = ({ children }) => {
           try {
             await signOut(auth);
             setCurrentUser(null);
-            alert("已登出");
+            setAlertText("已登出");
+            setAlertOpen(true);
           } catch (error) {
             console.error(error);
           }
         },
       }}
     >
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button={"確認"}
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
       {children}
     </AuthContext.Provider>
   );

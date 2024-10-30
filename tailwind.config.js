@@ -10,18 +10,19 @@ export default {
         "dark-orange": "#FF7A00",
         "bg-gray": "#ececec",
         "icon-orange": "#FE7E62",
+        "disabled-gray": "#989898",
       },
       keyframes: {
         fadeIn: {
           "0%": {
             opacity: 0,
-            width: '0px',
-            hight: '0px'
+            width: "0px",
+            hight: "0px",
           },
           "100%": {
             opacity: 1,
-            width: 'auto',
-            hight: 'auto'
+            width: "auto",
+            hight: "auto",
           },
         },
       },

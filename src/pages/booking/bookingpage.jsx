@@ -2,7 +2,7 @@ import styles from "./BookingPage.module.scss";
 import { Container, StepGroup, FormStep1, FormStep2, FormStep3, FormStep4 } from '../../components/booking/booking'
 import useTheme from '../../hooks/useTheme'
 import { useState, useEffect } from 'react'
-import { getDatabase, onValue, update, ref, query, orderByChild, equalTo, off } from "firebase/database";
+import { getDatabase, onValue, ref, query, orderByChild, equalTo, off } from "firebase/database";
 import moment from "moment";
 
 const BookingPage = () => {
@@ -14,7 +14,8 @@ const BookingPage = () => {
   const [newPetInfo, setNewPetInfo] = useState({ petName: '', gender: '', species: 'canine', birthday: '', breed: '' })
   const [selectedPets, setSelectedPets] = useState([])
   const [reserveData, setReserveData] = useState({})
-  const [reserveNum,setReserveNum] = useState([])
+  const [reserveNum, setReserveNum] = useState([])
+  const [haveNewPet, setHaveNewPet] = useState(false);
 
 
   const handleToStep2 = () => {
@@ -63,6 +64,8 @@ const BookingPage = () => {
       if (snap.exists()) {
         const data = snap.val();
         setReserveData(data)
+      } else {
+        setReserveData({})
       }
     });
 
@@ -106,6 +109,8 @@ const BookingPage = () => {
             setNewPetInfo={setNewPetInfo}
             selectedPets={selectedPets}
             setSelectedPets={setSelectedPets}
+            haveNewPet={haveNewPet}
+            setHaveNewPet={setHaveNewPet}
           />
         )}
         {step === 3 && (
@@ -117,12 +122,11 @@ const BookingPage = () => {
             selectedPets={selectedPets}
             newPetInfo={newPetInfo}
             setReserveNum={setReserveNum}
+            haveNewPet={haveNewPet}
           />
         )}
         {step === 4 && (
-          <FormStep4
-            reserveNum={reserveNum}
-            reserveInfo={reserveInfo} />
+          <FormStep4 reserveNum={reserveNum} reserveInfo={reserveInfo} />
         )}
       </Container>
     </div>

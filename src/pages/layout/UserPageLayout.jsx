@@ -3,9 +3,20 @@ import { Container } from "../../components/booking/booking";
 import { Menu, Wrapper } from "../../components/user/user";
 import useTheme from "../../hooks/useTheme";
 import { Outlet } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const UserPage = () => {
   const { tickerOpen } = useTheme();
+  const { currentUser } = useAuth()
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!currentUser) {
+      navigate('/')
+    }
+  })
 
   return (
     <div

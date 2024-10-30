@@ -244,6 +244,13 @@
   font-weight: 400;
 }
 
+.noDuty {
+  font-size: style.$title-font-size;
+  line-height: 28px;
+  font-weight: 400;
+  color: style.$disabled_gray;
+}
+
 .ownerInfo {
   display: flex;
   flex-direction: column;
@@ -363,10 +370,12 @@
 
 .nextBtn {
   @extend %submitBtn;
+  position: relative;
   width: 340px;
   border: none;
   background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
   color: style.$white;
+  overflow: hidden;
 }
 
 .prevBtn {
@@ -375,6 +384,13 @@
   border: 1px solid style.$disabled_gray;
   background: transparent;
   color: style.$disabled_gray;
+  transition: all 0.2s ease-out;
+}
+
+.nextBtnText {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
 }
 
 .infoWrapper {
@@ -935,8 +951,20 @@
 
   .nextBtn {
     width: 152px;
+  }
+
+  .nextBtnBg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
+    background-color: style.$dark_orange;
+    transition: opacity 0.2s ease-out;
+
     &:hover {
-      background: style.$dark_orange;
+      opacity: 1;
     }
   }
 
@@ -947,6 +975,7 @@
       background: style.$disabled_gray;
     }
   }
+
 
   .submitBtnGroup {
     flex-direction: row;

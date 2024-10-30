@@ -5,6 +5,8 @@ import moment from 'moment';
 import { getDatabase, ref, get, query, orderByChild, equalTo, update, push, runTransaction,limitToLast } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import { useEffect, useState } from 'react';
+import useAuth from "../../hooks/useAuth";
+import { OneBtnAlert } from "../alert/alert";
 
 
 const Container = ({ children, title, subitle, titleBgClassName, containerBgClassName  }) => {
@@ -80,8 +82,8 @@ const WeekSelection = ({ weeks, onChange, selectedWeekIndex}) => {
 const DaySelection = ({ weeks, selectedWeekIndex, reserveInfo, handleInfoChange }) => {
   const selectedWeek = weeks[selectedWeekIndex];
   const [startDate, endDate] = selectedWeek.split(' ~ ');
-  const startDateObj = moment(`${startDate}`);
-  const endDateObj = moment(`${endDate}`);
+  const startDateObj = moment(startDate, "YYYY/MM/DD");
+  const endDateObj = moment(endDate, "YYYY/MM/DD");
   const days = [];
   for (let date = startDateObj; date <= endDateObj; date.add('1', 'day')) {
     const formattedDate = date.format('YYYY/MM/DD');
@@ -101,13 +103,13 @@ const DaySelection = ({ weeks, selectedWeekIndex, reserveInfo, handleInfoChange 
     <div className={styles.btnGroup}>
       {days.map((day) => {
         return (
-          <>
+          <div key={day}>
             {compare(day) && <input type="radio" name="date" id={day} value={day} onChange={(e) => handleInfoChange(e.target.value)} checked />}
             {!compare(day) && <input type="radio" name="date" id={day} value={day} onChange={(e) => handleInfoChange(e.target.value)} />}
             <label htmlFor={day} className={styles.dateBtn}>
               {day.slice(5)}
             </label>
-          </>
+          </div>
         );})}
     </div>
   )
@@ -141,11 +143,11 @@ const TimeBtnGroup = ({ handleInfoChange, reserveInfo }) => {
     <div className={styles.btnGroup}>
       {timeData.map((data) => {
         return (
-          <>
+          <div key={data.value}>
             {compare(data.value) && <input type="radio" name='time' id={data.value} value={data.value} onChange={e => handleInfoChange(e.target.value)} checked />}
             {!compare(data.value) && <input type="radio" name='time' id={data.value} value={data.value} onChange={e => handleInfoChange(e.target.value)} />}
             <label htmlFor={data.value} className={styles.timeBtn}>{data.title}</label>
-          </>
+          </div>
         )
       })}
     </div>
@@ -165,8 +167,8 @@ const DoctorBtnGroup = ({ datas ,handleInfoChange, reserveInfo }) => {
     <div className={styles.btnGroup}>
       {datas.map((data) => {
         return (
-          <>
-            {compare(data.value) && (
+          <div key={data.value}>
+            {compare(data.title) && (
               <input
                 type="radio"
                 name="doctor"
@@ -179,7 +181,7 @@ const DoctorBtnGroup = ({ datas ,handleInfoChange, reserveInfo }) => {
                 checked
               />
             )}
-            {!compare(data.value) && (
+            {!compare(data.title) && (
               <input
                 type="radio"
                 name="doctor"
@@ -211,7 +213,7 @@ const DoctorBtnGroup = ({ datas ,handleInfoChange, reserveInfo }) => {
               )}
               {data.last <= 0 && <span>&nbsp;{"(已額滿)"}</span>}
             </label>
-          </>
+          </div>
         );
       })}
     </div>
@@ -220,11 +222,18 @@ const DoctorBtnGroup = ({ datas ,handleInfoChange, reserveInfo }) => {
 
 const NextBtn = ({ title, onClick }) => {
   return (
-    <button type="submit" className={styles.nextBtn} onClick={(e) => {
-      e.preventDefault()
-      onClick()
-    }}>{title}</button>
-  )
+    <button
+      type="submit"
+      className={styles.nextBtn}
+      onClick={(e) => {
+        e.preventDefault();
+        onClick();
+      }}
+    >
+      <span className={styles.nextBtnText}>{title}</span>
+      <span className={styles.nextBtnBg}></span>
+    </button>
+  );
 }
 
 const PrevBtn = ({ title, onClick }) => {
@@ -232,28 +241,61 @@ const PrevBtn = ({ title, onClick }) => {
     <button type="submit" className={styles.prevBtn} onClick={(e) => {
       e.preventDefault()
       onClick()
-    }}>{title}</button>
+    }}>
+      {title}
+    </button>
   )
 }
 
 const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, selectedWeekIndex, setSelectedWeekIndex }) => {
+  const [alertOpen, setAlertOpen] = useState(false)
+  const { currentUser } = useAuth()
+
   const handleWeekChange = (event) => {
     setSelectedWeekIndex(event.target.value)
+    setReserveInfo({ date: "", time: "", doctor: "", key: "", last: null });
   }
 
   const handleDateChange = (value) => {
     setReserveInfo({
       ...reserveInfo,
-      date: value
-    })
+      date: value,
+      time: "",
+      doctor: "",
+      key: "",
+      last: null,
+    });
   }
 
   const handleTimeChange = (value) => {
     setReserveInfo({
       ...reserveInfo,
-      time: value
-    })
+      time: value,
+      doctor: "",
+      key: "",
+      last: null,
+    });
   }
+
+  const handleSubmit = () => {
+    if (currentUser === null) {
+      setAlertOpen(true)
+      return
+    }
+    handleNextStep()
+  }
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false)
+  }
+
+  const handleToLogin = () => {
+    setAlertOpen(false);
+    const loginWindow = window.open("/login", "_blank"); // 打開新的視窗至登入頁面
+    if (loginWindow) {
+      loginWindow.focus(); // 確保新視窗獲得焦點
+    }
+  };
 
   const handleDoctorChange = (value, timeShift, last) => {
     setReserveInfo({
@@ -264,15 +306,25 @@ const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, s
     });
   }
 
+  // 將時間週期設為今日開始計算，為期四週
   const weeks = [];
   const today = moment();
   const endDay = moment().add("6", "day");
 
   for (let i = 0; i < 4; i++) {
     let week =
-      today.clone().add(i, "week").format("YYYY/MM/DD") +
+      today.clone().add(i, "weeks").format("YYYY/MM/DD") +
       " ~ " +
-      endDay.clone().add(i, "week").format("YYYY/MM/DD");
+      endDay.clone().add(i, "weeks").format("YYYY/MM/DD");
+    weeks.push(week);
+  }
+
+
+  if (moment(endDay.clone().add(3, "weeks").format("YYYY-MM-DD")).isBefore(today.clone().add(1, "months").format("YYYY-MM-DD"))) {
+    let week =
+      today.clone().add(4, "weeks").format("YYYY/MM/DD") +
+      " ~ " +
+      today.clone().add(1, "months").format("YYYY-MM-DD")
     weeks.push(week);
   }
 
@@ -287,45 +339,60 @@ const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, s
   })
 
   return (
-    <div className={styles.formContainer}>
-      <form action="post" className={styles.form}>
-        <h3 className={styles.formTitle}>請選擇日期</h3>
-        <p className={styles.describe}>(僅能預約一個月內之日期)</p>
-        <WeekSelection
-          weeks={weeks}
-          onChange={handleWeekChange}
-          selectedWeekIndex={selectedWeekIndex}
+    <>
+      {alertOpen && (
+        <OneBtnAlert
+          title="線上預約前請先登入會員"
+          button="登入"
+          handleClose={handleCloseAlert}
+          handleConfirm={handleToLogin}
         />
-        <DaySelection
-          selectedWeekIndex={selectedWeekIndex}
-          weeks={weeks}
-          reserveInfo={reserveInfo}
-          handleInfoChange={handleDateChange}
-        />
-        {reserveInfo.date.length !== 0 && (
-          <>
-            <h3 className={styles.formTitle}>請選擇時段</h3>
-            <TimeBtnGroup
-              handleInfoChange={handleTimeChange}
-              reserveInfo={reserveInfo}
-            />
-          </>
-        )}
-        {reserveInfo.time.length !== 0 && (
-          <>
-            <h3 className={styles.formTitle}>請選擇門診</h3>
-            <DoctorBtnGroup
-              datas={doctorData}
-              handleInfoChange={handleDoctorChange}
-              reserveInfo={reserveInfo}
-            />
-          </>
-        )}
-      </form>
-      <div className={styles.submitBtnGroup}>
-        <NextBtn title={"下一步"} onClick={handleNextStep} />
+      )}
+      <div className={styles.formContainer}>
+        <form action="post" className={styles.form}>
+          <h3 className={styles.formTitle}>請選擇日期</h3>
+          <p className={styles.describe}>(僅能預約一個月內之日期)</p>
+          <WeekSelection
+            weeks={weeks}
+            onChange={handleWeekChange}
+            selectedWeekIndex={selectedWeekIndex}
+          />
+          <DaySelection
+            selectedWeekIndex={selectedWeekIndex}
+            weeks={weeks}
+            reserveInfo={reserveInfo}
+            handleInfoChange={handleDateChange}
+          />
+          {reserveInfo?.date.length !== 0 && (
+            <>
+              <h3 className={styles.formTitle}>請選擇時段</h3>
+              <TimeBtnGroup
+                handleInfoChange={handleTimeChange}
+                reserveInfo={reserveInfo}
+              />
+            </>
+          )}
+          {reserveInfo?.time.length !== 0 && doctorData.length !== 0 && (
+            <>
+              <h3 className={styles.formTitle}>請選擇門診</h3>
+              <DoctorBtnGroup
+                datas={doctorData}
+                handleInfoChange={handleDoctorChange}
+                reserveInfo={reserveInfo}
+              />
+            </>
+          )}
+          {reserveInfo?.time.length !== 0 && doctorData.length === 0 && (
+            <>
+              <div className={styles.noDuty}>該時段無看診</div>
+            </>
+          )}
+        </form>
+        <div className={styles.submitBtnGroup}>
+          <NextBtn title={"下一步"} onClick={handleSubmit} />
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -535,8 +602,9 @@ const FormStep2 = ({
   setNewPetInfo,
   selectedPets,
   setSelectedPets,
+  haveNewPet,
+  setHaveNewPet,
 }) => {
-  const [haveNewPet, setHaveNewPet] = useState(false);
   const [originalPetInfo, setOriginalPetInfo] = useState([]);
   const db = getDatabase();
   const auth = getAuth();
@@ -581,10 +649,14 @@ const FormStep2 = ({
           const userPetInfo = snap.val();
           const petData = [];
           for (const [key, value] of Object.entries(userPetInfo)) {
-            petData.push({
+            const pet = {
               ...value,
               id: key,
-            });
+            }
+
+            if (!value.isDeleted) {
+              petData.push(pet)
+            }
           }
           setOriginalPetInfo(petData);
         } else {
@@ -686,26 +758,25 @@ const FormStep2 = ({
     if (!haveNewPet) {
       handleNextStep();
     } else if (haveNewPet) {
-      try {
-        const newPetKey = push(ref(db, "pets/"), newPetInfo).key;
-        await update(ref(db, "pets/" + newPetKey), {
-          owner_id: userId,
-        });
-      } catch (error) {
-        console.log(error);
-      }
+      if (!newPetInfo.petName) return alert("請填寫新寵物名字");
+      if (!newPetInfo.gender) return alert("請填寫新寵物性別")
+      if (!newPetInfo.birthday) return alert("請填寫新寵物生日年分");
+      if (!newPetInfo.breed) return alert("請填寫新寵物品種");
+
       handleNextStep();
     }
   };
 
   const handleExistingPetSelection = (originalPet) => {
     setSelectedPets((prevSelectedPets) => {
-      const isSeleted = prevSelectedPets.some(pet=> pet.id === originalPet.id)
+      const isSeleted = prevSelectedPets.some(
+        (pet) => pet.id === originalPet.id
+      );
       if (isSeleted) {
         return prevSelectedPets.filter((pet) => pet.id !== originalPet.id);
       } else if (
         prevSelectedPets.length >= reserveInfo.last ||
-        (haveNewPet && prevSelectedPets.length >= (reserveInfo.last - 1))
+        (haveNewPet && prevSelectedPets.length >= reserveInfo.last - 1)
       ) {
         alert(`目前該時段剩餘${reserveInfo.last}個空位`);
         return prevSelectedPets;
@@ -868,7 +939,12 @@ const FormStep3 = ({
   selectedPets,
   newPetInfo,
   setReserveNum,
+  haveNewPet,
 }) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  const userId = user.uid;
+
   const db = getDatabase();
 
   const date = reserveInfo.date.slice(0, -4);
@@ -908,7 +984,8 @@ const FormStep3 = ({
     const key = reserveInfo.key;
     const dateKey = `${date}_${key}`;
     const scheduleRef = ref(db, `schedule/${date}/${key}`);
-    const petCount = Object.keys(selectedPets).length;
+    let petCount = Object.keys(selectedPets).length;
+    if (haveNewPet) petCount += 1
 
     try {
       // 確認資料庫內可預約空位足夠
@@ -938,10 +1015,39 @@ const FormStep3 = ({
       const snap = await get(queryAppointmentsRef);
       if (snap.exists()) {
         const data = snap.val();
-        reserveCount = Object.values(data)[0].number
+        reserveCount = Object.values(data)[0].number;
       }
 
-      const numberList = []
+      const numberList = [];
+
+      // 將新增寵物資料及預約資訊傳至資料庫
+      if (haveNewPet) {
+        try {
+          const newPet = await push(ref(db, "pets/"), newPetInfo);
+          const newPetKey = newPet.key;
+          await update(ref(db, "pets/" + newPetKey), {
+            owner_id: userId,
+            isDeleted: false,
+          });
+
+          reserveCount += 1;
+          numberList.push(reserveCount);
+          const now = Date.now();
+          const reserveData = {
+            owner_id: userId,
+            pet_id: newPetKey,
+            number: reserveCount,
+            create_at: now,
+            date_key: dateKey,
+            doctor: reserveInfo.doctor,
+            pet_name: newPetInfo.petName,
+            isCanceled: false,
+          };
+          await push(appointmentsRef, reserveData);
+        } catch (error) {
+          console.log(error);
+        }
+      }
 
       await Promise.all(
         Object.values(selectedPets).map(async (pet) => {
@@ -955,14 +1061,14 @@ const FormStep3 = ({
             create_at: now,
             date_key: dateKey,
             doctor: reserveInfo.doctor,
+            pet_name: pet.petName,
+            isCanceled: false,
           };
           await push(appointmentsRef, reserveData);
         })
       );
 
-      setReserveNum(numberList)
-
-      alert("預約成功");
+      setReserveNum(numberList);
       handleSubmit();
     } catch (error) {
       if (error.message === "空位不足") {
