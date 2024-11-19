@@ -249,6 +249,12 @@ const PrevBtn = ({ title, onClick }) => {
 
 const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, selectedWeekIndex, setSelectedWeekIndex }) => {
   const [alertOpen, setAlertOpen] = useState(false)
+  const [alertConfig, setAlertConfig] = useState({
+    title: "",
+    button: "確認",
+    handleClose: () => setAlertOpen(false),
+    handleConfirm: () => setAlertOpen(false),
+  });
   const { currentUser } = useAuth()
 
   const handleWeekChange = (event) => {
@@ -278,24 +284,62 @@ const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, s
   }
 
   const handleSubmit = () => {
-    if (currentUser === null) {
+    if (reserveInfo.date.length === 0) {
+      setAlertConfig((prev) => {
+        return {
+          ...prev,
+          title: "請選擇預約日期",
+          button: "確認",
+          handleConfirm: () => setAlertOpen(false),
+        };
+      });
       setAlertOpen(true)
       return
+    } else if (reserveInfo.time.length === 0) {
+      setAlertConfig((prev) => {
+        return {
+          ...prev,
+          title: "請選擇預約時段",
+          button: "確認",
+          handleConfirm: () => setAlertOpen(false),
+        };
+      });
+      setAlertOpen(true);
+      return
+    } else if (reserveInfo.doctor.length === 0) {
+      setAlertConfig((prev) => {
+        return {
+          ...prev,
+          title: "請選擇醫師",
+          button: "確認",
+          handleConfirm: () => setAlertOpen(false),
+        };
+      });
+      setAlertOpen(true);
+      return
     }
+
+    if (currentUser === null) {
+      setAlertConfig((prev) => {
+        return {
+          ...prev,
+          title: "線上預約請先登入會員",
+          button: "登入",
+          handleConfirm: () => {
+            setAlertOpen(false);
+            const loginWindow = window.open("/login", "_blank"); // 打開新的視窗至登入頁面
+            if (loginWindow) {
+              loginWindow.focus(); // 確保新視窗獲得焦點
+            }
+          },
+        };
+      });
+      setAlertOpen(true);
+      return;
+    }
+
     handleNextStep()
   }
-
-  const handleCloseAlert = () => {
-    setAlertOpen(false)
-  }
-
-  const handleToLogin = () => {
-    setAlertOpen(false);
-    const loginWindow = window.open("/login", "_blank"); // 打開新的視窗至登入頁面
-    if (loginWindow) {
-      loginWindow.focus(); // 確保新視窗獲得焦點
-    }
-  };
 
   const handleDoctorChange = (value, timeShift, last) => {
     setReserveInfo({
@@ -342,10 +386,10 @@ const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, s
     <>
       {alertOpen && (
         <OneBtnAlert
-          title="線上預約前請先登入會員"
-          button="登入"
-          handleClose={handleCloseAlert}
-          handleConfirm={handleToLogin}
+          title={alertConfig.title}
+          button={alertConfig.button}
+          handleClose={alertConfig.handleClose}
+          handleConfirm={alertConfig.handleConfirm}
         />
       )}
       <div className={styles.formContainer}>
@@ -606,6 +650,9 @@ const FormStep2 = ({
   setHaveNewPet,
 }) => {
   const [originalPetInfo, setOriginalPetInfo] = useState([]);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
+
   const db = getDatabase();
   const auth = getAuth();
   const user = auth.currentUser;
@@ -658,7 +705,11 @@ const FormStep2 = ({
               petData.push(pet)
             }
           }
-          setOriginalPetInfo(petData);
+          if (petData.length === 0) {
+            setHaveNewPet(true);
+          } else {
+            setOriginalPetInfo(petData);
+          }
         } else {
           setHaveNewPet(true);
         }
@@ -670,6 +721,19 @@ const FormStep2 = ({
     getUserPetInfo();
     // eslint-disable-next-line
   }, []);
+
+  const handleAddNewPet = () => {
+    if (selectedPets.length >= 3) {
+      setAlertText("一次最多預約3隻寵物");
+      setAlertOpen(true);
+      return;
+    } else if (selectedPets.length >= reserveInfo.last) {
+      setAlertText(`目前該時段剩餘${reserveInfo.last}個空位`);
+      setAlertOpen(true);
+      return;
+    }
+    setHaveNewPet(true);
+  };
 
   const handleLastNameChange = (value) => {
     setOwnerInfo({
@@ -742,11 +806,15 @@ const FormStep2 = ({
     handlePetBreedChange,
   };
 
-  const handleNextStepAndUpdateData = async () => {
+  const handleNextStepAndUpdateUserData = async () => {
     if (ownerInfo.lastName.length === 0) {
-      return alert("請填寫飼主姓名");
+      setAlertText("請填寫飼主姓名");
+      setAlertOpen(true);
+      return;
     } else if (ownerInfo.phone.length === 0) {
-      return alert("請填寫飼主聯絡電話");
+      setAlertText("請填寫飼主聯絡電話");
+      setAlertOpen(true);
+      return;
     }
 
     try {
@@ -756,12 +824,33 @@ const FormStep2 = ({
     }
 
     if (!haveNewPet) {
+      if (selectedPets.length === 0) {
+        setAlertText("請選取預約寵物")
+        setAlertOpen(true)
+        return
+      }
       handleNextStep();
     } else if (haveNewPet) {
-      if (!newPetInfo.petName) return alert("請填寫新寵物名字");
-      if (!newPetInfo.gender) return alert("請填寫新寵物性別")
-      if (!newPetInfo.birthday) return alert("請填寫新寵物生日年分");
-      if (!newPetInfo.breed) return alert("請填寫新寵物品種");
+      if (!newPetInfo.petName) {
+        setAlertText("請填寫新寵物名字");
+        setAlertOpen(true);
+        return
+      }
+      if (!newPetInfo.gender) {
+        setAlertText("請填寫新寵物性別");
+        setAlertOpen(true);
+        return
+      }
+      if (!newPetInfo.birthday) {
+        setAlertText("請填寫新寵物生日年分");
+        setAlertOpen(true);
+        return
+      }
+      if (!newPetInfo.breed) {
+        setAlertText("請填寫新寵物品種");
+        setAlertOpen(true);
+        return
+      }
 
       handleNextStep();
     }
@@ -778,13 +867,15 @@ const FormStep2 = ({
         prevSelectedPets.length >= reserveInfo.last ||
         (haveNewPet && prevSelectedPets.length >= reserveInfo.last - 1)
       ) {
-        alert(`目前該時段剩餘${reserveInfo.last}個空位`);
+        setAlertText(`目前該時段剩餘${reserveInfo.last}個空位`);
+        setAlertOpen(true);
         return prevSelectedPets;
       } else if (
         prevSelectedPets.length >= 3 ||
         (haveNewPet && prevSelectedPets.length >= 2)
       ) {
-        alert("一次最多預約3隻寵物");
+        setAlertText("一次最多預約3隻寵物");
+        setAlertOpen(true);
         return prevSelectedPets;
       } else {
         return [...prevSelectedPets, originalPet];
@@ -793,130 +884,134 @@ const FormStep2 = ({
   };
 
   return (
-    <div className={styles.formContainer}>
-      <div className={styles.infoWrapper}>
-        <div className={styles.infoGroup}>
-          <h4 className={styles.infoTitle}>日期</h4>
-          <p className={styles.info}>{reserveInfo.date}</p>
-        </div>
-        <div className={styles.infoGroup}>
-          <h4 className={styles.infoTitle}>時段</h4>
-          <p className={styles.info}>{timeList[reserveInfo.time]}</p>
-        </div>
-        <div className={styles.infoGroup}>
-          <h4 className={styles.infoTitle}>醫師</h4>
-          <p className={styles.info}>{reserveInfo.doctor}</p>
-        </div>
-      </div>
-      <form action="post" className={styles.form}>
-        <h3 className={styles.formTitle}>飼主資料</h3>
-        <div className={styles.ownerInfo}>
-          <NameInput
-            lastName={ownerInfo.lastName}
-            firstName={ownerInfo.firstName}
-            gender={ownerInfo.gender}
-            handleLastNameChange={handleLastNameChange}
-            handleFirstNameChange={handleFirstNameChange}
-            handleGenderChange={handleGenderChange}
-          />
-          <PhoneInput
-            phone={ownerInfo.phone}
-            handlePhoneChange={handlePhoneChange}
-          />
-        </div>
-        <h3 className={styles.formTitle}>寵物資料</h3>
-        {reserveInfo.last > 2 && (
-          <p className={styles.describe}>{`已選擇 ${
-            selectedPets.length + haveNewPet
-          }/3 (一個時段最多預約三隻寵物)`}</p>
-        )}
-        {reserveInfo.last <= 2 && (
-          <p className={styles.describe}>{`已選擇 ${
-            selectedPets.length + haveNewPet
-          }/${reserveInfo.last} (目前該時段剩餘${reserveInfo.last}個空位)`}</p>
-        )}
-        {originalPetInfo.length !== 0 && (
-          <div className={styles.petInfo}>
-            <h4 className={styles.petInfoTitle}>原有寵物</h4>
-            <div className={styles.petInfoInputGroup}>
-              {originalPetInfo.map((info) => {
-                return (
-                  <div className={styles.petInfoGroup} key={info.id}>
-                    <input
-                      type="checkbox"
-                      name="pet"
-                      id={info.id.slice(1, 6)}
-                      className={styles.petInfoInput}
-                      onChange={() => handleExistingPetSelection(info)}
-                      checked={selectedPets.some((pet) => pet.id === info.id)}
-                    />
-                    <label
-                      htmlFor={info.id.slice(1, 6)}
-                      className={styles.petInfoLabel}
-                    >
-                      {info.species === "feline" && (
-                        <img
-                          src="/svg/booking_cat.svg"
-                          alt="icon"
-                          className={styles.petInfoIcon}
-                        />
-                      )}
-                      {info.species === "canine" && (
-                        <img
-                          src="/svg/booking_dog.svg"
-                          alt="icon"
-                          className={styles.petInfoIcon}
-                        />
-                      )}
-                      {info.petName}
-                    </label>
-                  </div>
-                );
-              })}
-            </div>
+    <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button="確認"
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
+      <div className={styles.formContainer}>
+        <div className={styles.infoWrapper}>
+          <div className={styles.infoGroup}>
+            <h4 className={styles.infoTitle}>日期</h4>
+            <p className={styles.info}>{reserveInfo.date}</p>
           </div>
-        )}
-        {!haveNewPet && (
-          <button
-            className={styles.addNewPet}
-            onClick={(e) => {
-              e.preventDefault();
-              if (selectedPets.length >= 3) {
-                return alert("一次最多預約3隻寵物");
-              } else if (selectedPets.length >= reserveInfo.last) {
-                return alert(`目前該時段剩餘${reserveInfo.last}個空位`);
-              }
-              setHaveNewPet(true);
-            }}
-          >
-            新增寵物
-          </button>
-        )}
-        {haveNewPet && (
-          <>
-            <div className={styles.newPetInfo}>
-              <div className={styles.infoHeader}>
-                <h4 className={styles.petInfoTitle}>新增寵物</h4>
-                <div
-                  className={styles.deleteBtn}
-                  onClick={() => {
-                    setHaveNewPet(false);
-                  }}
-                >
-                  移除
-                </div>
+          <div className={styles.infoGroup}>
+            <h4 className={styles.infoTitle}>時段</h4>
+            <p className={styles.info}>{timeList[reserveInfo.time]}</p>
+          </div>
+          <div className={styles.infoGroup}>
+            <h4 className={styles.infoTitle}>醫師</h4>
+            <p className={styles.info}>{reserveInfo.doctor}</p>
+          </div>
+        </div>
+        <form action="post" className={styles.form}>
+          <h3 className={styles.formTitle}>飼主資料</h3>
+          <div className={styles.ownerInfo}>
+            <NameInput
+              lastName={ownerInfo.lastName}
+              firstName={ownerInfo.firstName}
+              gender={ownerInfo.gender}
+              handleLastNameChange={handleLastNameChange}
+              handleFirstNameChange={handleFirstNameChange}
+              handleGenderChange={handleGenderChange}
+            />
+            <PhoneInput
+              phone={ownerInfo.phone}
+              handlePhoneChange={handlePhoneChange}
+            />
+          </div>
+          <h3 className={styles.formTitle}>寵物資料</h3>
+          {reserveInfo.last > 2 && (
+            <p className={styles.describe}>{`已選擇 ${
+              selectedPets.length + haveNewPet
+            }/3 (一個時段最多預約三隻寵物)`}</p>
+          )}
+          {reserveInfo.last <= 2 && (
+            <p className={styles.describe}>{`已選擇 ${
+              selectedPets.length + haveNewPet
+            }/${reserveInfo.last} (目前該時段剩餘${
+              reserveInfo.last
+            }個空位)`}</p>
+          )}
+          {originalPetInfo.length !== 0 && (
+            <div className={styles.petInfo}>
+              <h4 className={styles.petInfoTitle}>原有寵物</h4>
+              <div className={styles.petInfoInputGroup}>
+                {originalPetInfo.map((info) => {
+                  return (
+                    <div className={styles.petInfoGroup} key={info.id}>
+                      <input
+                        type="checkbox"
+                        name="pet"
+                        id={info.id.slice(1, 6)}
+                        className={styles.petInfoInput}
+                        onChange={() => handleExistingPetSelection(info)}
+                        checked={selectedPets.some((pet) => pet.id === info.id)}
+                      />
+                      <label
+                        htmlFor={info.id.slice(1, 6)}
+                        className={styles.petInfoLabel}
+                      >
+                        {info.species === "feline" && (
+                          <img
+                            src="/svg/booking_cat.svg"
+                            alt="icon"
+                            className={styles.petInfoIcon}
+                          />
+                        )}
+                        {info.species === "canine" && (
+                          <img
+                            src="/svg/booking_dog.svg"
+                            alt="icon"
+                            className={styles.petInfoIcon}
+                          />
+                        )}
+                        {info.petName}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
-              <PetInfoForm func={func} petInfo={newPetInfo} />
             </div>
-          </>
-        )}
-        <p className={styles.point}>以上資料將同步至會員中心</p>
-      </form>
-      <div className={styles.submitBtnGroup}>
-        <PrevBtn title={"上一步"} onClick={handlePrevStep} />
-        <NextBtn title={"下一步"} onClick={handleNextStepAndUpdateData} />
+          )}
+          {!haveNewPet && (
+            <button
+              className={styles.addNewPet}
+              onClick={handleAddNewPet}
+            >
+              新增寵物
+            </button>
+          )}
+          {haveNewPet && (
+            <>
+              <div className={styles.newPetInfo}>
+                <div className={styles.infoHeader}>
+                  <h4 className={styles.petInfoTitle}>新增寵物</h4>
+                  <div
+                    className={styles.deleteBtn}
+                    onClick={() => {
+                      setHaveNewPet(false);
+                    }}
+                  >
+                    移除
+                  </div>
+                </div>
+                <PetInfoForm func={func} petInfo={newPetInfo} />
+              </div>
+            </>
+          )}
+          <p className={styles.point}>以上資料將同步至會員中心</p>
+        </form>
+        <div className={styles.submitBtnGroup}>
+          <PrevBtn title={"上一步"} onClick={handlePrevStep} />
+          <NextBtn title={"下一步"} onClick={handleNextStepAndUpdateUserData} />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
@@ -941,6 +1036,8 @@ const FormStep3 = ({
   setReserveNum,
   haveNewPet,
 }) => {
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
   const auth = getAuth();
   const user = auth.currentUser;
   const userId = user.uid;
@@ -1039,6 +1136,7 @@ const FormStep3 = ({
             number: reserveCount,
             create_at: now,
             date_key: dateKey,
+            date: date,
             doctor: reserveInfo.doctor,
             pet_name: newPetInfo.petName,
             isCanceled: false,
@@ -1060,6 +1158,7 @@ const FormStep3 = ({
             number: reserveCount,
             create_at: now,
             date_key: dateKey,
+            date: date,
             doctor: reserveInfo.doctor,
             pet_name: pet.petName,
             isCanceled: false,
@@ -1072,85 +1171,97 @@ const FormStep3 = ({
       handleSubmit();
     } catch (error) {
       if (error.message === "空位不足") {
-        alert("預約失敗:位子不足");
+        setAlertText("預約失敗，目前剩餘空位不足，請選擇其他時段");
+        setAlertOpen(true);
       } else {
         console.error("預約失敗:", error);
-        alert("預約失敗，請稍後再試");
+        setAlertText("預約失敗，請稍後再試");
+        setAlertOpen(true);
       }
     }
   };
 
   return (
-    <div className={styles.formContainer}>
-      <div className={styles.form}>
-        <div className={styles.infoTable}>
-          <h3 className={styles.formTitle}>預約門診</h3>
-          <InfoTableGroup
-            title={"日期"}
-            info={date}
-            mark={day}
-            className={styles.bookingInfo}
-          />
-          <InfoTableGroup
-            title={"時段"}
-            info={reserveTime}
-            className={styles.bookingInfo}
-          />
-          <InfoTableGroup
-            title={"醫師"}
-            info={reserveDoctor}
-            mark={clinicNum}
-            className={styles.bookingInfo}
-          />
-        </div>
-        <div className={styles.infoTable}>
-          <h3 className={styles.formTitle}>飼主資料</h3>
-          <InfoTableGroup
-            title={"姓名"}
-            info={name}
-            mark={gender}
-            className={styles.bookingInfo}
-          />
-          <InfoTableGroup
-            title={"手機號碼"}
-            info={phone}
-            className={styles.bookingInfo}
-          />
-        </div>
-        <div className={styles.infoTable}>
-          <h3 className={styles.formTitle}>寵物資料</h3>
-          {selectedPets.map((pet, index) => {
-            let age = moment().format("YYYY") - pet.birthday;
-            if (age <= 0) age = "未滿1";
-            const icon = getIcon(pet.species);
-            return (
-              <>
-                <InfoTableGroup
-                  title={`寵物${index + 1}`}
-                  info={pet.petName}
-                  mark={`(${age}歲 · ${pet.breed})`}
-                  icon={icon}
-                  className={styles.bookingInfo}
-                />
-              </>
-            );
-          })}
-          {newPetInfo.petName && (
+    <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button="確認"
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
+      <div className={styles.formContainer}>
+        <div className={styles.form}>
+          <div className={styles.infoTable}>
+            <h3 className={styles.formTitle}>預約門診</h3>
             <InfoTableGroup
-              title={"新寵物"}
-              info={newPetInfo.petName}
-              mark={`(${newPetAge}歲 · ${newPetInfo.breed})`}
-              icon={getIcon(newPetInfo.species)}
+              title={"日期"}
+              info={date}
+              mark={day}
               className={styles.bookingInfo}
             />
-          )}
+            <InfoTableGroup
+              title={"時段"}
+              info={reserveTime}
+              className={styles.bookingInfo}
+            />
+            <InfoTableGroup
+              title={"醫師"}
+              info={reserveDoctor}
+              mark={clinicNum}
+              className={styles.bookingInfo}
+            />
+          </div>
+          <div className={styles.infoTable}>
+            <h3 className={styles.formTitle}>飼主資料</h3>
+            <InfoTableGroup
+              title={"姓名"}
+              info={name}
+              mark={gender}
+              className={styles.bookingInfo}
+            />
+            <InfoTableGroup
+              title={"手機號碼"}
+              info={phone}
+              className={styles.bookingInfo}
+            />
+          </div>
+          <div className={styles.infoTable}>
+            <h3 className={styles.formTitle}>寵物資料</h3>
+            {selectedPets.map((pet, index) => {
+              let age = moment().format("YYYY") - pet.birthday;
+              if (age <= 0) age = "未滿1";
+              const icon = getIcon(pet.species);
+              return (
+                <>
+                  <InfoTableGroup
+                    title={`寵物${index + 1}`}
+                    info={pet.petName}
+                    mark={`(${age}歲 · ${pet.breed})`}
+                    icon={icon}
+                    className={styles.bookingInfo}
+                  />
+                </>
+              );
+            })}
+            {haveNewPet && (
+              <InfoTableGroup
+                title={"新寵物"}
+                info={newPetInfo.petName}
+                mark={`(${newPetAge}歲 · ${newPetInfo.breed})`}
+                icon={getIcon(newPetInfo.species)}
+                className={styles.bookingInfo}
+              />
+            )}
+          </div>
+        </div>
+        <div className={styles.submitBtnGroup}>
+          <PrevBtn title={"上一步"} onClick={handlePrevStep} />
+          <NextBtn title={"確認預約"} onClick={handleReserve} />
         </div>
       </div>
-      <div className={styles.submitBtnGroup}>
-        <PrevBtn title={"上一步"} onClick={handlePrevStep} />
-        <NextBtn title={"確認預約"} onClick={handleReserve} />
-      </div>
-    </div>
+    </>
   );
 };
 

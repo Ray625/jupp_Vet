@@ -190,6 +190,7 @@
 .petInfo {
   @extend %info;
   grid-template-columns: 90px auto auto 1fr auto;
+  cursor: pointer;
 }
 
 .reserveInfo {
@@ -344,22 +345,28 @@
     min-height: 45vh;
   }
 
-  .tableField:hover {
+  .reserveInfo:hover {
     cursor: pointer;
+
     & .openArrow {
       opacity: 0.8;
     }
-  }
-
-  .openArrow:hover {
-    cursor: pointer;
-    opacity: 0.8;
   }
 
   .deleteBtn:hover {
     cursor: pointer;
     background-color: rgba(50, 50, 50, 0.2);
     color: style.$dark_gray;
+  }
+
+  .disable {
+    background-color: rgba(105, 105, 105, 0.1);
+    color: style.$disabled_gray;
+    &:hover {
+      cursor: auto;
+      background-color: rgba(105, 105, 105, 0.1);
+      color: style.$disabled_gray;
+    }
   }
 
   .editBtn:hover {

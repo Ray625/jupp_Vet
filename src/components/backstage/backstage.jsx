@@ -5,10 +5,15 @@ import {
   update,
   remove,
   push,
+  get
 } from "firebase/database";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import useThrottle from "../../hooks/useThrottle";
+import { OneBtnAlert } from "../alert/alert";
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 const week = ["mon", "tue", "wed", "thu", "fri", "sat"];
 const weekCh = ["一", "二", "三", "四", "五", "六"];
@@ -284,6 +289,8 @@ const MonthSchedule = () => {
     nextMonthSchedule,
   } = useOutletContext();
   const [newSchedule, setNewSchedule] = useState({});
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   useEffect(() => {
     setNewSchedule(schedule);
@@ -337,14 +344,24 @@ const MonthSchedule = () => {
     const scheduleRef = ref(db, "schedule");
     try {
       await update(scheduleRef, newSchedule);
-      alert("資料已更新");
+      setAlertText("資料已更新")
+      setAlertOpen(true)
     } catch (error) {
-      alert(error);
+    setAlertText(`資料上傳失敗：${error}`);
+    setAlertOpen(true);
     }
   }
 
   return (
-    <>
+    <div className="relative">
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button={"確認"}
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
       <div className="w-full">
         <div className="flex flex-row justify-between items-center mx-auto w-52 mb-2">
           <button className="hover:opacity-80" onClick={throttleSubtractSelect}>
@@ -362,8 +379,8 @@ const MonthSchedule = () => {
         </div>
       )}
       {Object.keys(newSchedule).length !== 0 && (
-        <div className="relative w-fit h-fit">
-          <div className="relative w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
+        <div className="w-fit h-fit">
+          <div className="w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
             <div className="flex flex-row w-fit gap-1 bg-white rounded mb-1">
               <div className="flex items-center justify-center w-32 h-8 ">
                 日
@@ -412,11 +429,13 @@ const MonthSchedule = () => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
 
 const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertText, setAlertText] = useState('')
   const db = getDatabase();
 
   // 月曆佔未符，前面格數
@@ -440,7 +459,8 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
     const scheduleRef = ref(db, "schedule");
     try {
       await update(scheduleRef, newSchedule);
-      alert("上傳成功");
+      setAlertText('上傳成功')
+      setAlertOpen(true)
     } catch (error) {
       console.log(error);
     }
@@ -448,6 +468,14 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
 
   return (
     <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button={"確認"}
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
       {Object.keys(newSchedule).length !== 0 && (
         <div className="relative w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
           <div className="flex flex-row w-fit gap-1 bg-white rounded mb-1">
@@ -475,7 +503,7 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
           </div>
           <div className="bg-white mt-1 p-1 rounded">
             <p className="w-full pr-1 text-end text-sm text-gray-700">
-              點選格子可逐日編輯，此處僅為預覽，按下新增將資料上傳
+              此處僅為預覽，點選格子可逐日編輯，按下新增將資料上傳
             </p>
             <div className="flex justify-center w-full mb-2">
               <NewBtn
@@ -496,6 +524,8 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
   const month = moment(time).format("YYYY / M");
   const day = "日一二三四五六"[moment(time).format("d")];
   const { r1s1, r1s2, r1s3, r2s1, r2s2, r2s3, r3s1, r3s2, r3s3 } = data
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertText, setAlertText] = useState('')
 
   const handleSaveDaySchedule = (e) => {
     e.stopPropagation()
@@ -516,7 +546,8 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
       isSameDoctor(r1s3, r3s3) ||
       isSameDoctor(r2s3, r3s3)
     ) {
-      alert("一時段不同診間，不可為同一醫師");
+      setAlertText("同一時段不同診間，不可為同一醫師");
+      setAlertOpen(true)
       return;
     }
 
@@ -533,6 +564,14 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
 
   return (
     <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button={"確認"}
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
       <div
         className="flex flex-col bg-white cursor-pointer w-32 h-32 rounded p-2 relative hover:opacity-80"
         onClick={() => setEnlarge(true)}
@@ -668,6 +707,8 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
   const { doctorsList } = useOutletContext();
   const [isEditing, setIsEditing] = useState(false)
   const [isAdding, setIsAdding] = useState(false)
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertText, setAlertText] = useState('')
 
   const handleNameSelectChange = (e) => {
     const value = e.target.value
@@ -728,139 +769,166 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
     });
   };
 
-  const handleSaveNewShift = (e) => {
-    e.stopPropagation();
+  const handleSaveNewShift = () => {
     if (!data) {
-      alert('請選擇值班醫師')
+      setAlertText('請選擇值班醫師')
+      setAlertOpen(true)
       return
     }
 
     if (!data.maxAppointments) {
-      alert('請填選最大門診數')
+      setAlertText("請填選最大門診數");
+      setAlertOpen(true);
       return
     }
 
     setIsAdding(false);
   }
 
+  const handleCancelNewShift = () => {
+    setNewSchedule((prev) => {
+      const newData = { ...prev };
+      delete newData[time][shift];
+      return newData;
+    });
+
+    setIsAdding(false);
+  }
+
   return (
-    <div className={`relative w-full h-full p-2 bg-white rounded text-base}`}>
-      {!isEditing && !data?.name && !isAdding && (
-        <div className="relative w-full h-full">
-          <p className="absolute text-gray-500">休診</p>
-          <button
-            className="flex justify-center items-center w-full h-full opacity-0 transition-opacity hover:opacity-80"
-            onClick={() => setIsAdding(true)}
-          >
-            <i className="fa-solid fa-plus fa-lg"></i>
-          </button>
-        </div>
+    <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button={"確認"}
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
       )}
-      {!isEditing && !isAdding && data?.name && (
-        <div>{`醫師: ${data?.name}`}</div>
-      )}
-      {!isEditing && !isAdding && data?.maxAppointments && (
-        <div className="mt-1">{`可約診人數: ${data?.maxAppointments}`}</div>
-      )}
-      {!isEditing && !isAdding && data?.name && (
-        <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
-          <button
-            className="hover:opacity-80"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(true);
-            }}
-          >
-            <i className="fa-solid fa-pen-to-square"></i>
-          </button>
-          <button className="hover:opacity-80 ml-2" onClick={handleShiftDelete}>
-            <i className="fa-solid fa-trash-can"></i>
-          </button>
-        </div>
-      )}
-      {isEditing && (
-        <div className="flex flex-row">
-          <p>醫師:</p>
-          <select
-            name="name"
-            className="ml-1 bg-bg-gray rounded"
-            value={data?.name}
-            onChange={handleNameSelectChange}
-          >
-            {doctorsList.map((doc) => (
-              <option value={doc.name} key={doc.id}>
-                {doc.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      {isEditing && (
-        <div className="flex flex-row items-center mt-1">
-          <p>可約診人數:</p>
-          <input
-            type="number"
-            max="20"
-            min="0"
-            value={data?.maxAppointments}
-            className="w-10 h-6 ml-1 pl-1 bg-bg-gray rounded"
-            onChange={handleNumInputChange}
-            required
-          />
-        </div>
-      )}
-      {isEditing && (
-        <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(false);
-            }}
-          >
-            <i className="fa-solid fa-check"></i>
-          </button>
-        </div>
-      )}
-      {isAdding && (
-        <div className="flex flex-row">
-          <p>醫師:</p>
-          <select
-            name="name"
-            className="ml-1 bg-bg-gray rounded"
-            value={data?.name}
-            onChange={handleNewNameInputChange}
-          >
-            <option value="">請選擇</option>
-            {doctorsList.map((doc) => (
-              <option value={doc.name} key={doc.id}>
-                {doc.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-      {isAdding && data && (
-        <div className="flex flex-row items-center mt-1">
-          <p>可約診人數:</p>
-          <input
-            type="number"
-            max="20"
-            min="0"
-            value={data?.maxAppointments}
-            className="w-10 h-6 ml-1 pl-1 bg-bg-gray rounded"
-            onChange={handleNumInputChange}
-            required
-          />
-        </div>
-      )}
-      {isAdding && (
-        <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
-          <button onClick={handleSaveNewShift}>
-            <i className="fa-solid fa-check"></i>
-          </button>
-        </div>
-      )}
-    </div>
+      <div className={`relative w-full h-full p-2 bg-white rounded text-base}`}>
+        {!isEditing && !data?.name && !isAdding && (
+          <div className="relative w-full h-full">
+            <p className="absolute text-gray-500">休診</p>
+            <button
+              className="flex justify-center items-center w-full h-full opacity-0 transition-opacity hover:opacity-80"
+              onClick={() => setIsAdding(true)}
+            >
+              <i className="fa-solid fa-plus fa-lg"></i>
+            </button>
+          </div>
+        )}
+        {!isEditing && !isAdding && data?.name && (
+          <div>{`醫師: ${data?.name}`}</div>
+        )}
+        {!isEditing && !isAdding && data?.maxAppointments && (
+          <div className="mt-1">{`可約診人數: ${data?.maxAppointments}`}</div>
+        )}
+        {!isEditing && !isAdding && data?.name && (
+          <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
+            <button
+              className="hover:opacity-80"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
+            >
+              <i className="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button
+              className="hover:opacity-80 ml-2"
+              onClick={handleShiftDelete}
+            >
+              <i className="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        )}
+        {isEditing && (
+          <div className="flex flex-row">
+            <p>醫師:</p>
+            <select
+              name="name"
+              className="ml-1 bg-bg-gray rounded"
+              value={data?.name}
+              onChange={handleNameSelectChange}
+            >
+              {doctorsList.map((doc) => (
+                <option value={doc.name} key={doc.id}>
+                  {doc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {isEditing && (
+          <div className="flex flex-row items-center mt-1">
+            <p>可約診人數:</p>
+            <input
+              type="number"
+              max="20"
+              min="0"
+              value={data?.maxAppointments}
+              className="w-10 h-6 ml-1 pl-1 bg-bg-gray rounded"
+              onChange={handleNumInputChange}
+              required
+            />
+          </div>
+        )}
+        {isEditing && (
+          <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(false);
+              }}
+            >
+              <i className="fa-solid fa-check"></i>
+            </button>
+          </div>
+        )}
+        {isAdding && (
+          <div className="flex flex-row">
+            <p>醫師:</p>
+            <select
+              name="name"
+              className="ml-1 bg-bg-gray rounded"
+              value={data?.name}
+              onChange={handleNewNameInputChange}
+            >
+              <option value="">請選擇</option>
+              {doctorsList.map((doc) => (
+                <option value={doc.name} key={doc.id}>
+                  {doc.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        {isAdding && data && (
+          <div className="flex flex-row items-center mt-1">
+            <p>可約診人數:</p>
+            <input
+              type="number"
+              max="20"
+              min="0"
+              value={data?.maxAppointments}
+              className="w-10 h-6 ml-1 pl-1 bg-bg-gray rounded"
+              onChange={handleNumInputChange}
+              required
+            />
+          </div>
+        )}
+        {isAdding && (
+          <div className="absolute bottom-0 left-0 flex flex-row justify-end gap-2 w-full pr-2">
+            <button className="hover:opacity-80" onClick={handleSaveNewShift}>
+              <i className="fa-solid fa-check"></i>
+            </button>
+            <button className="hover:opacity-80" onClick={handleCancelNewShift}>
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -1016,4 +1084,190 @@ const Schedule = () => {
   );
 };
 
-export { Doctors, Schedule };
+const Records = () => {
+  const { recordsData, doctorsList, filters, setFilters } = useOutletContext();
+  const [records, setRecords] = useState(recordsData)
+
+  useEffect(() => {
+    setRecords(recordsData);
+  }, [recordsData]);
+
+  const handlefilterDoctor = (e) => {
+    setFilters((prev) => {
+      return {
+        ...prev,
+        doctor: e.target.value
+      }
+    })
+  }
+
+  const handleClear = () => {
+    setFilters({
+      startDate: null,
+      endDate: null,
+      doctor: "all",
+      keywords: "",
+    });
+  }
+
+  return (
+    <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
+      <div className="p-3 bg-white rounded">
+        <div className="flex flex-row justify-between items-center">
+          <h3 className="my-2 font-medium text-2xl">約診紀錄</h3>
+          <search className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2 items-center justify-center w-fit rounded">
+              <label className="w-fit" htmlFor="datePicker">
+                區間
+              </label>
+              <div>
+                <DatePicker
+                  selected={filters.startDate}
+                  onChange={(date) =>
+                    setFilters((prev) => {
+                      const day = moment(new Date(date)).format("YYYY-MM-DD");
+                      return {
+                        ...prev,
+                        startDate: day,
+                      };
+                    })
+                  }
+                  selectsStart
+                  startDate={filters.startDate}
+                  endDate={filters.endDate}
+                  placeholderText="開始時間"
+                  dateFormat="yyyy-MM-dd"
+                  className="m-0 px-2 py-1 w-28 rounded bg-white border border-black"
+                  id="datePicker"
+                />
+              </div>
+              <div>
+                <DatePicker
+                  selected={filters.endDate}
+                  onChange={(date) =>
+                    setFilters((prev) => {
+                      const day = moment(new Date(date)).format("YYYY-MM-DD");
+                      return {
+                        ...prev,
+                        endDate: day,
+                      };
+                    })
+                  }
+                  selectsEnd
+                  startDate={filters.startDate}
+                  endDate={filters.endDate}
+                  minDate={filters.startDate}
+                  placeholderText="結束時間"
+                  dateFormat="yyyy-MM-dd"
+                  className="m-0 px-2 py-1 w-28 rounded bg-white border border-black"
+                />
+              </div>
+            </div>
+            <select
+              className="px-2 border border-black rounded"
+              value={filters.doctor}
+              onChange={handlefilterDoctor}
+            >
+              <option value="all">所有醫師</option>
+              {doctorsList.map((doctor) => (
+                <option
+                  value={doctor.name}
+                  key={doctor.id}
+                >{`${doctor.name} 醫師`}</option>
+              ))}
+            </select>
+            <input
+              type="text"
+              className="w-64 py-1 px-2 border border-gray-800 rounded focus:border-black"
+              placeholder="姓名、電話、Email、寵物名稱"
+              value={filters.keywords}
+              onChange={(e) => {
+                setFilters((prev) => {
+                  return ({
+                    ...prev,
+                    keywords: e.target.value
+                  })
+                });
+              }}
+            />
+            <button
+              className="px-2 bg-footer-blue text-white border border-footer-blue rounded hover:opacity-80"
+              onClick={handleClear}
+            >
+              清除條件
+            </button>
+          </search>
+        </div>
+        <table className="w-full mt-2 bg-white rounded">
+          <thead>
+            <tr>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                日期
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                診間
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                號碼
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                飼主姓名
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                電話
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                Email
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                寵物
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                醫師
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                備註
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {records &&
+              records.map((record) => (
+                <tr key={record.id}>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.date_key.slice(0, -5)}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.date_key.slice(-3, -2)}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.number}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {`${record.owner.lastName + record.owner.firstName}`}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.owner.phone}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.owner.email}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.pet_name}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.doctor.slice(0, -4)}
+                  </td>
+                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.isCanceled ? "已取消" : ""}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+export { Doctors, Schedule, Records };

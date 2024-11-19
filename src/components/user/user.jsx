@@ -108,6 +108,8 @@ const UserInfo = () => {
   );
   const [userId, setUserId] = useState('')
   const [editing, setEditing] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertText, setAlertText] = useState('')
   const db = getDatabase()
 
   useEffect(() => {
@@ -172,82 +174,100 @@ const UserInfo = () => {
   };
 
   const handleSave = ({ userId, ownerInfo }) => {
-    if (!ownerInfo.lastName) return alert("請填寫飼主姓氏");
-    if (!ownerInfo.phone) return alert("請填寫飼主手機");
+    if (!ownerInfo.lastName) {
+      setAlertText("請填寫飼主姓氏");
+      setAlertOpen(true)
+      return
+    }
+    if (!ownerInfo.phone) {
+      setAlertText("請填寫飼主手機");
+      setAlertOpen(true);
+      return
+    }
     handleUpdateInfo({ userId, ownerInfo });
     setEditing(false);
   };
 
   return (
-    <div className={styles.infoTable}>
-      {!editing && (
-        <>
-          <h4 className={styles.tableTitle}>飼主資料</h4>
-          <div className={styles.tableBody}>
-            <InfoTableGroup
-              title={"Email"}
-              info={ownerInfo.email}
-              className={styles.userInfoTable}
-            />
-            <InfoTableGroup
-              title={"姓名"}
-              info={`${ownerInfo.lastName} ${ownerInfo.firstName}`}
-              mark={gender}
-              className={styles.userInfoTable}
-            />
-            <InfoTableGroup
-              title={"手機號碼"}
-              info={ownerInfo.phone}
-              className={styles.userInfoTable}
-            />
-          </div>
-            <Button
-              text="編輯飼主資料"
-              onClick={() => {
-                setEditing(true);
-              }}
-            />
-        </>
+    <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button="確認"
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={()=> setAlertOpen(false)}
+        />
       )}
-      {editing && (
-        <>
-          <h4 className={styles.tableTitle}>編輯飼主資料</h4>
-          <div className={styles.tableBody}>
-            <div className={styles.form}>
-              <div className={styles.inputGroup}>
-                <label htmlFor="email" className={styles.inputTitle}>
-                  Email (會員帳號不得修改)
-                </label>
-                <input
-                  name="email"
-                  id="email"
-                  type="email"
-                  className={styles.emailInput}
-                  value={ownerInfo.email}
-                  disabled
-                />
-              </div>
-              <NameInput
-                lastName={ownerInfo.lastName}
-                firstName={ownerInfo.firstName}
-                gender={ownerInfo.gender}
-                handleLastNameChange={handleLastNameChange}
-                handleFirstNameChange={handleFirstNameChange}
-                handleGenderChange={handleGenderChange}
+      <div className={styles.infoTable}>
+        {!editing && (
+          <>
+            <h4 className={styles.tableTitle}>飼主資料</h4>
+            <div className={styles.tableBody}>
+              <InfoTableGroup
+                title={"Email"}
+                info={ownerInfo.email}
+                className={styles.userInfoTable}
               />
-              <PhoneInput
-                phone={ownerInfo.phone}
-                handlePhoneChange={handlePhoneChange}
+              <InfoTableGroup
+                title={"姓名"}
+                info={`${ownerInfo.lastName} ${ownerInfo.firstName}`}
+                mark={gender}
+                className={styles.userInfoTable}
+              />
+              <InfoTableGroup
+                title={"手機號碼"}
+                info={ownerInfo.phone}
+                className={styles.userInfoTable}
               />
             </div>
-            <Button
-              text="儲存"
-              onClick={() => handleSave({ userId, ownerInfo })}
-            />
-          </div>
-        </>
-      )}
-    </div>
+              <Button
+                text="編輯飼主資料"
+                onClick={() => {
+                  setEditing(true);
+                }}
+              />
+          </>
+        )}
+        {editing && (
+          <>
+            <h4 className={styles.tableTitle}>編輯飼主資料</h4>
+            <div className={styles.tableBody}>
+              <div className={styles.form}>
+                <div className={styles.inputGroup}>
+                  <label htmlFor="email" className={styles.inputTitle}>
+                    Email (會員帳號不得修改)
+                  </label>
+                  <input
+                    name="email"
+                    id="email"
+                    type="email"
+                    className={styles.emailInput}
+                    value={ownerInfo.email}
+                    disabled
+                  />
+                </div>
+                <NameInput
+                  lastName={ownerInfo.lastName}
+                  firstName={ownerInfo.firstName}
+                  gender={ownerInfo.gender}
+                  handleLastNameChange={handleLastNameChange}
+                  handleFirstNameChange={handleFirstNameChange}
+                  handleGenderChange={handleGenderChange}
+                />
+                <PhoneInput
+                  phone={ownerInfo.phone}
+                  handlePhoneChange={handlePhoneChange}
+                />
+              </div>
+              <Button
+                text="儲存"
+                onClick={() => handleSave({ userId, ownerInfo })}
+              />
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
@@ -259,6 +279,7 @@ const PetsInfo = () => {
   const [userId, setUserId] = useState('')
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
+  const [alertText, setAlertText] = useState('')
 
   const {currentUser, petsInfo} = useAuth()
   const db = getDatabase();
@@ -296,6 +317,7 @@ const PetsInfo = () => {
       })
 
       if (hasAppointments) {
+        setAlertText(`尚有 ${editPet.petName} 的預約，請先取消預約再刪除寵物資訊`)
         setAlertOpen(true)
         return;
       }
@@ -351,11 +373,31 @@ const PetsInfo = () => {
   };
 
   const handleSavePet = async (petId, pet) => {
-    if (pet.petName.length === 0) return alert("請填寫寵物姓名");
-    if (pet.gender.length === 0) return alert("請選擇寵物性別");
-    if (pet.species.length === 0) return alert("請選擇寵物種類");
-    if (pet.birthday.length === 0) return alert("請填寫寵物生日");
-    if (pet.breed.length === 0) return alert("請選擇寵物品種");
+    if (pet.petName.length === 0) {
+      setAlertText("請填寫寵物姓名");
+      setAlertOpen(true)
+      return
+    }
+    if (pet.gender.length === 0) {
+      setAlertText("請選擇寵物性別");
+      setAlertOpen(true);
+      return
+    }
+    if (pet.species.length === 0) {
+      setAlertText("請選擇寵物種類");
+      setAlertOpen(true)
+      return
+    }
+    if (pet.birthday.length === 0) {
+      setAlertText("請填寫寵物生日");
+      setAlertOpen(true)
+      return
+    }
+    if (pet.breed.length === 0) {
+      setAlertText("請選擇寵物品種");
+      setAlertOpen(true)
+      return
+    }
 
     const petRef = ref(db, "pets/" + petId)
     try {
@@ -367,11 +409,31 @@ const PetsInfo = () => {
   }
 
   const handleAddNewPet = async (pet) => {
-    if (pet.petName.length === 0) return alert('請填寫寵物姓名')
-    if (pet.gender.length === 0) return alert("請選擇寵物性別")
-    if (pet.species.length === 0) return alert("請選擇寵物種類");
-    if (pet.birthday.length === 0) return alert("請填寫寵物生日");
-    if (pet.breed.length === 0) return alert("請選擇寵物品種");
+    if (pet.petName.length === 0) {
+      setAlertText("請填寫寵物姓名");
+      setAlertOpen(true);
+      return;
+    }
+    if (pet.gender.length === 0) {
+      setAlertText("請選擇寵物性別");
+      setAlertOpen(true);
+      return;
+    }
+    if (pet.species.length === 0) {
+      setAlertText("請選擇寵物種類");
+      setAlertOpen(true);
+      return;
+    }
+    if (pet.birthday.length === 0) {
+      setAlertText("請填寫寵物生日");
+      setAlertOpen(true);
+      return;
+    }
+    if (pet.breed.length === 0) {
+      setAlertText("請選擇寵物品種");
+      setAlertOpen(true);
+      return;
+    }
 
     try {
       const newPetKey = push(ref(db, "pets/"), pet).key;
@@ -402,7 +464,7 @@ const PetsInfo = () => {
       )}
       {alertOpen && (
         <OneBtnAlert
-          title={`尚有 ${editPet.petName} 的預約，請先取消預約再刪除寵物資訊`}
+          title={alertText}
           button="確認"
           handleClose={() => setAlertOpen(false)}
           handleConfirm={() => setAlertOpen(false)}
@@ -575,11 +637,6 @@ const Record = () => {
     }
   }
 
-  const handleEditReverse = (e) => {
-    e.stopPropagation();
-
-  }
-
   return (
     <div className={styles.infoTable}>
       <h4 className={styles.tableTitle}>約診紀錄</h4>
@@ -591,6 +648,7 @@ const Record = () => {
           const date = moment(info.date_key.split('_')[0]).format("YYYY/MM/DD")
           const day = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六", "星期日"][moment(date).day()]
           const key = index + 1;
+          const isPassed = moment().isAfter(date, "day");
 
           const shift = ["10:00 ~ 13:00", "14:00 ~ 18:00", "19:00 ~ 21:00"][
             info.date_key.slice(-1) - 1
@@ -603,18 +661,15 @@ const Record = () => {
 
           return (
             <>
-              <div
-                className={styles.tableField}
-                onClick={() => {
-                  if (selectedIndex !== key) setSelectedIndex(key);
-                  if (selectedIndex === key) setSelectedIndex(0);
-                }}
-                key={info.key}
-              >
+              <div key={info.key}>
                 <div
                   className={`${styles.reserveInfo} ${
                     selectedIndex === key ? styles.rightAngle : ""
                   }`}
+                  onClick={() => {
+                    if (selectedIndex !== key) setSelectedIndex(key);
+                    if (selectedIndex === key) setSelectedIndex(0);
+                  }}
                 >
                   <div className={styles.petInfoTitle}>預約日期</div>
                   <div className={styles.infoDate}>{date}</div>
@@ -652,7 +707,9 @@ const Record = () => {
                     </div>
                     <div className={styles.reserveBtnGroup}>
                       <button
-                        className={styles.deleteBtn}
+                        className={`${styles.deleteBtn} ${
+                          isPassed ? styles.disable : ""
+                        }`}
                         onClick={(e) =>
                           handleCancelReverse(
                             info.key,
@@ -662,9 +719,10 @@ const Record = () => {
                             e
                           )
                         }
+                        disabled={isPassed}
                       >
-                        取消預約
-                        <i className="fa-regular fa-trash-can"></i>
+                        {isPassed ? "日期已過，無法變更" : "取消預約"}
+                        {!isPassed && <i className="fa-regular fa-trash-can"></i>}
                       </button>
                     </div>
                   </>

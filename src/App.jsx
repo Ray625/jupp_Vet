@@ -12,7 +12,7 @@ import HomePage from "./pages/homepage/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
 import PhotoPage from "./pages/photo/PhotoPage";
 import BackstageLayout from "./pages/layout/BackstageLayout";
-import { Doctors, Schedule } from "./components/backstage/backstage";
+import { Doctors, Schedule, Records } from "./components/backstage/backstage";
 import UserPageLayout from "./pages/layout/UserPageLayout";
 import { UserInfo, PetsInfo, Record, Password } from "./components/user/user";
 
@@ -23,29 +23,30 @@ function App() {
         <DeviceProvider>
           <AuthProvider>
             <ThemeProvider>
-                <Routes>
-                  <Route path="backstage" element={<BackstageLayout />}>
-                    <Route index element={<Doctors />} />
-                    <Route path="schedule" element={<Schedule />} />
-                    <Route path="records" element={<h1>約診</h1>} />
+              <Routes>
+                <Route path="backstage" element={<BackstageLayout />}>
+                  <Route index element={<Doctors />} />
+                  <Route path="schedule" element={<Schedule />} />
+                  <Route path="records" element={<Records />} />
+                  <Route path="users" element={<h1>使用者</h1>} />
+                </Route>
+                <Route path="/" element={<LoginLayout />}>
+                  <Route path="login" element={<LoginPage />} />
+                  <Route path="signup" element={<SignupPage />} />
+                  <Route path="forget-pass" element={<ForgetPassPage />} />
+                </Route>
+                <Route path="/" element={<HomePageLayout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="booking" element={<BookingPage />} />
+                  <Route path="photo" element={<PhotoPage />} />
+                  <Route path="user" element={<UserPageLayout />}>
+                    <Route index element={<UserInfo />} />
+                    <Route path="pets" element={<PetsInfo />} />
+                    <Route path="records" element={<Record />} />
+                    <Route path="password" element={<Password />} />
                   </Route>
-                  <Route path="/" element={<LoginLayout />}>
-                    <Route path="login" element={<LoginPage />} />
-                    <Route path="signup" element={<SignupPage />} />
-                    <Route path="forget-pass" element={<ForgetPassPage />} />
-                  </Route>
-                  <Route path="/" element={<HomePageLayout />}>
-                    <Route index element={<HomePage />} />
-                    <Route path="booking" element={<BookingPage />} />
-                    <Route path="photo" element={<PhotoPage />} />
-                    <Route path="user" element={<UserPageLayout />}>
-                      <Route index element={<UserInfo />} />
-                      <Route path="pets" element={<PetsInfo />} />
-                      <Route path="records" element={<Record />} />
-                      <Route path="password" element={<Password />} />
-                    </Route>
-                  </Route>
-                </Routes>
+                </Route>
+              </Routes>
             </ThemeProvider>
           </AuthProvider>
         </DeviceProvider>

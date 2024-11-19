@@ -17,29 +17,12 @@ const BookingPage = () => {
   const [reserveNum, setReserveNum] = useState([])
   const [haveNewPet, setHaveNewPet] = useState(false);
 
-
-  const handleToStep2 = () => {
-    if (reserveInfo.date.length === 0) {
-      return alert('請選擇預約日期')
-    } else if (reserveInfo.time.length === 0) {
-      return alert('請選擇預約時段')
-    } else if (reserveInfo.doctor.length === 0) {
-      return alert('請選擇醫師')
-    }
-
-    setStep(s => s + 1)
-  }
-
-  const handleToStep3 = () => {
+  const handleNextStep = () => {
     setStep(s => s + 1)
   }
 
   const handlePrevStep = () => {
     setStep(s => s - 1)
-  }
-
-  const handleSubmit = () => {
-    setStep(s => s + 1)
   }
 
   useEffect(() => {
@@ -89,7 +72,7 @@ const BookingPage = () => {
         <StepGroup step={step} />
         {step === 1 && (
           <FormStep1
-            handleNextStep={handleToStep2}
+            handleNextStep={handleNextStep}
             selectedWeekIndex={selectedWeekIndex}
             setSelectedWeekIndex={setSelectedWeekIndex}
             reserveInfo={reserveInfo}
@@ -100,7 +83,7 @@ const BookingPage = () => {
         {step === 2 && (
           <FormStep2
             handlePrevStep={handlePrevStep}
-            handleNextStep={handleToStep3}
+            handleNextStep={handleNextStep}
             reserveInfo={reserveInfo}
             reserveData={reserveData}
             ownerInfo={ownerInfo}
@@ -116,7 +99,7 @@ const BookingPage = () => {
         {step === 3 && (
           <FormStep3
             handlePrevStep={handlePrevStep}
-            handleSubmit={handleSubmit}
+            handleSubmit={handleNextStep}
             reserveInfo={reserveInfo}
             ownerInfo={ownerInfo}
             selectedPets={selectedPets}

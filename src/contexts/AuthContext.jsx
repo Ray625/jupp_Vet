@@ -28,13 +28,14 @@ const defaultAuthContext = {
   currentUser: null,
   userInfo: null,
   petsInfo: [],
+  reserveInfo: [],
   emailRegister: null,
   googleLogin: null,
   emailLogin: null,
   logout: null,
   backTo: null,
   isLoading: false,
-}
+} 
 
 const AuthContext = createContext(defaultAuthContext);
 
@@ -99,8 +100,6 @@ const AuthProvider = ({ children }) => {
               ...value,
               petId: key,
             };
-
-            console.log(value)
 
             if (!value.isDeleted) {
               petData.push(pet);
@@ -239,6 +238,7 @@ const AuthProvider = ({ children }) => {
             setCurrentUser(null);
             setAlertText("已登出");
             setAlertOpen(true);
+            navigate('/')
           } catch (error) {
             console.error(error);
           }

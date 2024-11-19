@@ -33,7 +33,7 @@ const InfoSection = () => {
             <IconGroup
               className={styles.iconTime}
               svg={'time'}
-              content={'Mon - Sun 10:00 am - 21:00 pm'}
+              content={'Mon - Sat 10:00 am - 21:00 pm'}
             />
             <IconGroup
               className={styles.iconPin}
