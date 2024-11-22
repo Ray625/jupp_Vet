@@ -14,7 +14,7 @@ const OneBtnAlert = ({ title, button, handleClose, handleConfirm }) => {
     <div className="z-[999] fixed top-0 left-0 flex w-full h-full justify-center items-center bg-[rgba(0,0,0,0.5)]">
       <div className="z-[999] relative flex flex-col gap-8 justify-center items-center w-[486px] max-w-[90%] md:max-w-[60%] h-[320px] max-h-[40%] bg-white rounded-[20px] shadow-[0_0_40px_0_#0000001F]">
         <button
-          className="absolute top-7 right-9 flex justify-center items-center w-10 h-8 hover:opacity-80"
+          className="absolute top-8 right-8 flex justify-center items-center w-10 h-8 hover:opacity-80"
           onClick={handleClose}
         >
           <i className="fa-solid fa-xmark fa-xl"></i>
@@ -44,9 +44,9 @@ const ConfirmAlert = ({ title, handleCancel, handleConfirm, handleClose }) => {
 
   return createPortal(
     <div className="z-[999] fixed top-0 left-0 flex w-full h-full justify-center items-center bg-[rgba(0,0,0,0.5)]">
-      <div className="z-[999] relative flex flex-col gap-8 justify-center items-center w-[486px] max-w-[90%] md:max-w-[60%] h-[320px] max-h-[40%] bg-white rounded-[20px] shadow-[0_0_40px_0_#0000001F]">
+      <div className="z-[999] relative flex flex-col gap-8 justify-center items-center w-[486px] max-w-[90%] md:max-w-[60%] h-[320px] max-h-[40%] bg-white rounded-[20px]">
         <button
-          className="absolute top-7 right-9 flex justify-center items-center w-10 h-8 hover:opacity-80"
+          className="absolute top-8 right-8 flex justify-center items-center w-10 h-8 hover:opacity-80"
           onClick={handleClose}
         >
           <i className="fa-solid fa-xmark fa-xl"></i>

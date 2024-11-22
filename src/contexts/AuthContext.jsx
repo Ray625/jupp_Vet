@@ -19,6 +19,7 @@ import {
   orderByChild,
   equalTo,
   off,
+  get,
 } from "firebase/database";
 import { OneBtnAlert } from "../components/alert/alert"; 
 // eslint-disable-next-line
@@ -182,9 +183,10 @@ const AuthProvider = ({ children }) => {
             const user_id = user.uid;
             const userRef = ref(db, "users/" + user_id);
             await set(userRef, {
-              firstName,
-              lastName,
-              email,
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
+              createdAt: user.metadata.creationTime,
             });
             setCurrentUser(user);
             setIsLoading(false);
@@ -202,6 +204,17 @@ const AuthProvider = ({ children }) => {
           try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
+            const user_id = user.uid;
+            const userRef = ref(db, "users/" + user_id);
+            const snap = await get(userRef);
+            if (!snap.exists()) {
+              await set(userRef, {
+                firstName: user.displayName,
+                email: user.email,
+                createdAt: user.metadata.creationTime,
+              });
+            }
+
             setCurrentUser(user);
             navigate("/");
           } catch (error) {

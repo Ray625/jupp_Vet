@@ -12,7 +12,7 @@ import HomePage from "./pages/homepage/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
 import PhotoPage from "./pages/photo/PhotoPage";
 import BackstageLayout from "./pages/layout/BackstageLayout";
-import { Doctors, Schedule, Records } from "./components/backstage/backstage";
+import { Doctors, Schedule, Records, Users } from "./components/backstage/backstage";
 import UserPageLayout from "./pages/layout/UserPageLayout";
 import { UserInfo, PetsInfo, Record, Password } from "./components/user/user";
 
@@ -28,7 +28,7 @@ function App() {
                   <Route index element={<Doctors />} />
                   <Route path="schedule" element={<Schedule />} />
                   <Route path="records" element={<Records />} />
-                  <Route path="users" element={<h1>使用者</h1>} />
+                  <Route path="users" element={<Users />} />
                 </Route>
                 <Route path="/" element={<LoginLayout />}>
                   <Route path="login" element={<LoginPage />} />

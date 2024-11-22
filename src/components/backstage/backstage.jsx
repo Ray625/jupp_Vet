@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  getDatabase,
-  ref,
-  update,
-  remove,
-  push,
-  get
-} from "firebase/database";
+import { getDatabase, ref, update, remove, push, get } from "firebase/database";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import useThrottle from "../../hooks/useThrottle";
@@ -319,38 +312,38 @@ const MonthSchedule = () => {
   );
 
   const handleSubtractSelectMonth = () => {
-    setNewSchedule(prevMonthSchedule)
+    setNewSchedule(prevMonthSchedule);
     setSelectMonth((prev) => {
       const newMonth = moment(prev).subtract(1, "M").format("YYYY-MM");
       return newMonth;
     });
-  }
+  };
 
   const throttleSubtractSelect = useThrottle(handleSubtractSelectMonth, 300);
 
   const handleAddSelectMonth = () => {
-    setNewSchedule(nextMonthSchedule)
+    setNewSchedule(nextMonthSchedule);
     setSelectMonth((prev) => {
-      const newMonth = moment(prev).add(1, "M").format("YYYY-MM")
-      return newMonth
-    })
-  }
+      const newMonth = moment(prev).add(1, "M").format("YYYY-MM");
+      return newMonth;
+    });
+  };
 
   const throttleAddSelect = useThrottle(handleAddSelectMonth, 300);
 
   const handleUpdateSchedule = async () => {
-    const db = getDatabase()
+    const db = getDatabase();
 
     const scheduleRef = ref(db, "schedule");
     try {
       await update(scheduleRef, newSchedule);
-      setAlertText("資料已更新")
-      setAlertOpen(true)
+      setAlertText("資料已更新");
+      setAlertOpen(true);
     } catch (error) {
-    setAlertText(`資料上傳失敗：${error}`);
-    setAlertOpen(true);
+      setAlertText(`資料上傳失敗：${error}`);
+      setAlertOpen(true);
     }
-  }
+  };
 
   return (
     <div className="relative">
@@ -431,11 +424,11 @@ const MonthSchedule = () => {
       )}
     </div>
   );
-}
+};
 
 const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
-  const [alertOpen, setAlertOpen] = useState(false)
-  const [alertText, setAlertText] = useState('')
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
   const db = getDatabase();
 
   // 月曆佔未符，前面格數
@@ -455,12 +448,12 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
   );
 
   const handleNewSchedule = async ({ e, newSchedule }) => {
-    e.stopPropagation()
+    e.stopPropagation();
     const scheduleRef = ref(db, "schedule");
     try {
       await update(scheduleRef, newSchedule);
-      setAlertText('上傳成功')
-      setAlertOpen(true)
+      setAlertText("上傳成功");
+      setAlertOpen(true);
     } catch (error) {
       console.log(error);
     }
@@ -516,19 +509,19 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
       )}
     </>
   );
-}
+};
 
 const DayFrame = ({ time, data, setNewSchedule }) => {
   const [enlarge, setEnlarge] = useState(false);
   const date = moment(time).format("D");
   const month = moment(time).format("YYYY / M");
   const day = "日一二三四五六"[moment(time).format("d")];
-  const { r1s1, r1s2, r1s3, r2s1, r2s2, r2s3, r3s1, r3s2, r3s3 } = data
-  const [alertOpen, setAlertOpen] = useState(false)
-  const [alertText, setAlertText] = useState('')
+  const { r1s1, r1s2, r1s3, r2s1, r2s2, r2s3, r3s1, r3s2, r3s3 } = data;
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const handleSaveDaySchedule = (e) => {
-    e.stopPropagation()
+    e.stopPropagation();
 
     const isSameDoctor = (s1, s2) => {
       return s1?.name && s2?.name && s1.name === s2.name;
@@ -547,20 +540,20 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
       isSameDoctor(r2s3, r3s3)
     ) {
       setAlertText("同一時段不同診間，不可為同一醫師");
-      setAlertOpen(true)
+      setAlertOpen(true);
       return;
     }
 
     setEnlarge(false);
-  }
+  };
 
   const initialsName = (data) => {
     if (!data) {
-      return ''
+      return "";
     } else {
       return `${data.name[0]} `;
     }
-  }
+  };
 
   return (
     <>
@@ -705,13 +698,13 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
 
 const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
   const { doctorsList } = useOutletContext();
-  const [isEditing, setIsEditing] = useState(false)
-  const [isAdding, setIsAdding] = useState(false)
-  const [alertOpen, setAlertOpen] = useState(false)
-  const [alertText, setAlertText] = useState('')
+  const [isEditing, setIsEditing] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertText, setAlertText] = useState("");
 
   const handleNameSelectChange = (e) => {
-    const value = e.target.value
+    const value = e.target.value;
     setNewSchedule((prev) => {
       return {
         ...prev,
@@ -719,12 +712,12 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
           ...prev[time],
           [shift]: {
             ...prev[time][shift],
-            'name': value
+            name: value,
           },
         },
       };
-    })
-  }
+    });
+  };
 
   const handleNumInputChange = (e) => {
     const value = e.target.value;
@@ -736,19 +729,19 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
           [shift]: {
             ...prev[time][shift],
             maxAppointments: value,
-          }
-        }
-      }
-    })
-  }
+          },
+        },
+      };
+    });
+  };
 
   const handleShiftDelete = () => {
     setNewSchedule((prev) => {
-      const newData = { ...prev }
+      const newData = { ...prev };
       delete newData[time][shift];
-      return newData
-    })
-  }
+      return newData;
+    });
+  };
 
   const handleNewNameInputChange = (e) => {
     const value = e.target.value;
@@ -771,19 +764,19 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
 
   const handleSaveNewShift = () => {
     if (!data) {
-      setAlertText('請選擇值班醫師')
-      setAlertOpen(true)
-      return
+      setAlertText("請選擇值班醫師");
+      setAlertOpen(true);
+      return;
     }
 
     if (!data.maxAppointments) {
       setAlertText("請填選最大門診數");
       setAlertOpen(true);
-      return
+      return;
     }
 
     setIsAdding(false);
-  }
+  };
 
   const handleCancelNewShift = () => {
     setNewSchedule((prev) => {
@@ -793,7 +786,7 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
     });
 
     setIsAdding(false);
-  }
+  };
 
   return (
     <>
@@ -930,18 +923,22 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
       </div>
     </>
   );
-}
+};
 
 const Schedule = () => {
   const { doctorsList } = useOutletContext();
   const [newSchedule, setNewSchedule] = useState({});
   const [emptyBox, setEmptyBox] = useState([]);
-  const [action, setAction] = useState('view')
+  const [action, setAction] = useState("view");
   const monthOption = [];
 
   for (let i = 0; i <= 3; i++) {
     const data = moment().add(i, "months").format("YYYY-MM");
-    monthOption.push(<option value={data} key={data}>{data}月</option>);
+    monthOption.push(
+      <option value={data} key={data}>
+        {data}月
+      </option>
+    );
   }
 
   // 依照醫師名單之設定產生單日班表
@@ -1084,22 +1081,93 @@ const Schedule = () => {
   );
 };
 
+const Paginator = ({
+  totalPage,
+  currentPage,
+  handleChangePage,
+  handleKeyDown,
+  handleOnBlur,
+  handlePrevPage,
+  handleNextPage,
+}) => {
+  const isFirstPage = currentPage === 1;
+  const isLastPage = currentPage === totalPage;
+
+  return (
+    <div className="flex flex-row w-full mt-auto justify-between items-center">
+      <div className="flex flex-row gap-2 items-center">
+        <input
+          type="text"
+          value={currentPage}
+          className="w-6 px-1 rounded border border-black bg-white text-black text-center"
+          onChange={(e) => handleChangePage(e.target.value)}
+          onKeyDown={handleKeyDown}
+          onBlur={handleOnBlur}
+        />
+        <p>{`/ ${totalPage}`}</p>
+      </div>
+      <div className="flex flex-row gap-2 items-center">
+        <button
+          className={`w-12 rounded border text-lg text-center ${
+            isFirstPage
+              ? "border-disabled-gray text-disabled-gray"
+              : " border-footer-blue text-footer-blue hover:text-white hover:bg-footer-blue"
+          }`}
+          onClick={handlePrevPage}
+          disabled={isFirstPage}
+        >{`<`}</button>
+        <button
+          className={`w-12 rounded border text-lg text-center ${
+            isLastPage
+              ? "border-disabled-gray text-disabled-gray"
+              : " border-footer-blue text-footer-blue hover:text-white hover:bg-footer-blue"
+          }`}
+          onClick={handleNextPage}
+          disabled={isLastPage}
+        >{`>`}</button>
+      </div>
+    </div>
+  );
+};
+
 const Records = () => {
   const { recordsData, doctorsList, filters, setFilters } = useOutletContext();
-  const [records, setRecords] = useState(recordsData)
+  const [records, setRecords] = useState(recordsData);
+  const [paginator, setPaginator] = useState({
+    totalPage: null,
+    currentPage: 1,
+    inputValue: 1,
+  });
 
   useEffect(() => {
-    setRecords(recordsData);
+    const totalPage = Math.ceil(recordsData.length / 15);
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        totalPage: totalPage,
+      };
+    });
   }, [recordsData]);
+
+  useEffect(() => {
+    if (paginator.currentPage) {
+      const startItems = 0 + (paginator.currentPage - 1) * 15;
+      const endItems = 15 + (paginator.currentPage - 1) * 15;
+
+      const currentPageData = recordsData.slice(startItems, endItems);
+
+      setRecords(currentPageData);
+    }
+  }, [paginator.currentPage, recordsData]);
 
   const handlefilterDoctor = (e) => {
     setFilters((prev) => {
       return {
         ...prev,
-        doctor: e.target.value
-      }
-    })
-  }
+        doctor: e.target.value,
+      };
+    });
+  };
 
   const handleClear = () => {
     setFilters({
@@ -1108,11 +1176,109 @@ const Records = () => {
       doctor: "all",
       keywords: "",
     });
-  }
+  };
+
+  const handleChangePage = (page) => {
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        inputValue: page,
+      };
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      const pageNumber = Number(paginator.inputValue);
+
+      if (pageNumber >= paginator.totalPage) {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: paginator.totalPage,
+            inputValue: paginator.totalPage,
+          };
+        });
+        return;
+      } else if (pageNumber <= 1) {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: 1,
+            inputValue: 1,
+          };
+        });
+        return;
+      } else {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: pageNumber,
+          };
+        });
+      }
+    }
+  };
+
+  const handleOnBlur = () => {
+    if (paginator.inputValue === "") {
+      setPaginator((prev) => ({
+        ...prev,
+        currentPage: 1,
+        inputValue: 1,
+      }));
+    }
+  };
+
+  const handleTurnPage = (page) => {
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        currentPage: Number(prev.currentPage) + page,
+        inputValue: Number(prev.currentPage) + page,
+      };
+    });
+  };
+
+  const handleNextPage = () => {
+    if (paginator.currentPage !== paginator.inputValue) {
+      setPaginator((prev) => {
+        return {
+          ...prev,
+          currentPage: Number(prev.currentPage),
+          inputValue: Number(prev.currentPage),
+        };
+      });
+    }
+
+    if (paginator.currentPage < paginator.totalPage) {
+      handleTurnPage(1);
+    } else {
+      return;
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (paginator.currentPage !== paginator.inputValue) {
+      setPaginator((prev) => {
+        return {
+          ...prev,
+          currentPage: Number(prev.currentPage),
+          inputValue: Number(prev.currentPage),
+        };
+      });
+    }
+
+    if (paginator.currentPage > 1) {
+      handleTurnPage(-1);
+    } else {
+      return;
+    }
+  };
 
   return (
     <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
-      <div className="p-3 bg-white rounded">
+      <div className="flex flex-col h-full p-3 bg-white rounded">
         <div className="flex flex-row justify-between items-center">
           <h3 className="my-2 font-medium text-2xl">約診紀錄</h3>
           <search className="flex flex-row gap-2">
@@ -1183,10 +1349,10 @@ const Records = () => {
               value={filters.keywords}
               onChange={(e) => {
                 setFilters((prev) => {
-                  return ({
+                  return {
                     ...prev,
-                    keywords: e.target.value
-                  })
+                    keywords: e.target.value,
+                  };
                 });
               }}
             />
@@ -1265,9 +1431,326 @@ const Records = () => {
               ))}
           </tbody>
         </table>
+        <Paginator
+          currentPage={paginator.inputValue}
+          totalPage={paginator.totalPage}
+          handleChangePage={handleChangePage}
+          handleKeyDown={handleKeyDown}
+          handleOnBlur={handleOnBlur}
+          handleNextPage={handleNextPage}
+          handlePrevPage={handlePrevPage}
+        />
+      </div>
+    </div>
+  );
+};
+
+const PetsInfo = ({ pets, setPetsInfoOpen, setPets }) => {
+  console.log("pets", pets)
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden"
+
+    return () => {
+      document.body.style.overflow = "auto"
+    }
+  }, [])
+
+  return (
+    <div className="fixed top-0 left-0 flex w-full h-full justify-center items-center bg-[rgba(0,0,0,0.5)]">
+      <div className="relative p-6 border rounded-xl bg-white">
+        <button
+          className="absolute top-8 right-8"
+          onClick={() => {
+            setPetsInfoOpen(false);
+            setPets({});
+          }}
+        >
+          <i className="fa-solid fa-xmark fa-xl"></i>
+        </button>
+        <h3 className="font-medium text-2xl">寵物列表</h3>
+        <div className="flex flex-col gap-2 w-[486px] h-fit mt-4">
+          {pets &&
+            Object.values(pets).map((pet, index) => {
+              let speciesIcon = "";
+              switch (pet.species) {
+                case "feline":
+                  speciesIcon = "/svg/booking_cat.svg";
+                  break;
+                default:
+                  speciesIcon = "/svg/booking_dog.svg";
+              }
+              let gender = "";
+              switch (pet.gender) {
+                case "female":
+                  gender = "母";
+                  break;
+                default:
+                  gender = "公";
+              }
+              let age = moment().format("YYYY") - pet.birthday;
+              if (age <= 0) age = "未滿1";
+
+              return (
+                <div
+                  className="flex flex-row gap-2 p-2 border rounded text-lg"
+                  key={pet.petName}
+                >
+                  <div className="mr-4">寵物{index + 1}</div>
+                  <div>{pet.petName}</div>
+                  <img src={speciesIcon} alt="icon" />
+                  <div className="text-disabled-gray">
+                    ( {gender}・{age}歲・{pet.breed} )
+                  </div>
+                  {pet.isDeleted && <div>(已刪除)</div>}
+                </div>
+              );
+            })}
+        </div>
       </div>
     </div>
   );
 }
 
-export { Doctors, Schedule, Records };
+const Users = () => {
+  const { usersData, userFilters, setUserFilters } = useOutletContext();
+  const [users, setUsers] = useState(usersData);
+  const [paginator, setPaginator] = useState({
+    totalPage: null,
+    currentPage: 1,
+    inputValue: 1,
+  });
+  console.log("usersData", usersData)
+
+  const [pets, setPets] = useState({})
+  const [petsInfoOpen, setPetsInfoOpen] = useState(false)
+
+  useEffect(() => {
+    const totalPage = Math.ceil(usersData.length / 15)
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        totalPage,
+      }
+    })
+  }, [usersData])
+
+  useEffect(() => {
+    if (paginator.currentPage) {
+      const startItems = 0 + (paginator.currentPage - 1) * 15;
+      const endItems = 15 + (paginator.currentPage - 1) * 15;
+
+      const currentPageData = usersData.slice(startItems, endItems);
+
+      setUsers(currentPageData);
+    }
+  }, [paginator.currentPage, usersData]);
+
+  const handleFilterChange = (e) => {
+    setUserFilters(e.target.value);
+  }
+
+  const handleFilterClear = () => {
+    setUserFilters("")
+  }
+
+  const handleChangePage = (page) => {
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        inputValue: page,
+      };
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      const pageNumber = Number(paginator.inputValue);
+
+      if (pageNumber >= paginator.totalPage) {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: paginator.totalPage,
+            inputValue: paginator.totalPage,
+          };
+        });
+        return;
+      } else if (pageNumber <= 1) {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: 1,
+            inputValue: 1,
+          };
+        });
+        return;
+      } else {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: pageNumber,
+          };
+        });
+      }
+    }
+  };
+
+  const handleOnBlur = () => {
+    if (paginator.inputValue === "") {
+      setPaginator((prev) => ({
+        ...prev,
+        currentPage: 1,
+        inputValue: 1,
+      }));
+    }
+  };
+
+  const handleTurnPage = (page) => {
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        currentPage: Number(prev.currentPage) + page,
+        inputValue: Number(prev.currentPage) + page,
+      };
+    });
+  };
+
+  const handleNextPage = () => {
+    if (paginator.currentPage !== paginator.inputValue) {
+      setPaginator((prev) => {
+        return {
+          ...prev,
+          currentPage: Number(prev.currentPage),
+          inputValue: Number(prev.currentPage),
+        };
+      });
+    }
+
+    if (paginator.currentPage < paginator.totalPage) {
+      handleTurnPage(1);
+    } else {
+      return;
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (paginator.currentPage !== paginator.inputValue) {
+      setPaginator((prev) => {
+        return {
+          ...prev,
+          currentPage: Number(prev.currentPage),
+          inputValue: Number(prev.currentPage),
+        };
+      });
+    }
+
+    if (paginator.currentPage > 1) {
+      handleTurnPage(-1);
+    } else {
+      return;
+    }
+  };
+
+  return (
+    <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
+      <div className="flex flex-col h-full p-3 bg-white rounded">
+        <div className="flex flex-row justify-between items-center">
+          <h3 className="my-2 font-medium text-2xl">使用者列表</h3>
+          <search className="flex flex-row gap-2 justify-end h-fit">
+            <input
+              type="text"
+              className="w-64 py-1 px-2 border border-gray-800 rounded focus:border-black"
+              placeholder="姓名、電話、Email、寵物名稱"
+              name="filter"
+              value={userFilters}
+              onChange={handleFilterChange}
+            />
+            <button
+              className="px-2 bg-footer-blue text-white border border-footer-blue rounded hover:opacity-80"
+              onClick={handleFilterClear}
+            >
+              清除條件
+            </button>
+          </search>
+        </div>
+        <table className="w-full mt-2 bg-white rounded">
+          <thead>
+            <tr>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                創建日期
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                姓名
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                電話
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                Email
+              </th>
+              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                寵物
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {users &&
+              users.map((user) => {
+                if (user.email === "admin001@gmail.com") return;
+
+                return (
+                  <tr key={user.id}>
+                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                      {moment(user.createdAt).format("YYYY-MM-DD")}
+                    </td>
+                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                      {`${user.lastName || ""}${user.firstName || ""}`}
+                    </td>
+                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                      {user.phone}
+                    </td>
+                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                      {user.email}
+                    </td>
+                    <td className="px-2 py-1 border-4 border-bg-gray text-center font-normal text-xl">
+                      {user.pets && (
+                        <button
+                          className="w-fit min-w-8 border border-black rounded-full hover:text-white hover:bg-footer-blue"
+                          name="Open Pets Info"
+                          onClick={() => {
+                            setPetsInfoOpen(true);
+                            setPets(user.pets);
+                          }}
+                        >
+                          {Object.values(user.pets)?.length}
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+        {petsInfoOpen && (
+          <PetsInfo
+            pets={pets}
+            setPets={setPets}
+            setPetsInfoOpen={setPetsInfoOpen}
+          />
+        )}
+        <Paginator
+          currentPage={paginator.inputValue}
+          totalPage={paginator.totalPage}
+          handleChangePage={handleChangePage}
+          handleKeyDown={handleKeyDown}
+          handleOnBlur={handleOnBlur}
+          handleNextPage={handleNextPage}
+          handlePrevPage={handlePrevPage}
+        />
+      </div>
+    </div>
+  );
+};
+
+export { Doctors, Schedule, Records, Users };

@@ -368,7 +368,7 @@ const FormStep1 = ({ handleNextStep, reserveInfo, reserveData, setReserveInfo, s
     let week =
       today.clone().add(4, "weeks").format("YYYY/MM/DD") +
       " ~ " +
-      today.clone().add(1, "months").format("YYYY-MM-DD")
+      today.clone().add(1, "months").format("YYYY/MM/DD")
     weeks.push(week);
   }
 
@@ -981,7 +981,10 @@ const FormStep2 = ({
           {!haveNewPet && (
             <button
               className={styles.addNewPet}
-              onClick={handleAddNewPet}
+              onClick={(e) => {
+                e.preventDefault()
+                handleAddNewPet()
+              }}
             >
               新增寵物
             </button>

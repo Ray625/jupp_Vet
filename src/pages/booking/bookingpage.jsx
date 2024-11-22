@@ -36,7 +36,7 @@ const BookingPage = () => {
     const db = getDatabase()
     if (reserveInfo.date.length === 0) return
     if (reserveInfo.time.length === 0) return
-    const date = moment(reserveInfo.date).format("YYYY-MM-DD")
+    const date = moment(reserveInfo.date.slice(0, -4)).format("YYYY-MM-DD");
     const shift = reserveInfo.time
     const queryRef = query(
       ref(db, "schedule/" + date),
