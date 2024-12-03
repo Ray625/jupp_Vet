@@ -10,11 +10,11 @@ import {
   query,
   orderByChild,
   equalTo,
-  limitToLast,
   startAt,
   endAt
 } from "firebase/database"
 import moment from "moment"
+import useAuth from "../../hooks/useAuth"
 
 const navList = [
   {
@@ -42,17 +42,18 @@ const NavBtn = ({ props }) => {
 
   return (
     <button
-      className={`rounded p-4 w-32 text-start hover:bg-primary-blue hover:text-white ${
+      className={`rounded p-4 w-32 text-start transition-all duration-200 hover:bg-primary-blue hover:text-white ${
         pathname === path && "bg-primary-blue text-white"
       }`}
       onClick={() => navigate(path)}
     >
       {text}
     </button>
-  )
+  );
 }
 
 const BackstageLayout = () => {
+  const { currentUser } = useAuth()
   // 醫師列表
   const [doctorsList, setDoctorsList] = useState([])
 
@@ -79,6 +80,12 @@ const BackstageLayout = () => {
   const [userFilters, setUserFilters] = useState("")
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    if (!currentUser || currentUser.email !== "admin001@gmail.com") {
+      navigate('/')
+    }
+  },[currentUser, navigate])
 
   // 從資料庫抓取醫師列表資料
   useEffect(() => {
@@ -293,6 +300,7 @@ const BackstageLayout = () => {
         const list = snap.val()
         const usersData = []
         for (const [key, value] of Object.entries(list)) {
+          if (value.email === "admin001@gmail.com") continue
           usersData.push({
             ...value,
             id: key,
@@ -382,7 +390,7 @@ const BackstageLayout = () => {
         <div className="container flex flex-row justify-between mx-auto">
           <h2 className="text-xl w-fit text-white">動物醫院後台</h2>
           <button
-            className="text-white hover:opacity-80"
+            className="text-white hover:opacity-80 transition-all duration-200"
             onClick={() => navigate("/")}
           >
             <i className="fa-solid fa-arrow-right-from-bracket fa-lg"></i>

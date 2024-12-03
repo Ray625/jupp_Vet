@@ -65,13 +65,13 @@ const EditInput = ({
         })}
       </div>
       <button
-        className="flex justify-start items-center w-3.5 hover:opacity-80"
+        className="flex justify-start items-center w-3.5 hover:opacity-80 transition-all duration-200"
         onClick={handleSave}
       >
         <i className="fa-solid fa-check text-center"></i>
       </button>
       <button
-        className="flex justify-start items-center w-3.5 hover:opacity-80"
+        className="flex justify-start items-center w-3.5 hover:opacity-80 transition-all duration-200"
         onClick={handleCancel}
       >
         <i className="fa-solid fa-xmark text-center"></i>
@@ -242,13 +242,13 @@ const Doctors = () => {
                   {`${work.sat ? `週六(${work.sat})` : ""}`}
                 </p>
                 <button
-                  className="hover:opacity-80"
+                  className="hover:opacity-80 transition-all duration-200"
                   onClick={() => handleEditDoctor(doc)}
                 >
                   <i className="fa-solid fa-pen-to-square"></i>
                 </button>
                 <button
-                  className="hover:opacity-80"
+                  className="hover:opacity-80 transition-all duration-200"
                   onClick={() => handleDeleteDoctor(doc.id, doc.name)}
                 >
                   <i className="fa-solid fa-trash-can"></i>
@@ -357,11 +357,17 @@ const MonthSchedule = () => {
       )}
       <div className="w-full">
         <div className="flex flex-row justify-between items-center mx-auto w-52 mb-2">
-          <button className="hover:opacity-80" onClick={throttleSubtractSelect}>
+          <button
+            className="hover:opacity-80 transition-all duration-200"
+            onClick={throttleSubtractSelect}
+          >
             <i className="fa-solid fa-chevron-left"></i>
           </button>
           <div className="font-medium text-2xl">{`${selectMonth}月`}</div>
-          <button className="hover:opacity-80" onClick={throttleAddSelect}>
+          <button
+            className="hover:opacity-80 transition-all duration-200"
+            onClick={throttleAddSelect}
+          >
             <i className="fa-solid fa-chevron-right"></i>
           </button>
         </div>
@@ -566,7 +572,7 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
         />
       )}
       <div
-        className="flex flex-col bg-white cursor-pointer w-32 h-32 rounded p-2 relative hover:opacity-80"
+        className="flex flex-col bg-white cursor-pointer w-32 h-32 rounded p-2 relative hover:opacity-80 transition-all duration-200"
         onClick={() => setEnlarge(true)}
       >
         <div className="text-right">{date}</div>
@@ -605,7 +611,7 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
         <div className="flex flex-col w-full h-full py-6 px-4 bg-white absolute top-0 left-0 rounded z-10">
           <div className="flex flex-row justify-between items-center">
             <button
-              className="flex justify-center items-center w-8 p-2 rounded hover:opacity-80"
+              className="flex justify-center items-center w-8 p-2 rounded hover:opacity-80 transition-all duration-200"
               onClick={handleSaveDaySchedule}
             >
               <i className="fa-solid fa-chevron-left"></i>
@@ -803,7 +809,7 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
           <div className="relative w-full h-full">
             <p className="absolute text-gray-500">休診</p>
             <button
-              className="flex justify-center items-center w-full h-full opacity-0 transition-opacity hover:opacity-80"
+              className="flex justify-center items-center w-full h-full opacity-0 hover:opacity-80 transition-all duration-200"
               onClick={() => setIsAdding(true)}
             >
               <i className="fa-solid fa-plus fa-lg"></i>
@@ -819,7 +825,7 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
         {!isEditing && !isAdding && data?.name && (
           <div className="absolute bottom-0 left-0 flex flex-row justify-end w-full pr-2">
             <button
-              className="hover:opacity-80"
+              className="hover:opacity-80 transition-all duration-200"
               onClick={(e) => {
                 e.stopPropagation();
                 setIsEditing(true);
@@ -828,7 +834,7 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
               <i className="fa-solid fa-pen-to-square"></i>
             </button>
             <button
-              className="hover:opacity-80 ml-2"
+              className="hover:opacity-80 ml-2 transition-all duration-200"
               onClick={handleShiftDelete}
             >
               <i className="fa-solid fa-trash-can"></i>
@@ -912,10 +918,16 @@ const ShiftFrame = ({ data = null, time, shift, setNewSchedule }) => {
         )}
         {isAdding && (
           <div className="absolute bottom-0 left-0 flex flex-row justify-end gap-2 w-full pr-2">
-            <button className="hover:opacity-80" onClick={handleSaveNewShift}>
+            <button
+              className="hover:opacity-80 transition-all duration-200"
+              onClick={handleSaveNewShift}
+            >
               <i className="fa-solid fa-check"></i>
             </button>
-            <button className="hover:opacity-80" onClick={handleCancelNewShift}>
+            <button
+              className="hover:opacity-80 transition-all duration-200"
+              onClick={handleCancelNewShift}
+            >
               <i className="fa-solid fa-xmark"></i>
             </button>
           </div>
@@ -1111,7 +1123,7 @@ const Paginator = ({
           className={`w-12 rounded border text-lg text-center ${
             isFirstPage
               ? "border-disabled-gray text-disabled-gray"
-              : " border-footer-blue text-footer-blue hover:text-white hover:bg-footer-blue"
+              : " border-footer-blue text-footer-blue hover:text-white hover:bg-footer-blue transition-all duration-200"
           }`}
           onClick={handlePrevPage}
           disabled={isFirstPage}
@@ -1120,7 +1132,7 @@ const Paginator = ({
           className={`w-12 rounded border text-lg text-center ${
             isLastPage
               ? "border-disabled-gray text-disabled-gray"
-              : " border-footer-blue text-footer-blue hover:text-white hover:bg-footer-blue"
+              : " border-footer-blue text-footer-blue hover:text-white hover:bg-footer-blue transition-all duration-200"
           }`}
           onClick={handleNextPage}
           disabled={isLastPage}
@@ -1357,7 +1369,7 @@ const Records = () => {
               }}
             />
             <button
-              className="px-2 bg-footer-blue text-white border border-footer-blue rounded hover:opacity-80"
+              className="px-2 bg-footer-blue text-white border border-footer-blue rounded hover:opacity-80 transition-all duration-200"
               onClick={handleClear}
             >
               清除條件
@@ -1667,7 +1679,7 @@ const Users = () => {
               onChange={handleFilterChange}
             />
             <button
-              className="px-2 bg-footer-blue text-white border border-footer-blue rounded hover:opacity-80"
+              className="px-2 bg-footer-blue text-white border border-footer-blue rounded hover:opacity-80 transition-all duration-200"
               onClick={handleFilterClear}
             >
               清除條件
@@ -1697,8 +1709,6 @@ const Users = () => {
           <tbody>
             {users &&
               users.map((user) => {
-                if (user.email === "admin001@gmail.com") return;
-
                 return (
                   <tr key={user.id}>
                     <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
@@ -1716,7 +1726,7 @@ const Users = () => {
                     <td className="px-2 py-1 border-4 border-bg-gray text-center font-normal text-xl">
                       {user.pets && (
                         <button
-                          className="w-fit min-w-8 border border-black rounded-full hover:text-white hover:bg-footer-blue"
+                          className="w-fit min-w-8 border border-black rounded-full hover:text-white hover:bg-footer-blue transition-all duration-200"
                           name="Open Pets Info"
                           onClick={() => {
                             setPetsInfoOpen(true);

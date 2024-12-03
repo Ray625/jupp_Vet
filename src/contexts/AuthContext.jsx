@@ -8,6 +8,9 @@ import {
   signInWithPopup,
   onAuthStateChanged,
   updateProfile,
+  reauthenticateWithCredential,
+  updatePassword,
+  EmailAuthProvider
 } from "firebase/auth";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -34,7 +37,7 @@ const defaultAuthContext = {
   googleLogin: null,
   emailLogin: null,
   logout: null,
-  backTo: null,
+  changePassword: null,
   isLoading: false,
 } 
 
@@ -251,9 +254,36 @@ const AuthProvider = ({ children }) => {
             setCurrentUser(null);
             setAlertText("已登出");
             setAlertOpen(true);
-            navigate('/')
+            navigate("/");
           } catch (error) {
             console.error(error);
+          }
+        },
+        changePassword: async ({user ,oldPassword, newPassword }) => {
+          try {
+            const credential = EmailAuthProvider.credential(
+              user.email,
+              oldPassword
+            );
+            await reauthenticateWithCredential(user, credential);
+            await updatePassword(user, newPassword);
+
+            setAlertText("密碼已成功更新，請使用新密碼重新登入");
+            setAlertOpen(true);
+
+            await signOut(auth);
+            setCurrentUser(null);
+          } catch (error) {
+            console.error("錯誤發生:", error);
+
+            switch (error.code) {
+              case "auth/wrong-password":
+                setAlertText("舊密碼不正確");
+                setAlertOpen(true);
+                break;
+              default:
+                alert("密碼更新失敗，請檢查網路或稍後再試");
+            }
           }
         },
       }}

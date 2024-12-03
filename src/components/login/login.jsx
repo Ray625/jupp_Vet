@@ -2,6 +2,7 @@ import styles from './login.module.scss';
 import { useNavigate } from 'react-router-dom';
 import useDevice from '../../hooks/useDevice';
 import { deviceParams } from '../../utils/const';
+import { useState } from 'react';
 
 const LoginContainer = ({ children }) => {
   const device = useDevice();
@@ -85,10 +86,67 @@ const FormGroup = ({ children, btnText, onSubmit}) => {
 const InputGroup = ({ title, name, type, placeholder, autocomplete, value, onChange }) => {
   return (
     <div className={styles.inputGroup}>
-      <label htmlFor={name} className={styles.inputLabel}>{title}</label>
-      <input type={type} name={name} id={name} placeholder={placeholder} className={styles.input} autoComplete={autocomplete} value={value} onChange={onChange} />
+      <label htmlFor={name} className={styles.inputLabel}>
+        {title}
+      </label>
+      <div className={styles.inputWrapper}>
+        <input
+          type={type}
+          name={name}
+          id={name}
+          placeholder={placeholder}
+          className={styles.input}
+          autoComplete={autocomplete}
+          value={value}
+          onChange={onChange}
+          />
+      </div>
     </div>
-  )
+  );
 }
 
-export { LoginContainer, LeftSide, RightSide, TitleGroup, GoogleBtn, FormGroup,InputGroup };
+const PasswordInput = ({ title, name, placeholder, autocomplete = "off", value, onChange,
+}) => {
+  const [showPassword, setShowPassword] = useState(false);
+
+  return (
+    <div className={styles.inputGroup}>
+      <label htmlFor={name} className={styles.inputLabel}>
+        {title}
+      </label>
+      <div className={styles.inputWrapper}>
+        <input
+          type={showPassword ? "text" : "password"}
+          name={name}
+          id={name}
+          placeholder={placeholder}
+          className={styles.input}
+          autoComplete={autocomplete}
+          value={value}
+          onChange={onChange}
+        />
+        {showPassword && (
+          <div className={styles.eyes} onClick={() => setShowPassword(false)}>
+            <i className={`${styles.eyeIcon} fa-solid fa-eye-slash`}></i>
+          </div>
+        )}
+        {!showPassword && (
+          <div className={styles.eyes} onClick={() => setShowPassword(true)}>
+            <i className={`${styles.eyeIcon} fa-solid fa-eye`}></i>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export {
+  LoginContainer,
+  LeftSide,
+  RightSide,
+  TitleGroup,
+  GoogleBtn,
+  FormGroup,
+  InputGroup,
+  PasswordInput,
+};

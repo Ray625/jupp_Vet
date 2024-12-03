@@ -21,6 +21,7 @@ import { useState, useEffect, } from "react";
 import moment from "moment";
 import useAuth from "../../hooks/useAuth";
 import { ConfirmAlert, OneBtnAlert } from "../alert/alert";
+import { PasswordInput } from "../login/login"
 
 const list = [
   {
@@ -794,7 +795,113 @@ const Record = () => {
 };
 
 const Password = () => {
-  return <h4 className={styles.tableTitle}>變更密碼</h4>;
+  const [oldPassword, setOldPassword] = useState("")
+  const [newPassword, setNewPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertText, setAlertText] = useState("")
+
+  const { currentUser, changePassword } = useAuth();
+  // 使用者登入方式
+  const providerWay = currentUser?.providerData[0].providerId
+
+  const handleChangePassword = ({oldPassword, newPassword, confirmPassword}) => {
+    const isValidPassword = (password) => {
+      const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,12}$/;
+      return regex.test(password);
+    };
+
+    if (!isValidPassword(newPassword)) {
+      setAlertText("請設定為8-12位英數混合之密碼");
+      setAlertOpen(true);
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setAlertText("新密碼與確認密碼不一致");
+      setAlertOpen(true)
+      return
+    }
+
+    changePassword({
+      user: currentUser,
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    });
+  }
+
+  return (
+    <>
+      {alertOpen && (
+        <OneBtnAlert
+          title={alertText}
+          button="確認"
+          handleClose={() => setAlertOpen(false)}
+          handleConfirm={() => setAlertOpen(false)}
+        />
+      )}
+      <div className={styles.infoTable}>
+        <h4 className={styles.tableTitle}>變更密碼</h4>
+        <div className={styles.tableBody}>
+          {providerWay === "password" && (
+            <>
+              <div className={styles.form}>
+                <PasswordInput
+                  title="舊密碼"
+                  name="password"
+                  placeholder="請輸入舊密碼"
+                  value={oldPassword}
+                  onChange={(e) => {
+                    setOldPassword(e.target.value);
+                  }}
+                />
+                <PasswordInput
+                  title="新密碼"
+                  name="newPassword"
+                  placeholder="請輸入8-12位英數混合之新密碼"
+                  value={newPassword}
+                  onChange={(e) => {
+                    setNewPassword(e.target.value);
+                  }}
+                />
+                <PasswordInput
+                  title="確認新密碼"
+                  name="confirmPassword"
+                  placeholder="請再次輸入新密碼"
+                  value={confirmPassword}
+                  onChange={(e) => {
+                    setConfirmPassword(e.target.value);
+                  }}
+                />
+              </div>
+              <Button
+                text="變更"
+                onClick={() =>
+                  handleChangePassword({
+                    oldPassword,
+                    newPassword,
+                    confirmPassword,
+                  })
+                }
+              />
+            </>
+          )}
+          {providerWay === "google.com" && (
+            <>
+              <div className={styles.googleHint}>
+                <p>
+                  您是以 Google 帳戶登入，因此未在本站設定密碼。
+                  <br />
+                  如需變更密碼，請至您的 Google 帳戶進行相關操作。
+                </p>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+    </>
+  );
 };
 
 export { Menu, Wrapper, UserInfo, PetsInfo, Record, Password };

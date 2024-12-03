@@ -6,7 +6,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import LoginLayout from "./pages/layout/LoginLayout";
 import LoginPage from "./pages/login/LoginPage";
 import SignupPage from "./pages/login/SignupPage";
-import ForgetPassPage from "./pages/login/ForgetPassPage";
+import { ForgetPassPage, ResetPassPage } from "./pages/login/ForgetPassPage";
 import HomePageLayout from "./pages/layout/HomePageLayout";
 import HomePage from "./pages/homepage/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
@@ -34,6 +34,7 @@ function App() {
                   <Route path="login" element={<LoginPage />} />
                   <Route path="signup" element={<SignupPage />} />
                   <Route path="forget-pass" element={<ForgetPassPage />} />
+                  <Route path="reset-pass" element={<ResetPassPage />} />
                 </Route>
                 <Route path="/" element={<HomePageLayout />}>
                   <Route index element={<HomePage />} />

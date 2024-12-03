@@ -1,5 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { LoginContainer, LeftSide, RightSide, TitleGroup, GoogleBtn, FormGroup, InputGroup } from '../../components/login/login';
+import {
+  LoginContainer,
+  LeftSide,
+  RightSide,
+  TitleGroup,
+  GoogleBtn,
+  FormGroup,
+  InputGroup,
+  PasswordInput,
+} from "../../components/login/login";
 import styles from "./LoginPage.module.scss";
 import { useState } from "react";
 import useAuth from "../../hooks/useAuth";
@@ -81,10 +90,9 @@ const LoginPage = () => {
               autocomplete={"email"}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <InputGroup
+            <PasswordInput
               title={"密碼"}
               name={"password"}
-              type={"password"}
               placeholder={"請輸入8-12位英數混合之密碼"}
               value={password}
               autocomplete={"current-password"}
