@@ -53,7 +53,7 @@
 }
 
 .navbarList {
-  height: 100%; // 把下面推出去讓滑鼠hover向下移動的過程不會讓下拉選單消失
+  height: 100%;
   display: none; // mobile時隱藏
 }
 
@@ -63,11 +63,11 @@
   display: flex;
   align-items: center;
 
-  &:hover {
-    & .dropdownMenu {
-      display: flex;
-    }
-  }
+  // &:hover {
+  //   & .dropdownMenu {
+  //     display: flex;
+  //   }
+  // }
 }
 
 .userCenter {
@@ -132,39 +132,39 @@
   }
 }
 
-.dropdownMenu {
-  border-radius: 0 0 16px 16px;
-  background-color: style.$white;
-  margin: 0;
-  padding: 8px 0;
-  width: 148px;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  top: 100%;
-  left: -27px;
-  box-shadow: 0px 10px 12px 0px #00000014;
+// .dropdownMenu {
+//   border-radius: 0 0 16px 16px;
+//   background-color: style.$white;
+//   margin: 0;
+//   padding: 8px 0;
+//   width: 148px;
+//   display: none;
+//   flex-direction: column;
+//   align-items: center;
+//   position: absolute;
+//   top: 100%;
+//   left: -27px;
+//   box-shadow: 0px 10px 12px 0px #00000014;
 
-  &:hover {
-    display: flex;
-  }
+//   &:hover {
+//     display: flex;
+//   }
 
-  div {
-    width: 132px;
-    padding: 16px 24px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    color: style.$dark_gray;
+//   div {
+//     width: 132px;
+//     padding: 16px 24px;
+//     border-radius: 8px;
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     text-align: center;
+//     color: style.$dark_gray;
 
-    &:hover {
-      background-color: style.$hover_gray;
-    }
-  }
-}
+//     &:hover {
+//       background-color: style.$hover_gray;
+//     }
+//   }
+// }
 
 .hamburgerContainer {
   display: flex;
@@ -283,6 +283,9 @@
 }
 
 .entry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   width: 100%;
   padding: 16px;
   font-size: 18px;
@@ -292,6 +295,9 @@
 }
 
 .active {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   width: 100%;
   padding: 16px;
   font-size: 18px;

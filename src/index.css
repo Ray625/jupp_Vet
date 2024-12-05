@@ -21,4 +21,12 @@ code {
 
 html {
   background-color: #ececec;
+  scroll-behavior: smooth;
+  scroll-padding: 80px;
+}
+
+@media screen and (min-width: 480px) {
+  html {
+    scroll-padding: 120px;
+  }
 }

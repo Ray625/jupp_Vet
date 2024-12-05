@@ -70,7 +70,7 @@ const OfferSection = () => {
   }
 
   return (
-    <section className={styles.container}>
+    <section className={styles.container} id='offer'>
       <div className={styles.wrapper}>
         <div className={styles.body}>
           <div className={styles.icon}>

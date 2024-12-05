@@ -107,27 +107,31 @@ const NewsSection = () => {
   }
 
   return (
-    <section className={styles.container}>
+    <section className={styles.container} id="news">
       <div className={styles.wrapper}>
         <div className={styles.titleContainer}>
           <div className={styles.titleGroup}>
-            <object data="/svg/home_footprint.svg" className={styles.footprint} aria-label="footprint"> </object>
+            <img
+              src="/svg/home_footprint.svg"
+              alt="icon"
+              className={styles.footprint}
+            />
             <h2 className={styles.title}>Latest News</h2>
           </div>
-            <h3 className={styles.subtitle}>最新資訊</h3>
-            <CardSlider />
-            <PrimaryButton title={'查看更多'} onClick={handleMoreBtnClick}/>
+          <h3 className={styles.subtitle}>最新資訊</h3>
+          <CardSlider />
+          <PrimaryButton title={"查看更多"} onClick={handleMoreBtnClick} />
         </div>
         <div className={styles.body}>
           <div className={styles.cardList}>
             {news.map((newsItem) => {
-              return <Card props={newsItem} key={newsItem.id}/>
+              return <Card props={newsItem} key={newsItem.id} />;
             })}
           </div>
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export default NewsSection;

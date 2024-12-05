@@ -27,9 +27,15 @@
   justify-content: flex-start;
 }
 
-.titleGroup {
+.titleContainer {
   display: flex;
   flex-direction: column;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .footprint {

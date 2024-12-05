@@ -160,7 +160,7 @@ const ResetPassPage = () => {
     try {
       await confirmPasswordReset(auth, oobCode, newPassword);
       setAlertConfig({
-        text: "密碼重設成功，請使用新密碼登入",
+        text: "密碼重設成功，請重新登入",
         confirm: () => {
           setAlertOpen(false)
           navigate('/login')

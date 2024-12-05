@@ -58,6 +58,7 @@ const SliderBanner = () => {
     <section
       className={styles.container}
       style={{ paddingTop: tickerOpen ? "124px" : "80px" }}
+      id="home"
     >
       <Slider {...settings}>
         <div className={styles.wrapper}>

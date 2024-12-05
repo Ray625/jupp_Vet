@@ -30,6 +30,9 @@
 }
 
 .title {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   font-size: style.$mobile-title-font-size;
   color: style.$primary_orange;
 }

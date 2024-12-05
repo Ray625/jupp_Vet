@@ -6,64 +6,129 @@ import { InfoGroup } from '../footer/footer';
 import useAuth from '../../hooks/useAuth';
 import useTheme from '../../hooks/useTheme';
 
-const MobileMenu = forwardRef((props, ref) => {
+const MobileMenu = forwardRef(({ setHamburgerClose }, ref) => {
   const navigate = useNavigate()
   const location = useLocation()
 
   return (
     <div className={styles.closedMenu} ref={ref}>
-      <div className={styles.topSide}>
-        <div onClick={() => navigate('/') } className={location.pathname === '/' ? styles.active : styles.entry}>
-          {location.pathname === '/' && (
-          <img src="svg/footprint.svg" alt="footprint" className={styles.activeImg} />
+      <div className={styles.topSide} onClick={setHamburgerClose}>
+        <div
+          onClick={() => navigate("/")}
+          className={
+            location.pathname === "/" && location.hash === ""
+              ? styles.active
+              : styles.entry
+          }
+        >
+          {location.pathname === "/" && location.hash === "" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
           )}
           首頁
         </div>
-        <div onClick={() => navigate('/about')} className={location.pathname === '/about' ? styles.active : styles.entry}>
-          {location.pathname === '/about' && (
-          <img src="svg/footprint.svg" alt="footprint" className={styles.activeImg} />
+        <div
+          className={`${location.hash === "#about" && styles.active} ${
+            styles.entry
+          }`}
+        >
+          {location.hash === "#about" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
           )}
-          關於我們
+          <a href="/#about">關於我們</a>
         </div>
-        <div onClick={() => navigate('/service')} className={location.pathname === '/service' ? styles.active : styles.entry}>
-          {location.pathname === '/service' && (
-          <img src="svg/footprint.svg" alt="footprint" className={styles.activeImg} />
+        <div
+          className={`${location.hash === "#offer" && styles.active} ${
+            styles.entry
+          }`}
+        >
+          {location.hash === "#offer" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
           )}
-          服務項目
+          <a href="/#offer">服務項目</a>
         </div>
-        <div onClick={() => navigate('/photo')} className={location.pathname === '/photo' ? styles.active : styles.entry}>
-          {location.pathname === '/photo' && (
-          <img src="svg/footprint.svg" alt="footprint" className={styles.activeImg} />
+        <div
+          className={`${location.hash === "#news" && styles.active} ${
+            styles.entry
+          }`}
+        >
+          {location.hash === "#news" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
+          )}
+          <a href="/#news">最新消息</a>
+        </div>
+        <div
+          className={`${location.hash === "#info" && styles.active} ${
+            styles.entry
+          }`}
+        >
+          {location.hash === "#info" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
+          )}
+          <a href="/#info">交通指南</a>
+        </div>
+        <div
+          onClick={() => navigate("/photo")}
+          className={
+            location.pathname === "/photo" ? styles.active : styles.entry
+          }
+        >
+          {location.pathname === "/photo" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
           )}
           照片牆
         </div>
-        <div onClick={() => navigate('/contact-us')} className={location.pathname === '/contact-us' ? styles.active : styles.entry}>
-          {location.pathname === '/contact-us' && (
-          <img src="svg/footprint.svg" alt="footprint" className={styles.activeImg} />
-          )}
-          聯絡我們
-        </div>
       </div>
       <div className={styles.bottomSide}>
-        <button className={styles.bookBtn} onClick={() => alert('booking')}>立即預約</button>
-        <button className={styles.loginBtn} onClick={() => navigate('/login')}>登入</button>
+        <button className={styles.bookBtn} onClick={() => {
+          navigate("/booking")
+          setHamburgerClose()
+        }}>
+          立即預約
+        </button>
+        <button className={styles.loginBtn} onClick={() => navigate("/login")}>
+          登入
+        </button>
         <InfoGroup />
       </div>
     </div>
-  )
+  );
 })
 
 MobileMenu.displayName = 'MobileMenu';
 
-const DropdownMenu = ({linkTo, menuList}) => {
-  const navigate = useNavigate()
+// const DropdownMenu = ({linkTo, menuList}) => {
+//   const navigate = useNavigate()
 
-  return (
-    <ul className={styles.dropdownMenu}>
-      {menuList.map((item, index) => <div onClick={() => navigate(`/${linkTo}`)}key={index}>{item}</div>)}
-    </ul>
-  )
-}
+//   return (
+//     <ul className={styles.dropdownMenu}>
+//       {menuList.map((item, index) => <div onClick={() => navigate(`/${linkTo}`)}key={index}>{item}</div>)}
+//     </ul>
+//   )
+// }
 
 const Header = () => {
   const [ hamburgerOpen, setHamburgerOpen ] = useState(false)
@@ -117,44 +182,26 @@ const Header = () => {
       <div className={styles.wrapper}>
         <div className={styles.logo} onClick={handleLogeClick}></div>
         <div className={styles.navbarList}>
-          <div onClick={() => navigate("/")} className={styles.navbarEntry}>
-            首頁
+          <div className={styles.navbarEntry}>
+            <a href="/#home">首頁</a>
           </div>
-          <div
-            onClick={() => navigate("/about")}
-            className={styles.navbarEntry}
-          >
-            關於我們
-            <DropdownMenu
-              linkTo={"about"}
-              menuList={["經營理念", "專業團隊", "診所資訊"]}
-            />
+          <div className={styles.navbarEntry}>
+            <a href="/#about">關於我們</a>
           </div>
-          <div
-            onClick={() => navigate("/service")}
-            className={styles.navbarEntry}
-          >
-            服務項目
-            <DropdownMenu
-              linkTo={"service"}
-              menuList={["內科", "外科", "其他專科"]}
-            />
+          <div className={styles.navbarEntry}>
+            <a href="/#offer">服務項目</a>
+          </div>
+          <div className={styles.navbarEntry}>
+            <a href="/#news">最新消息</a>
+          </div>
+          <div className={styles.navbarEntry}>
+            <a href="/#info">交通指南</a>
           </div>
           <div
             onClick={() => navigate("/photo")}
             className={styles.navbarEntry}
           >
             照片牆
-          </div>
-          <div
-            onClick={() => navigate("/contact-us")}
-            className={styles.navbarEntry}
-          >
-            聯絡我們
-            <DropdownMenu
-              linkTo={"contact-us"}
-              menuList={["交通指南", "聯絡表單"]}
-            />
           </div>
         </div>
         <div className={styles.btnGroup}>
@@ -207,7 +254,7 @@ const Header = () => {
         >
           <div className={styles.hamburgerBtn} ref={hamburgerRef}></div>
         </div>
-        <MobileMenu ref={menuRef} />
+        <MobileMenu setHamburgerClose={handleHamburgerClick} ref={menuRef} />
       </div>
     </div>
   );
