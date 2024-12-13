@@ -5,6 +5,7 @@ import OfferSection from "../../components/homepage/offer";
 import ReasonSection from "../../components/homepage/reason";
 import ReviewsSection from "../../components/homepage/reviews";
 import NewsSection from "../../components/homepage/news";
+import PhotoSection from "../../components/homepage/photo";
 import InfoSection from "../../components/homepage/info";
 import BookSection from "../../components/homepage/booking";
 import { BookingButton } from "../../components/button/button";
@@ -49,6 +50,7 @@ const HomePage = () => {
       <ReasonSection />
       <ReviewsSection />
       <NewsSection />
+      <PhotoSection />
       <InfoSection />
       <BookSection ref={bookingRef} />
     </div>

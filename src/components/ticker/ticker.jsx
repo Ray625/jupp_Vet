@@ -4,9 +4,9 @@ import styles from './ticker.module.scss';
 import Slider from "react-slick";
 
 const news = [
-    '2024 春節營業時間調整: 2/9至2/13休診，請需要拿藥的毛孩提前準備。',
-    '2024 3/29至3/30休診: 醫師外出進修，暫停看診兩日。',
-    '2024 5/1休診: 院內進行設備更新，暫停看診。',
+    '2025 春節營業時間調整: 1/28至2/1休診，請需要拿藥的毛孩提前準備。',
+    '2025 2/26至2/28休診: 醫師外出進修，暫停看診兩日。',
+    '2025 4/1休診: 院內進行設備更新，暫停看診。',
   ]
 
 const NewsSlider = () => {
@@ -41,7 +41,7 @@ const Ticker = ({ onClick }) => {
       <div className={styles.wrapper}>
         <NewsSlider />
       </div>
-        <button className={styles.closeBtn} aria-label="close" onClick={onClick}><i class="fa-solid fa-xmark"></i></button>
+        <button className={styles.closeBtn} aria-label="close" onClick={onClick}><i className="fa-solid fa-xmark"></i></button>
     </div>
   )
 }

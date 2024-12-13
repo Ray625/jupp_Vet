@@ -19,17 +19,14 @@ const BookingPage = () => {
 
   const handleNextStep = () => {
     setStep(s => s + 1)
+    window.scrollTo({ top: 236, left: 0, behavior: "instant" });
   }
 
   const handlePrevStep = () => {
     setStep(s => s - 1)
+    window.scrollTo({ top: 236, left: 0, behavior: "instant" });
   }
 
-  useEffect(() => {
-    if (step) {
-      window.scrollTo(0, 0);
-    }
-  }, [step])
 
   // 依使用者所選時段，至資料庫抓取對應的門診
   useEffect(() => {

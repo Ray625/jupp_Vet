@@ -73,6 +73,20 @@ const MobileMenu = forwardRef(({ setHamburgerClose }, ref) => {
           <a href="/#news">最新消息</a>
         </div>
         <div
+          className={`${location.hash === "#photo" && styles.active} ${
+            styles.entry
+          }`}
+        >
+          {location.hash === "#photo" && (
+            <img
+              src="svg/footprint.svg"
+              alt="footprint"
+              className={styles.activeImg}
+            />
+          )}
+          <a href="/#photo">照片集</a>
+        </div>
+        <div
           className={`${location.hash === "#info" && styles.active} ${
             styles.entry
           }`}
@@ -86,27 +100,15 @@ const MobileMenu = forwardRef(({ setHamburgerClose }, ref) => {
           )}
           <a href="/#info">交通指南</a>
         </div>
-        <div
-          onClick={() => navigate("/photo")}
-          className={
-            location.pathname === "/photo" ? styles.active : styles.entry
-          }
-        >
-          {location.pathname === "/photo" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
-          )}
-          照片牆
-        </div>
       </div>
       <div className={styles.bottomSide}>
-        <button className={styles.bookBtn} onClick={() => {
-          navigate("/booking")
-          setHamburgerClose()
-        }}>
+        <button
+          className={styles.bookBtn}
+          onClick={() => {
+            navigate("/booking");
+            setHamburgerClose();
+          }}
+        >
           立即預約
         </button>
         <button className={styles.loginBtn} onClick={() => navigate("/login")}>
@@ -195,13 +197,10 @@ const Header = () => {
             <a href="/#news">最新消息</a>
           </div>
           <div className={styles.navbarEntry}>
-            <a href="/#info">交通指南</a>
+            <a href="/#photo">照片集</a>
           </div>
-          <div
-            onClick={() => navigate("/photo")}
-            className={styles.navbarEntry}
-          >
-            照片牆
+          <div className={styles.navbarEntry}>
+            <a href="/#info">交通指南</a>
           </div>
         </div>
         <div className={styles.btnGroup}>

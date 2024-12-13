@@ -10,7 +10,6 @@ import { ForgetPassPage, ResetPassPage } from "./pages/login/ForgetPassPage";
 import HomePageLayout from "./pages/layout/HomePageLayout";
 import HomePage from "./pages/homepage/HomePage";
 import BookingPage from "./pages/booking/BookingPage";
-import PhotoPage from "./pages/photo/PhotoPage";
 import BackstageLayout from "./pages/layout/BackstageLayout";
 import { Doctors, Schedule, Records, Users } from "./components/backstage/backstage";
 import UserPageLayout from "./pages/layout/UserPageLayout";
@@ -39,7 +38,6 @@ function App() {
                 <Route path="/" element={<HomePageLayout />}>
                   <Route index element={<HomePage />} />
                   <Route path="booking" element={<BookingPage />} />
-                  <Route path="photo" element={<PhotoPage />} />
                   <Route path="user" element={<UserPageLayout />}>
                     <Route index element={<UserInfo />} />
                     <Route path="pets" element={<PetsInfo />} />

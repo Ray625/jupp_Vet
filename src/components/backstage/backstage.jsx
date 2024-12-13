@@ -1115,6 +1115,7 @@ const Paginator = ({
           onChange={(e) => handleChangePage(e.target.value)}
           onKeyDown={handleKeyDown}
           onBlur={handleOnBlur}
+          name="currentPage"
         />
         <p>{`/ ${totalPage}`}</p>
       </div>
@@ -1144,7 +1145,7 @@ const Paginator = ({
 
 const Records = () => {
   const { recordsData, doctorsList, filters, setFilters } = useOutletContext();
-  const [records, setRecords] = useState(recordsData);
+  const [records, setRecords] = useState(null);
   const [paginator, setPaginator] = useState({
     totalPage: null,
     currentPage: 1,
@@ -1152,7 +1153,7 @@ const Records = () => {
   });
 
   useEffect(() => {
-    const totalPage = Math.ceil(recordsData.length / 15);
+    const totalPage = Math.ceil(recordsData.length / 14);
     setPaginator((prev) => {
       return {
         ...prev,
@@ -1163,8 +1164,8 @@ const Records = () => {
 
   useEffect(() => {
     if (paginator.currentPage) {
-      const startItems = 0 + (paginator.currentPage - 1) * 15;
-      const endItems = 15 + (paginator.currentPage - 1) * 15;
+      const startItems = 0 + (paginator.currentPage - 1) * 14;
+      const endItems = 14 + (paginator.currentPage - 1) * 14;
 
       const currentPageData = recordsData.slice(startItems, endItems);
 
@@ -1289,13 +1290,13 @@ const Records = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
-      <div className="flex flex-col h-full p-3 bg-white rounded">
+    <div className="flex flex-col mx-auto py-8 w-fit h-full">
+      <div className="flex flex-col h-full p-3 bg-white rounded overflow-x-hidden ">
         <div className="flex flex-row justify-between items-center">
           <h3 className="my-2 font-medium text-2xl">約診紀錄</h3>
           <search className="flex flex-row gap-2">
             <div className="flex flex-row gap-2 items-center justify-center w-fit rounded">
-              <label className="w-fit" htmlFor="datePicker">
+              <label className="w-fit" htmlFor="startTime">
                 區間
               </label>
               <div>
@@ -1316,7 +1317,7 @@ const Records = () => {
                   placeholderText="開始時間"
                   dateFormat="yyyy-MM-dd"
                   className="m-0 px-2 py-1 w-28 rounded bg-white border border-black"
-                  id="datePicker"
+                  id="startTime"
                 />
               </div>
               <div>
@@ -1338,6 +1339,7 @@ const Records = () => {
                   placeholderText="結束時間"
                   dateFormat="yyyy-MM-dd"
                   className="m-0 px-2 py-1 w-28 rounded bg-white border border-black"
+                  id="endTime"
                 />
               </div>
             </div>
@@ -1345,6 +1347,7 @@ const Records = () => {
               className="px-2 border border-black rounded"
               value={filters.doctor}
               onChange={handlefilterDoctor}
+              name="doctorFilter"
             >
               <option value="all">所有醫師</option>
               {doctorsList.map((doctor) => (
@@ -1358,6 +1361,7 @@ const Records = () => {
               type="text"
               className="w-64 py-1 px-2 border border-gray-800 rounded focus:border-black"
               placeholder="姓名、電話、Email、寵物名稱"
+              name="filter"
               value={filters.keywords}
               onChange={(e) => {
                 setFilters((prev) => {
@@ -1376,34 +1380,34 @@ const Records = () => {
             </button>
           </search>
         </div>
-        <table className="w-full mt-2 bg-white rounded">
+        <table className="w-fit mt-2 bg-white rounded table-fixed">
           <thead>
             <tr>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
                 日期
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
                 診間
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
                 號碼
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
                 飼主姓名
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
                 電話
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-48 border-4 border-bg-gray text-left font-normal text-xl">
                 Email
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
                 寵物
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
                 醫師
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal text-xl">
                 備註
               </th>
             </tr>
@@ -1412,31 +1416,40 @@ const Records = () => {
             {records &&
               records.map((record) => (
                 <tr key={record.id}>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
                     {record.date_key.slice(0, -5)}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
                     {record.date_key.slice(-3, -2)}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
                     {record.number}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td
+                    className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                    title={`${record.owner.lastName + record.owner.firstName}`}
+                  >
                     {`${record.owner.lastName + record.owner.firstName}`}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
                     {record.owner.phone}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td
+                    className="px-2 py-1 w-48 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                    title={record.owner.email}
+                  >
                     {record.owner.email}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td
+                    className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                    title={record.pet_name}
+                  >
                     {record.pet_name}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
-                    {record.doctor.slice(0, -4)}
+                  <td className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
+                    {record.doctor.slice(0, -7)}
                   </td>
-                  <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal text-xl">
                     {record.isCanceled ? "已取消" : ""}
                   </td>
                 </tr>
@@ -1458,8 +1471,6 @@ const Records = () => {
 };
 
 const PetsInfo = ({ pets, setPetsInfoOpen, setPets }) => {
-  console.log("pets", pets)
-
   useEffect(() => {
     document.body.style.overflow = "hidden"
 
@@ -1481,7 +1492,7 @@ const PetsInfo = ({ pets, setPetsInfoOpen, setPets }) => {
           <i className="fa-solid fa-xmark fa-xl"></i>
         </button>
         <h3 className="font-medium text-2xl">寵物列表</h3>
-        <div className="flex flex-col gap-2 w-[486px] h-fit mt-4">
+        <div className="flex flex-col gap-2 w-fit min-w-[486px] h-fit mt-4">
           {pets &&
             Object.values(pets).map((pet, index) => {
               let speciesIcon = "";
@@ -1532,13 +1543,12 @@ const Users = () => {
     currentPage: 1,
     inputValue: 1,
   });
-  console.log("usersData", usersData)
 
   const [pets, setPets] = useState({})
   const [petsInfoOpen, setPetsInfoOpen] = useState(false)
 
   useEffect(() => {
-    const totalPage = Math.ceil(usersData.length / 15)
+    const totalPage = Math.ceil(usersData.length / 14)
     setPaginator((prev) => {
       return {
         ...prev,
@@ -1549,8 +1559,8 @@ const Users = () => {
 
   useEffect(() => {
     if (paginator.currentPage) {
-      const startItems = 0 + (paginator.currentPage - 1) * 15;
-      const endItems = 15 + (paginator.currentPage - 1) * 15;
+      const startItems = 0 + (paginator.currentPage - 1) * 14;
+      const endItems = 14 + (paginator.currentPage - 1) * 14;
 
       const currentPageData = usersData.slice(startItems, endItems);
 
@@ -1665,7 +1675,7 @@ const Users = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
+    <div className="flex flex-col mx-auto py-8 w-fit h-full">
       <div className="flex flex-col h-full p-3 bg-white rounded">
         <div className="flex flex-row justify-between items-center">
           <h3 className="my-2 font-medium text-2xl">使用者列表</h3>
@@ -1686,22 +1696,22 @@ const Users = () => {
             </button>
           </search>
         </div>
-        <table className="w-full mt-2 bg-white rounded">
+        <table className="w-fit mt-2 bg-white rounded table-fixed">
           <thead>
             <tr>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-40 border-4 border-bg-gray text-left font-normal text-xl">
                 創建日期
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-32 border-4 w border-bg-gray text-left font-normal text-xl">
                 姓名
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
                 電話
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-64 border-4 border-bg-gray text-left font-normal text-xl">
                 Email
               </th>
-              <th className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal text-xl">
                 寵物
               </th>
             </tr>
@@ -1711,19 +1721,25 @@ const Users = () => {
               users.map((user) => {
                 return (
                   <tr key={user.id}>
-                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    <td className="px-2 py-1 w-40 border-4 border-bg-gray text-left font-normal text-xl">
                       {moment(user.createdAt).format("YYYY-MM-DD")}
                     </td>
-                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    <td
+                      className="px-2 py-1 w-32 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                      title={`${user.lastName || ""}${user.firstName || ""}`}
+                    >
                       {`${user.lastName || ""}${user.firstName || ""}`}
                     </td>
-                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
                       {user.phone}
                     </td>
-                    <td className="px-2 py-1 border-4 border-bg-gray text-left font-normal text-xl">
+                    <td
+                      className="px-2 py-1 w-64 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                      title={user.email}
+                    >
                       {user.email}
                     </td>
-                    <td className="px-2 py-1 border-4 border-bg-gray text-center font-normal text-xl">
+                    <td className="px-2 py-1 w-20 border-4 border-bg-gray text-center font-normal text-xl">
                       {user.pets && (
                         <button
                           className="w-fit min-w-8 border border-black rounded-full hover:text-white hover:bg-footer-blue transition-all duration-200"

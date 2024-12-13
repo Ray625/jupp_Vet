@@ -368,7 +368,7 @@ const BackstageLayout = () => {
         const filterData = finalData.filter((user) => {
           const keywords = userFilters.toLowerCase();
           return (
-            user.pets?.hasOwnProperty(keywords) ||
+            (user.pets && typeof user.pets === "object" && Object.prototype.hasOwnProperty.call(user.pets, keywords)) ||
             user.firstName?.toLowerCase().includes(keywords) ||
             user.lastName?.toLowerCase().includes(keywords) ||
             user.phone?.includes(keywords) ||

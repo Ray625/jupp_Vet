@@ -59,6 +59,17 @@ const SignupPage = () => {
       setAlertOpen(true);
       return;
     }
+
+    const isValidPassword = (password) => {
+      const regex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,12}$/;
+      return regex.test(password);
+    };
+
+    if (!isValidPassword(password)) {
+      setAlertText("請輸入8-12位英數混合之密碼");
+      setAlertOpen(true);
+      return;
+    }
     if(password.length > 12 || password.length < 8) {
       setAlertText("請輸入8-12位英數混合之密碼");
       setAlertOpen(true);
