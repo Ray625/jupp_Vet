@@ -1,4 +1,5 @@
 import styles from './footer.module.scss';
+import { useNavigate } from 'react-router-dom';
 
 const IconGroup = ({wrapperClassName, className, svg, content}) => {
   return (
@@ -36,31 +37,30 @@ const InfoGroup = () => {
   );
 }
 
-// const Footer = () => {
-//   return (
-//     <section className={styles.container}>
-//       <div className={styles.wrapper}>
-//         <div className={styles.logo}></div>
-//         <div className={styles.content}>
-//           <p className={styles.describe}>Caring for your pets like family.</p>
-//           <p className={styles.copyright}>Copyright © 2024 JP Pet Clinic All rights reserved.</p>
-//         </div>
-//         <InfoGroup />
-//       </div>
-//     </section>
-//   )
-// }
+const SideMapGroup = ({ title, items, links = null, tag = null }) => {
+  const navigate = useNavigate()
 
-const SideMapGroup = ({ title, items, links }) => {
   return (
     <div className={styles.sideMapGroup}>
       <p className={styles.sideMapeTitle}>{title}</p>
       <ul className={styles.sideMapeList}>
         {items.map((item, index) => (
           <li className={styles.sideMapeItem} key={item}>
-            <a href={links[index]} className={styles.link}>
-              {item}
-            </a>
+            {tag && (
+              <a href={tag[index]} className={styles.link}>
+                {item}
+              </a>
+            )}
+            {links && (
+              <div
+                className={styles.link}
+                onClick={() => {
+                  navigate(links[index]);
+                }}
+              >
+                {item}
+              </div>
+            )}
           </li>
         ))}
       </ul>
@@ -83,30 +83,30 @@ const Footer = () => {
           <SideMapGroup
             title={"關於我們"}
             items={["經營理念"]}
-            links={["/#about"]}
+            tag={["/#about"]}
           />
           <SideMapGroup
             title={"服務項目"}
             items={["內科", "外科"]}
-            links={["/#offer", "/#offer"]}
+            tag={["/#offer", "/#offer"]}
           />
           <SideMapGroup
             title={"最新消息"}
             items={["診所公告", "醫療新知"]}
-            links={["/#news", "/#news"]}
+            tag={["/#news", "/#news"]}
           />
           <SideMapGroup
             title={"聯絡我們"}
             items={["交通指南"]}
-            links={["/#info"]}
+            tag={["/#info"]}
           />
           <SideMapGroup
             title={"會員中心"}
             items={["飼主資料", "寵物資料", "預約紀錄"]}
             links={[
-              "https://my-vet-web.web.app/user",
-              "https://my-vet-web.web.app/user/pets",
-              "https://my-vet-web.web.app/user/records",
+              "/user",
+              "/user/pets",
+              "/user/records",
             ]}
           />
         </div>
