@@ -5,6 +5,8 @@ import { PrimaryButton } from '../button/button';
 import { InfoGroup } from '../footer/footer';
 import useAuth from '../../hooks/useAuth';
 import useTheme from '../../hooks/useTheme';
+import useDevice from '../../hooks/useDevice';
+import { deviceParams } from '../../utils/const';
 
 const MobileMenu = forwardRef(
   ({ setHamburgerClose, currentUser, handleSignOut }, ref) => {
@@ -101,74 +103,61 @@ const MobileMenu = forwardRef(
             )}
             <a href="/#info">交通指南</a>
           </div>
+          {currentUser && currentUser?.email === "admin001@gmail.com" && (
+            <div
+              className={styles.entry}
+              onClick={() => {
+                navigate("/backstage");
+                setHamburgerClose();
+              }}
+            >
+              後台
+            </div>
+          )}
+          {currentUser && currentUser?.email !== "admin001@gmail.com" && (
+            <div
+              className={`${location.pathname === "/user" && styles.active} ${
+                styles.entry
+              }`}
+              onClick={() => {
+                navigate("/user");
+                setHamburgerClose();
+              }}
+            >
+              會員中心
+            </div>
+          )}
         </div>
         <div className={styles.bottomSide}>
+          <button
+            className={styles.bookBtn}
+            onClick={() => {
+              navigate("/booking");
+              setHamburgerClose();
+            }}
+          >
+            立即預約
+          </button>
           {currentUser ? (
-            <>
-              {currentUser.email === "admin001@gmail.com" && (
-                <button
-                  className={styles.backstageBtn}
-                  onClick={() => {
-                    navigate("/backstage");
-                    setHamburgerClose();
-                  }}
-                >
-                  後台
-                </button>
-              )}
-              {currentUser.email !== "admin001@gmail.com" && (
-                <button
-                  className={styles.backstageBtn}
-                  onClick={() => {
-                    navigate("/user");
-                    setHamburgerClose();
-                  }}
-                >
-                  會員中心
-                </button>
-              )}
-              <div className={styles.bookingUserBtnGroup}>
-                <button
-                  className={styles.bookBtn}
-                  onClick={() => {
-                    navigate("/booking");
-                    setHamburgerClose();
-                  }}
-                >
-                  立即預約
-                </button>
-                <button
-                  onClick={() => {
-                    handleSignOut();
-                    setHamburgerClose();
-                  }}
-                  className={styles.loginBtn}
-                >
-                  登出
-                </button>
-              </div>
-            </>
+            <button
+              onClick={() => {
+                handleSignOut();
+                setHamburgerClose();
+              }}
+              className={styles.loginBtn}
+            >
+              登出
+            </button>
           ) : (
-            <>
-              <button
-                className={styles.bookBtn}
-                onClick={() => {
-                  navigate("/booking");
-                  setHamburgerClose();
-                }}
-              >
-                立即預約
-              </button>
-              <button
-                onClick={() => {
-                  navigate("/login");
-                  setHamburgerClose();
-                }}
-                className={styles.loginBtn}
-              >
-                登入
-              </button>
-            </>
+            <button
+              onClick={() => {
+                navigate("/login");
+                setHamburgerClose();
+              }}
+              className={styles.loginBtn}
+            >
+              登入
+            </button>
           )}
         </div>
         <div className={styles.infoWrapper}>
@@ -188,14 +177,27 @@ const Header = () => {
   const navigate = useNavigate()
   const { currentUser, logout } = useAuth()
   const { tickerOpen } = useTheme()
+  const device = useDevice()
 
   useEffect(() => {
+    // mobileMenu打開時，外部畫面禁止滑動
     if(hamburgerOpen) {
       document.body.style.overflow = 'hidden';
+      hamburgerRef.current.className = styles.closeBtn;
+      menuRef.current.className = styles.mobileMenu;
     } else {
       document.body.style.overflow = 'auto';
+      hamburgerRef.current.className = styles.hamburgerBtn;
+      menuRef.current.className = styles.closedMenu;
     }
-  },[hamburgerOpen])
+  }, [hamburgerOpen])
+
+  // 小螢幕切換至大螢幕時，自動將mobileMenu關閉，以防螢幕被鎖住無法上下滾動
+  useEffect(() => {
+    if (device === deviceParams.pc || device === deviceParams.laptop) {
+      setHamburgerOpen(false)
+    }
+  }, [device]);
 
   const handleSignOut = () => {
     logout()
@@ -206,16 +208,6 @@ const Header = () => {
   }
 
   const handleHamburgerClick = () => {
-    if (!hamburgerOpen) {
-      hamburgerRef.current.className = styles.closeBtn
-      menuRef.current.className = styles.mobileMenu
-      document.body.style.overflow = "hidden";
-    } else {
-      hamburgerRef.current.className = styles.hamburgerBtn
-      menuRef.current.className = styles.closedMenu
-      document.body.style.overflow = "auto";
-    }
-
     setHamburgerOpen(!hamburgerOpen)
   }
 

@@ -190,17 +190,17 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 20px;
   position: fixed;
   top: 80px;
   right: 0;
   z-index: 10;
   width: 100vw;
-  height: fit-content; // 若遇到小螢幕，內容會超出100vh，所以這裡設定fit-content
-  min-height: calc(100vh - 80px); // min-height設定讓大螢幕時至少讓畫面佔滿
+  height: calc(100vh - 80px);
   padding: 24px;
   background-color: style.$hover_gray;
   transition: opacity 0.3s ease;
+  overflow-y: scroll;
 
   a,
   button,
@@ -277,13 +277,6 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
-}
-
-.bookingUserBtnGroup {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  gap: 12px;
 }
 
 .bookBtn,
