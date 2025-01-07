@@ -107,6 +107,15 @@ const CardSlider = () => {
           slidesToScroll: 1,
         },
       },
+      {
+        breakpoint: 1400,
+        settings: {
+          speed: 1000,
+          autoplaySpeed: 3000,
+          slidesToShow: 2,
+          slidesToScroll: 2,
+        },
+      },
     ],
   };
 

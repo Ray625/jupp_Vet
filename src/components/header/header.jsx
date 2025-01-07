@@ -6,131 +6,180 @@ import { InfoGroup } from '../footer/footer';
 import useAuth from '../../hooks/useAuth';
 import useTheme from '../../hooks/useTheme';
 
-const MobileMenu = forwardRef(({ setHamburgerClose }, ref) => {
-  const navigate = useNavigate()
-  const location = useLocation()
+const MobileMenu = forwardRef(
+  ({ setHamburgerClose, currentUser, handleSignOut }, ref) => {
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  return (
-    <div className={styles.closedMenu} ref={ref}>
-      <div className={styles.topSide} onClick={setHamburgerClose}>
-        <div
-          onClick={() => navigate("/")}
-          className={
-            location.pathname === "/" && location.hash === ""
-              ? styles.active
-              : styles.entry
-          }
-        >
-          {location.pathname === "/" && location.hash === "" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
-          )}
-          首頁
+    return (
+      <div className={styles.closedMenu} ref={ref}>
+        <div className={styles.topSide} onClick={setHamburgerClose}>
+          <div
+            onClick={() => navigate("/")}
+            className={
+              location.pathname === "/" && location.hash === ""
+                ? styles.active
+                : styles.entry
+            }
+          >
+            {location.pathname === "/" && location.hash === "" && (
+              <img
+                src="svg/footprint.svg"
+                alt="footprint"
+                className={styles.activeImg}
+              />
+            )}
+            首頁
+          </div>
+          <div
+            className={`${location.hash === "#about" && styles.active} ${
+              styles.entry
+            }`}
+          >
+            {location.hash === "#about" && (
+              <img
+                src="svg/footprint.svg"
+                alt="footprint"
+                className={styles.activeImg}
+              />
+            )}
+            <a href="/#about">關於我們</a>
+          </div>
+          <div
+            className={`${location.hash === "#offer" && styles.active} ${
+              styles.entry
+            }`}
+          >
+            {location.hash === "#offer" && (
+              <img
+                src="svg/footprint.svg"
+                alt="footprint"
+                className={styles.activeImg}
+              />
+            )}
+            <a href="/#offer">服務項目</a>
+          </div>
+          <div
+            className={`${location.hash === "#news" && styles.active} ${
+              styles.entry
+            }`}
+          >
+            {location.hash === "#news" && (
+              <img
+                src="svg/footprint.svg"
+                alt="footprint"
+                className={styles.activeImg}
+              />
+            )}
+            <a href="/#news">最新消息</a>
+          </div>
+          <div
+            className={`${location.hash === "#photo" && styles.active} ${
+              styles.entry
+            }`}
+          >
+            {location.hash === "#photo" && (
+              <img
+                src="svg/footprint.svg"
+                alt="footprint"
+                className={styles.activeImg}
+              />
+            )}
+            <a href="/#photo">照片集</a>
+          </div>
+          <div
+            className={`${location.hash === "#info" && styles.active} ${
+              styles.entry
+            }`}
+          >
+            {location.hash === "#info" && (
+              <img
+                src="svg/footprint.svg"
+                alt="footprint"
+                className={styles.activeImg}
+              />
+            )}
+            <a href="/#info">交通指南</a>
+          </div>
         </div>
-        <div
-          className={`${location.hash === "#about" && styles.active} ${
-            styles.entry
-          }`}
-        >
-          {location.hash === "#about" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
+        <div className={styles.bottomSide}>
+          {currentUser ? (
+            <>
+              {currentUser.email === "admin001@gmail.com" && (
+                <button
+                  className={styles.backstageBtn}
+                  onClick={() => {
+                    navigate("/backstage");
+                    setHamburgerClose();
+                  }}
+                >
+                  後台
+                </button>
+              )}
+              {currentUser.email !== "admin001@gmail.com" && (
+                <button
+                  className={styles.backstageBtn}
+                  onClick={() => {
+                    navigate("/user");
+                    setHamburgerClose();
+                  }}
+                >
+                  會員中心
+                </button>
+              )}
+              <div className={styles.bookingUserBtnGroup}>
+                <button
+                  className={styles.bookBtn}
+                  onClick={() => {
+                    navigate("/booking");
+                    setHamburgerClose();
+                  }}
+                >
+                  立即預約
+                </button>
+                <button
+                  onClick={() => {
+                    handleSignOut();
+                    setHamburgerClose();
+                  }}
+                  className={styles.loginBtn}
+                >
+                  登出
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <button
+                className={styles.bookBtn}
+                onClick={() => {
+                  navigate("/booking");
+                  setHamburgerClose();
+                }}
+              >
+                立即預約
+              </button>
+              <button
+                onClick={() => {
+                  navigate("/login");
+                  setHamburgerClose();
+                }}
+                className={styles.loginBtn}
+              >
+                登入
+              </button>
+            </>
           )}
-          <a href="/#about">關於我們</a>
         </div>
-        <div
-          className={`${location.hash === "#offer" && styles.active} ${
-            styles.entry
-          }`}
-        >
-          {location.hash === "#offer" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
-          )}
-          <a href="/#offer">服務項目</a>
-        </div>
-        <div
-          className={`${location.hash === "#news" && styles.active} ${
-            styles.entry
-          }`}
-        >
-          {location.hash === "#news" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
-          )}
-          <a href="/#news">最新消息</a>
-        </div>
-        <div
-          className={`${location.hash === "#photo" && styles.active} ${
-            styles.entry
-          }`}
-        >
-          {location.hash === "#photo" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
-          )}
-          <a href="/#photo">照片集</a>
-        </div>
-        <div
-          className={`${location.hash === "#info" && styles.active} ${
-            styles.entry
-          }`}
-        >
-          {location.hash === "#info" && (
-            <img
-              src="svg/footprint.svg"
-              alt="footprint"
-              className={styles.activeImg}
-            />
-          )}
-          <a href="/#info">交通指南</a>
+        <div className={styles.infoWrapper}>
+          <InfoGroup />
         </div>
       </div>
-      <div className={styles.bottomSide}>
-        <button
-          className={styles.bookBtn}
-          onClick={() => {
-            navigate("/booking");
-            setHamburgerClose();
-          }}
-        >
-          立即預約
-        </button>
-        <button className={styles.loginBtn} onClick={() => navigate("/login")}>
-          登入
-        </button>
-        <InfoGroup />
-      </div>
-    </div>
-  );
-})
+    );
+  }
+);
 
 MobileMenu.displayName = 'MobileMenu';
-
-// const DropdownMenu = ({linkTo, menuList}) => {
-//   const navigate = useNavigate()
-
-//   return (
-//     <ul className={styles.dropdownMenu}>
-//       {menuList.map((item, index) => <div onClick={() => navigate(`/${linkTo}`)}key={index}>{item}</div>)}
-//     </ul>
-//   )
-// }
 
 const Header = () => {
   const [ hamburgerOpen, setHamburgerOpen ] = useState(false)
@@ -160,9 +209,11 @@ const Header = () => {
     if (!hamburgerOpen) {
       hamburgerRef.current.className = styles.closeBtn
       menuRef.current.className = styles.mobileMenu
+      document.body.style.overflow = "hidden";
     } else {
       hamburgerRef.current.className = styles.hamburgerBtn
       menuRef.current.className = styles.closedMenu
+      document.body.style.overflow = "auto";
     }
 
     setHamburgerOpen(!hamburgerOpen)
@@ -253,7 +304,12 @@ const Header = () => {
         >
           <div className={styles.hamburgerBtn} ref={hamburgerRef}></div>
         </div>
-        <MobileMenu setHamburgerClose={handleHamburgerClick} ref={menuRef} />
+        <MobileMenu
+          setHamburgerClose={handleHamburgerClick}
+          currentUser={currentUser}
+          handleSignOut={handleSignOut}
+          ref={menuRef}
+        />
       </div>
     </div>
   );

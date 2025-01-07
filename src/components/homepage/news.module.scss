@@ -66,6 +66,10 @@
 .cardSlider {
   width: 100vw;
   height: 200px;
+  ul {
+    position: absolute;
+    bottom: -24px;
+  }
 }
 
 .body {
@@ -79,17 +83,19 @@
 }
 
 .card {
-  width: 340px;
-  height: 114px;
-  margin: 20px auto;
-  padding: 12px;
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
   align-items: center;
+  gap: 12px;
+  width: 80%;
+  height: 114px;
+  margin: 20px auto;
+  padding: 16px;
   background-color: style.$white;
   border-radius: 20px;
   box-shadow: 0px 0px 20px 0px #0000000A;
+  overflow: hidden;
 }
 
 .cardImg {
@@ -99,7 +105,14 @@
   height: 90px;
   padding: 0;
   border-radius: 12px;
+  flex-shrink: 0;
   overflow: hidden;
+}
+
+.img {
+  width: auto;
+  height: 100%;
+  object-fit: cover;
 }
 
 .moreBtn {
@@ -110,16 +123,17 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  margin-left: 16px;
   flex-grow: 1;
+  overflow: hidden;
 }
 
 %cardTag {
   width: fit-content;
-  padding: 8px 12px;
+  padding: 0 12px;
   margin: 0 0 12px 0;
   font-size: 12px;
   border-radius: 4px;
+  line-height: 28px;
 }
 
 .cardTagPost {
@@ -141,14 +155,16 @@
 }
 
 .cardTime {
-  margin: 0 0 8px 0;
   font-size: 12px;
   color: style.$dark_gray;
 }
 
 .cardTitle {
-  margin: 0 0 8px 0;
+  width: 100%;
   font-size: style.$font-size;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 // Banner下方分頁器點點，修改react-slick套件的樣式，因樣式不同，和其他slider取不同class
@@ -184,7 +200,6 @@
 
 :global(.mobile-slick-dots) {
   position: absolute;
-  bottom: -40px;
   left: 50%;
   transform: translate(-50%, 0);
   padding: 0;
@@ -219,11 +234,80 @@
 }
 
 
-
-
 @media screen and (min-width: 480px) {
   .container {
+    padding: 60px 24px;
+    &::before {
+      width: 360px;
+      height: 480px;
+      left: 10%;
+    }
+  }
+
+  .wrapper {
+    flex-direction: column;
+    align-items: center;
+    width: style.$wrapper_width;
+    margin: 0 auto;
+  }
+
+  .titleContainer {
+    align-items: flex-start;
+  }
+
+  .footprint {
+    width: 18px;
+    height: 20px;
+    margin: 0;
+  }
+
+  .title {
+    font-size: style.$title-font-size;
+    margin: 8px 0 16px 0;
+  }
+
+  .subtitle {
+    margin: 0 0 32px 0;
+    font-size: style.$subtitle-font-size;
+    line-height: 43.5px;
+  }
+
+  .cardSlider {
+    display: none;
+  }
+
+  .card {
+    width: 568px;
+    height: auto;
+    margin: 0;
+    padding: 16px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  .cardImg {
+    width: fit-content;
+    height:fit-content;
+  }
+
+  .content {
+    margin-left: 25px;
+  }
+
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .container {
     padding: 124px 24px;
+
     &::before {
       width: 473px;
       height: 503px;
@@ -233,14 +317,11 @@
 
   .wrapper {
     flex-direction: row;
-    justify-content: space-around;
+    justify-content: center;
     align-items: flex-start;
-    width: style.$wrapper_width;
+    gap: 32px;
+    width: 100%;
     margin: 0 auto;
-  }
-
-  .titleContainer {
-    align-items: flex-start;
   }
 
   .titleGroup {
@@ -260,52 +341,22 @@
     margin: 0;
   }
 
-  .subtitle {
-    margin: 0 0 32px 0;
-    font-size: style.$subtitle-font-size;
-    line-height: 43.5px;
+  .card {
+    width: 600px;
   }
+}
 
-  .cardSlider {
-    display: none;
-  }
-
-  %btn-hover {
-    background-color: style.$white;
-    color: style.$primary_blue;
-    transform: scale(1.075, 1);
-    transform: translate(10px, 0);
+@media screen and (min-width: 1440px) {
+  .wrapper {
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    gap: 0;
+    width: style.$wrapper_width;
+    margin: 0 auto;
   }
 
   .card {
     width: 672px;
-    height: auto;
-    margin: 0;
-    padding: 16px;
-    &:hover {
-      cursor: pointer;
-      .moreBtn {
-        @extend %btn-hover;
-      }
-    }
-  }
-
-  .cardImg {
-    width: fit-content;
-    height:fit-content;
-  }
-
-  .content {
-    margin-left: 25px;
-  }
-
-  .moreBtn {
-    composes: labelMoreBtn from '../button/button.module.scss';
-    margin: 0 32px 0 0;
-    line-height: 1;
-  }
-
-  .body {
-    display: block;
   }
 }

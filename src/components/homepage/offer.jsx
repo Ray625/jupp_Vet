@@ -70,29 +70,29 @@ const OfferSection = () => {
   }
 
   return (
-    <section className={styles.container} id='offer'>
+    <section className={styles.container} id="offer">
       <div className={styles.wrapper}>
         <div className={styles.body}>
           <div className={styles.icon}>
-            <object data="/svg/home_footprint.svg" className={styles.footprint} aria-label="footprint"> </object>
+            <img
+              src="/svg/home_footprint.svg"
+              alt="icon"
+              className={styles.footprint}
+            />
           </div>
           <h2 className={styles.title}>Our Offer</h2>
-          <h3 className={styles.subtitle}>
-            專業醫療服務，用心護理
-          </h3>
+          <h3 className={styles.subtitle}>專業醫療服務，用心護理</h3>
           <div className={styles.cardList}>
             {offers.map((offer, index) => {
-              return <Card props={offer} key={index}/>
+              return <Card props={offer} key={index} />;
             })}
           </div>
           <CardSlider />
-        <PrimaryButton
-          title={'立即預約'}
-          onClick={handleBookingeBtnClick} />
+          <PrimaryButton title={"立即預約"} onClick={handleBookingeBtnClick} />
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 export default OfferSection;

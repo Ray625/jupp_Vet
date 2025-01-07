@@ -120,17 +120,13 @@
 
 @media screen and (min-width: 480px) {
   .container {
-    height: 72vh;
+    height: fit-content;
   }
 
   .wrapper {
     width: style.$wrapper_width;
     justify-content: center;
     align-items: center;
-  }
-
-  .img {
-    display: block;
   }
 
   .title {
@@ -154,18 +150,35 @@
   }
 
   .iconList {
+    width: 144px;
+    gap: 24px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .container {
+    height: 72vh;
+  }
+
+  .img {
+    display: block;
+  }
+
+  .iconList {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     gap: 32px;
     margin-top: 0;
-  }
-
-  .iconGroup {
-    margin-top: 48px;
+    width: 100%;
   }
 
   .mobileImg {
     display: none;
+  }
+
+  .iconGroup {
+    margin-top: 48px;
+    white-space: nowrap;
   }
 }

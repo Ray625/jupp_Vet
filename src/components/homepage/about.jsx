@@ -4,11 +4,15 @@ const IconGroup = ({className, svg, content}) => {
   return (
     <div className={styles.iconGroup}>
       <span className={className}>
-        <object data={`/svg/icon_` + svg +`.svg`} className={styles.icon} aria-label="icon"> </object>
+        <img
+          src={`/svg/icon_` + svg + `.svg`}
+          alt="icon"
+          className={styles.icon}
+        />
       </span>
       <p>{content}</p>
     </div>
-  )
+  );
 }
 
 const AboutSection = () => {

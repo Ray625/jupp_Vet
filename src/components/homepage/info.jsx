@@ -1,14 +1,18 @@
 import styles from './info.module.scss'
 
-const IconGroup = ({className, svg, content}) => {
+const IconGroup = ({ svg, content}) => {
   return (
     <div className={styles.iconGroup}>
-      <span className={styles.iconWrapper}>
-        <object data={`/svg/icon_` + svg +`.svg`} className={className} aria-label="icon"> </object>
-      </span>
+      <div className={styles.iconWrapper}>
+        <img
+          src={svg}
+          alt="icon"
+          className={styles.icon }
+        />
+      </div>
       <p className={styles.infoContent}>{content}</p>
     </div>
-  )
+  );
 }
 
 const InfoSection = () => {
@@ -22,28 +26,25 @@ const InfoSection = () => {
                 src="/svg/home_footprint.svg"
                 alt="icon"
                 className={styles.footprint}
-                />
+              />
               <h2 className={styles.title}>Infomation</h2>
             </div>
-            <h3 className={styles.subtitle}>本院資訊</h3>
+            <h3 className={styles.subtitle}>交通指南</h3>
             <p className={styles.describe}>
               我們位於台北市立動物園旁，附近有數個停車場。若家中毛孩有任何異狀，請盡速與本院聯絡或線上預約。
             </p>
           </div>
           <div className={styles.infoGroup}>
             <IconGroup
-              className={styles.iconPhone}
-              svg={"phone"}
+              svg={"/svg/icon_phone.svg"}
               content={"02 2345 6789"}
             />
             <IconGroup
-              className={styles.iconTime}
-              svg={"time"}
+              svg={"/svg/icon_time.svg"}
               content={"Mon - Sat 10:00 am - 21:00 pm"}
             />
             <IconGroup
-              className={styles.iconPin}
-              svg={"pin"}
+              svg={"/svg/icon_pin.svg"}
               content={"116台北市文山區新光路二段8號"}
             />
           </div>

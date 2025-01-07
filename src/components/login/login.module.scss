@@ -185,6 +185,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 16px;
 }
 
 .inputGroup {
@@ -202,7 +203,6 @@
 .inputWrapper {
   position: relative;
   height: 100%;
-  margin: 0 0 24px 0;
 }
 
 .input {
@@ -296,8 +296,30 @@
 
 @media screen and (min-width: 480px) {
   .container {
+    padding-top: 64px;
+  }
+
+  .leftSide {
+    height: 140px;
+    &::after {
+      height: 40px;
+    }
+  }
+
+  .describe {
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  .copyright {
+    display: block;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .container {
     height: 100vh;
-    padding-top: 0;
+    padding-top: 0px;
   }
 
   .wrapper {
@@ -305,9 +327,10 @@
   }
 
   .leftSide {
-    width: 580px;
+    width: 45%;
     height: 100%;
     background-position: center center;
+
     &::after {
       display: none;
     }
@@ -326,9 +349,10 @@
     flex-grow: 1;
     padding: 0;
   }
-
-  .copyright {
-    display: block;
-  }
 }
 
+@media screen and (min-width: 1440px) {
+  .leftSide {
+    width: 580px;
+  }
+}

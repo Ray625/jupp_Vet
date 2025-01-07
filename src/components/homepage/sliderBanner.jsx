@@ -14,7 +14,11 @@ const SliderBanner = () => {
 
   const PrevArrowButton = ({ onClick }) => {
     return (
-      <button className={styles.prevArrowBtn} onClick={onClick}>
+      <button
+        className={styles.prevArrowBtn}
+        onClick={onClick}
+        aria-hidden="false"
+      >
         <i className="fa-solid fa-arrow-left"></i>
       </button>
     );
@@ -22,7 +26,11 @@ const SliderBanner = () => {
 
   const NextArrowButton = ({ onClick }) => {
     return (
-      <button className={styles.nextArrowBtn} onClick={onClick}>
+      <button
+        className={styles.nextArrowBtn}
+        onClick={onClick}
+        aria-hidden="false"
+      >
         <i className="fa-solid fa-arrow-left"></i>
       </button>
     );

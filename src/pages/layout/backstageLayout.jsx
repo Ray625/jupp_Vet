@@ -42,7 +42,7 @@ const NavBtn = ({ props }) => {
 
   return (
     <button
-      className={`rounded p-4 w-32 text-start transition-all duration-200 hover:bg-primary-blue hover:text-white ${
+      className={`rounded p-4 xl:w-32 w-fit text-start transition-all duration-200 hover:bg-primary-blue hover:text-white ${
         pathname === path && "bg-primary-blue text-white"
       }`}
       onClick={() => navigate(path)}
@@ -298,6 +298,7 @@ const BackstageLayout = () => {
     onValue(usersRef, (snap) => {
       if (snap.exists()) {
         const list = snap.val()
+        console.log("list", list)
         const usersData = []
         for (const [key, value] of Object.entries(list)) {
           if (value.email === "admin001@gmail.com") continue
@@ -385,7 +386,7 @@ const BackstageLayout = () => {
   }, [users, userFilters])
 
   return (
-    <div className="container-none h-screen flex flex-col font-sans">
+    <div className="container-none xl:h-screen h-fit flex flex-col font-sans">
       <div className="w-full p-8 bg-footer-blue">
         <div className="container flex flex-row justify-between mx-auto">
           <h2 className="text-xl w-fit text-white">動物醫院後台</h2>
@@ -398,8 +399,8 @@ const BackstageLayout = () => {
         </div>
       </div>
       <div className="h-full bg-bg-gray">
-        <div className="container flex flex-row h-full mx-auto">
-          <div className="flex flex-col items-start gap-y-1 w-48 p-8 text-lg h-full">
+        <div className="container flex flex-col xl:flex-row  h-full mx-auto">
+          <div className="flex flex-row xl:flex-col items-start justify-start gap-y-1 xl:w-48 xl:p-8 xl:h-full p-4 text-lg ">
             {navList.map((item) => (
               <NavBtn props={item} key={item.text} />
             ))}
@@ -418,14 +419,14 @@ const BackstageLayout = () => {
                 setFilters,
                 usersData,
                 userFilters,
-                setUserFilters
+                setUserFilters,
               }}
             />
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default BackstageLayout

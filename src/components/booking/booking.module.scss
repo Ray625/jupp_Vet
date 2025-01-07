@@ -171,7 +171,7 @@
 }
 
 .formContainer {
-  margin-top: 34px;
+  margin-top: 40px;
 }
 
 .selectBtnGroup {
@@ -231,7 +231,6 @@
   @extend %form;
   width: 340px;
   align-items: flex-start;
-  margin-top: 12px;
   margin-bottom: 36px;
   padding: 28px 16px;
   border-radius: 12px;
@@ -256,6 +255,7 @@
   flex-direction: column;
   gap: 24px;
   margin-bottom: 64px;
+  width: 100%;
 }
 
 .describe {
@@ -397,8 +397,9 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  width: 340px;
+  width: 100%;
   height: fit-content;
+  margin-bottom: 12px;
   padding: 16px;
   border-radius: 12px;
   background-color: style.$white;
@@ -438,7 +439,22 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 308px;
+  width: 100%;
+}
+
+.petNameGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.petNameGender {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 16px;
 }
 
 .inputGroup {
@@ -666,7 +682,8 @@
 .species {
   @extend %select;
   justify-content: flex-start;
-  align-self: center;
+  align-self: flex-start;
+  margin-bottom: 16px;
 }
 
 .speciesInput {
@@ -787,44 +804,47 @@
   color: style.$font_gray;
 }
 
+.tableInfo {
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .tableMark {
-  display: flex;
-  justify-content: flex-start;
-  margin-left: 16px;
-  color: style.$disabled_gray;
+  display: none;
 }
 
 .infoTableIcon {
+  grid-column: 4 / 5;
   width: 20px;
   height: 20px;
 }
 
 .confirmForm {
   @extend %form;
-  width: 672px;
+  width: 340px;
   align-items: center;
-  padding: 64px 108px;
-  margin-top: 24px;
-  margin-bottom: 64px;
-  border-radius: 20px;
+  padding: 28px 16px 16px 16px;
+  margin-bottom: 36px;
+  border-radius: 12px;
 }
 
 .confirmFormTitle {
   font-size: 20px;
   line-height: 28px;
   font-weight: 400;
-  margin: 0 0 64px 0;
+  margin: 0 0 32px 0;
 }
 
 .bookingNum {
-  margin-bottom: 64px;
+  margin-bottom: 32px;
   color: style.$icon_blue;
-  font-size: 60px;
+  font-size: 44px;
   font-weight: 600;
 }
 
 .remind {
-  margin-bottom: 64px;
+  margin-bottom: 20px;
   line-height: 28px;
 }
 
@@ -860,6 +880,10 @@
   list-style-type: decimal;
   font-size: style.$point-font-size;
   line-height: 24px;
+}
+
+.note {
+  text-align: left;
 }
 
 @media screen and (min-width: 480px) {
@@ -929,15 +953,42 @@
   }
 
   .formContainer {
-    margin-top: 68px;
+    margin-top: 48px;
   }
 
   .form {
     width: 672px;
     padding: 64px 108px;
-    margin-top: 24px;
     margin-bottom: 64px;
     border-radius: 20px;
+  }
+
+  .tableMark {
+    display: flex;
+    justify-content: flex-start;
+    margin-left: 16px;
+    color: style.$disabled_gray;
+  }
+
+  .confirmForm {
+    width: 672px;
+    padding: 64px 108px;
+    margin-bottom: 64px;
+    border-radius: 20px;
+  }
+
+  .confirmFormTitle {
+    margin: 0 0 32px 0;
+  }
+
+  .remind {
+    margin-bottom: 32px;
+  }
+
+  .bookingNum {
+    margin-bottom: 32px;
+    font-size: 60px;
+    font-weight: 600;
   }
 
   .btnGroup {
@@ -976,18 +1027,18 @@
     }
   }
 
-
   .submitBtnGroup {
     flex-direction: row;
-    margin-bottom: 120px;
+    margin-bottom: 64px;
     gap: 24px;
   }
 
   .infoWrapper {
     flex-direction: row;
     gap: 14px;
-    width: 672px;
+    max-width: 672px;
     height: 116px;
+    margin-bottom: 24px;
     padding: 12px;
     border-radius: 20px;
     div {
@@ -1022,6 +1073,22 @@
     width: 456px;
   }
 
+  .petNameGroup {
+    flex-direction: row;
+    gap: 16px;
+    width: 456px;
+  }
+
+  .petNameGender {
+    width: fit-content;
+  }
+
+  .species {
+    justify-content: flex-start;
+    align-self: center;
+    margin-bottom: 0;
+  }
+
   .nameInput {
     width: 140px;
   }
@@ -1029,5 +1096,43 @@
   .gender {
     justify-content: flex-end;
     align-self: flex-end;
+  }
+
+
+}
+
+@media screen and (min-width: 1024px) {
+  .formContainer {
+    margin-top: 48px;
+  }
+
+  .confirmFormTitle {
+    margin: 0 0 40px 0;
+  }
+
+  .remind {
+    margin-bottom: 40px;
+  }
+
+  .bookingNum {
+    margin-bottom: 40px;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .formContainer {
+    margin-top: 68px;
+  }
+
+  .confirmFormTitle {
+    margin: 0 0 64px 0;
+  }
+
+  .remind {
+    margin-bottom: 64px;
+  }
+
+  .bookingNum {
+    margin-bottom: 64px;
   }
 }

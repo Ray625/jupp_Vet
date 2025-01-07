@@ -21,7 +21,7 @@
 .logo {
   height: 44px;
   width: 156px;
-  background-image: url('../../public/svg/logo.svg');
+  background-image: url('/public/svg/logo.svg');
   background-repeat: no-repeat;
   background-size: contain;
 }
@@ -38,7 +38,7 @@
     content: '';
     width: 13.5px;
     height: 12px;
-    background-image: url('../../public/svg/footprint.svg');
+    background-image: url('/public/svg/footprint.svg');
     position: absolute;
     left: -6px;
     top: 50%;
@@ -62,12 +62,6 @@
   height: 100%;
   display: flex;
   align-items: center;
-
-  // &:hover {
-  //   & .dropdownMenu {
-  //     display: flex;
-  //   }
-  // }
 }
 
 .userCenter {
@@ -132,40 +126,6 @@
   }
 }
 
-// .dropdownMenu {
-//   border-radius: 0 0 16px 16px;
-//   background-color: style.$white;
-//   margin: 0;
-//   padding: 8px 0;
-//   width: 148px;
-//   display: none;
-//   flex-direction: column;
-//   align-items: center;
-//   position: absolute;
-//   top: 100%;
-//   left: -27px;
-//   box-shadow: 0px 10px 12px 0px #00000014;
-
-//   &:hover {
-//     display: flex;
-//   }
-
-//   div {
-//     width: 132px;
-//     padding: 16px 24px;
-//     border-radius: 8px;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     text-align: center;
-//     color: style.$dark_gray;
-
-//     &:hover {
-//       background-color: style.$hover_gray;
-//     }
-//   }
-// }
-
 .hamburgerContainer {
   display: flex;
   justify-content: center;
@@ -229,11 +189,10 @@
 .mobileMenu {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 8px;
   position: fixed;
   top: 80px;
-  left: 0;
   right: 0;
   z-index: 10;
   width: 100vw;
@@ -258,7 +217,7 @@
     right: 0;
     width: 170px;
     height: 180px;
-    background-image: url(../../public/img/news_background.png);
+    background-image: url('/public/img/news_background.png');
     background-size: contain;
     opacity: 0.5;
   }
@@ -317,10 +276,19 @@
 .bottomSide {
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+.bookingUserBtnGroup {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
 }
 
 .bookBtn,
-.loginBtn {
+.loginBtn,
+.backstageBtn {
   padding: 16px;
   text-align: center;
   font-size: 18px;
@@ -329,22 +297,31 @@
 }
 
 .bookBtn {
-  margin: 20px 0 20px 0;
   color: style.$white;
   background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+  flex-grow: 1;
 }
 
 .loginBtn {
-  margin: 0 0 32px 0;
   color: style.$primary_orange;
   background: style.$white;
+  flex-grow: 1;
 }
 
+.backstageBtn {
+  color: style.$white;
+  background: linear-gradient(90deg, style.$primary_orange 0%, style.$dark_orange 100%);
+  flex-grow: 1;
+}
+
+.infoWrapper {
+  margin-top: auto;
+}
 
 
 @media screen and (min-width: 480px) {
   .wrapper {
-    justify-content: space-around;
+    justify-content: space-between;
   }
 
   .logo {
@@ -353,14 +330,28 @@
     }
   }
 
+  .mobileMenu {
+    width: 50vw;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .wrapper {
+    justify-content: space-around;
+  }
+
   .navbarList {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 3rem;
+    gap: 0;
   }
 
   .navbarEntry:hover {
+    cursor: pointer;
+  }
+
+  .login:hover {
     cursor: pointer;
   }
 
@@ -384,10 +375,6 @@
     border-radius: 50%;
   }
 
-  .login:hover {
-    cursor: pointer;
-  }
-
   .hamburgerContainer {
     display: none;
   }
@@ -402,5 +389,11 @@
 
   .closedMenu {
     display: none;
+  }
+}
+
+@media screen and (min-width: 1440px) {
+  .navbarList {
+    gap: 2rem;
   }
 }

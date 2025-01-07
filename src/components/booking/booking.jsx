@@ -533,36 +533,38 @@ const PetInfoForm = ({ petInfo, func }) => {
 
   return (
     <div className={styles.infoBody}>
-      <div className={styles.nameGroup}>
-        <div className={styles.inputGroup}>
-          <label htmlFor="petName" className={styles.inputTitle}>
-            寵物名
-          </label>
-          <input
-            name="petName"
-            id="petName"
-            type="text"
-            autoComplete="auto"
-            className={styles.petNameInput}
-            value={petInfo.petName}
-            onChange={(e) => handlePetNameChange(e.target.value)}
-          />
-        </div>
-        <div className={`${styles.inputGroup} ${styles.petGenderInput}`}>
-          <label htmlFor="petGender" className={styles.inputTitle}>
-            性別
-          </label>
-          <select
-            name="petGender"
-            id="petGender"
-            className={styles.selection}
-            onChange={(e) => handlePetGenderChange(e.target.value)}
-            value={petInfo.gender}
-          >
-            <option value="">請選擇</option>
-            <option value="male">公</option>
-            <option value="female">母</option>
-          </select>
+      <div className={styles.petNameGroup}>
+        <div className={styles.petNameGender}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="petName" className={styles.inputTitle}>
+              寵物名
+            </label>
+            <input
+              name="petName"
+              id="petName"
+              type="text"
+              autoComplete="auto"
+              className={styles.petNameInput}
+              value={petInfo.petName}
+              onChange={(e) => handlePetNameChange(e.target.value)}
+            />
+          </div>
+          <div className={`${styles.inputGroup} ${styles.petGenderInput}`}>
+            <label htmlFor="petGender" className={styles.inputTitle}>
+              性別
+            </label>
+            <select
+              name="petGender"
+              id="petGender"
+              className={styles.selection}
+              onChange={(e) => handlePetGenderChange(e.target.value)}
+              value={petInfo.gender}
+            >
+              <option value="">請選擇</option>
+              <option value="male">公</option>
+              <option value="female">母</option>
+            </select>
+          </div>
         </div>
         <div className={styles.species}>
           <input
@@ -1295,7 +1297,6 @@ const FormStep4 = ({ reserveNum, reserveInfo }) => {
           <span className={styles.bookingTime}>
             {date} {reserveTime}{" "}
           </span>
-          時段
           <br />
           值班醫師
           <span className={styles.bookingTime}> {reserveInfo.doctor}</span>

@@ -1,8 +1,9 @@
 @use '/src/styles/style.scss';
 
 .loading {
+  position: relative;
   width: 100%;
-  height: 100vh;
+  height: 20vh;
 }
 
 .container {
@@ -10,7 +11,7 @@
   flex-direction: column;
   align-items: center;
   height: fit-content;
-  padding: 92px 0 120px 0;
+  padding: 64px 0;
   overflow: hidden;
   background-color: style.$white;
 }

@@ -58,6 +58,9 @@
   width: 100vw;
   height: fit-content;
   margin: 0 0 52px 0;
+  ul {
+    bottom: -4px;
+  }
 }
 
 .leftCard,
@@ -133,7 +136,6 @@
   .body {
     width: style.$wrapper_width;
     height: 90%;
-    padding-top: 4vh;
   }
 
   .footprint {
@@ -150,6 +152,40 @@
     margin: 0 0 44px 0;
     font-size: style.$subtitle-font-size;
     line-height: 43.5px;
+  }
+
+  .cardSlider {
+    width: 480px;
+    height: fit-content;
+    margin: 0 0 52px 0;
+    ul {
+      bottom: -24px;
+    }
+  }
+
+  .leftCard,
+  .rightCard {
+    width: 88%;
+    height: fit-content;
+    padding: 32px;
+    margin: 20px auto;
+    border-radius: 20px;
+    background: style.$white;
+    box-shadow: 0px 0px 20px 0px #0000000A;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      background-size: cover;
+      background-repeat: no-repeat;
+      opacity: 0.15;
+    }
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .body {
+    padding-top: 4vh;
   }
 
   .cardList {
@@ -170,20 +206,21 @@
 
   .leftCard {
     margin: 0 0 22px 0;
+
     &::before {
-      top: 55px;
+      top: 90px;
       left: -10px;
     }
   }
 
   .rightCard {
     margin: 22px 0 0 0;
+
     &::before {
       top: 55px;
       left: -10px;
     }
   }
-
 
   .cardTitle {
     margin: 0 0 28px 0;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getDatabase, ref, update, remove, push, get } from "firebase/database";
+import { getDatabase, ref, update, remove, push } from "firebase/database";
 import moment from "moment";
 import { useOutletContext } from "react-router-dom";
 import useThrottle from "../../hooks/useThrottle";
@@ -207,8 +207,8 @@ const Doctors = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 w-8/12 h-fit">
-      <div className="flex flex-col px-4 py-8 gap-4 bg-white rounded-lg shadow-lg">
+    <div className="flex flex-col mx-auto xl:pt-8 pb-8 h-fit lg:w-8/12 md:w-fit">
+      <div className="flex flex-col px-4 py-8 gap-4 lg:w-full md:w-fit bg-white rounded-lg shadow-lg">
         <div className="flex flex-row gap-4">
           <p className="text-xl font-medium px-4 w-20">醫師</p>
           <p className="text-xl font-medium flex-grow pr-20 text-center">
@@ -229,11 +229,13 @@ const Doctors = () => {
             const work = doc.work;
             return (
               <div
-                className="flex flex-row gap-4 p-4 bg-bg-gray rounded-lg"
+                className="flex flex-row gap-4 p-4 lg:w-full md:w-fit bg-bg-gray rounded-lg"
                 key={doc.name}
               >
-                <p className="font-normal w-20">{doc.name}</p>
-                <p className="font-normal flex-grow text-center">
+                <p className="font-normal lg:w-20 md:w-fit text-nowrap">
+                  {doc.name}
+                </p>
+                <p className="font-normal flex-grow text-center text-nowrap">
                   {`${work.mon ? `週一(${work.mon})` : ""}`}{" "}
                   {`${work.tue ? `週二(${work.tue})` : ""}`}{" "}
                   {`${work.wed ? `週三(${work.wed})` : ""}`}{" "}
@@ -299,7 +301,10 @@ const MonthSchedule = () => {
   const placeholderArrayBefore = Array.from(
     { length: Number(firstDayOfWeek) },
     (_, i) => (
-      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+      <div
+        className="xl:w-32 xl:h-32 lg:w-28 lg:h-28 w-24 h-24 rounded bg-white"
+        key={`empty-${i}`}
+      ></div>
     )
   );
 
@@ -307,7 +312,10 @@ const MonthSchedule = () => {
   const placeholderArrayAfter = Array.from(
     { length: 6 - Number(lastDayOfWeek) },
     (_, i) => (
-      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+      <div
+        className="xl:w-32 xl:h-32 lg:w-28 lg:h-28 w-24 h-24 rounded bg-white"
+        key={`empty-${i}`}
+      ></div>
     )
   );
 
@@ -381,25 +389,25 @@ const MonthSchedule = () => {
         <div className="w-fit h-fit">
           <div className="w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
             <div className="flex flex-row w-fit gap-1 bg-white rounded mb-1">
-              <div className="flex items-center justify-center w-32 h-8 ">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 日
               </div>
-              <div className="flex items-center justify-center w-32 h-8">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 一
               </div>
-              <div className="flex items-center justify-center w-32 h-8">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 二
               </div>
-              <div className="flex items-center justify-center w-32 h-8">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 三
               </div>
-              <div className="flex items-center justify-center w-32 h-8">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 四
               </div>
-              <div className="flex items-center justify-center w-32 h-8">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 五
               </div>
-              <div className="flex items-center justify-center w-32 h-8">
+              <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">
                 六
               </div>
             </div>
@@ -441,7 +449,7 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
   const placeholderArrayBefore = Array.from(
     { length: Number(emptyBox[0]) },
     (_, i) => (
-      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+      <div className="xl:w-32 xl:h-32 lg:w-28 lg:h-28 w-24 h-24 rounded bg-white" key={`empty-${i}`}></div>
     )
   );
 
@@ -449,7 +457,10 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
   const placeholderArrayAfter = Array.from(
     { length: 6 - Number(emptyBox[1]) },
     (_, i) => (
-      <div className="w-32 h-32 rounded bg-white" key={`empty-${i}`}></div>
+      <div
+        className="xl:w-32 xl:h-32 lg:w-28 lg:h-28 w-24 h-24 rounded bg-white"
+        key={`empty-${i}`}
+      ></div>
     )
   );
 
@@ -478,13 +489,13 @@ const PreviewSchedule = ({ newSchedule, setNewSchedule, emptyBox }) => {
       {Object.keys(newSchedule).length !== 0 && (
         <div className="relative w-fit h-fit mt-1 p-1 bg-bg-gray rounded">
           <div className="flex flex-row w-fit gap-1 bg-white rounded mb-1">
-            <div className="flex items-center justify-center w-32 h-8 ">日</div>
-            <div className="flex items-center justify-center w-32 h-8">一</div>
-            <div className="flex items-center justify-center w-32 h-8">二</div>
-            <div className="flex items-center justify-center w-32 h-8">三</div>
-            <div className="flex items-center justify-center w-32 h-8">四</div>
-            <div className="flex items-center justify-center w-32 h-8">五</div>
-            <div className="flex items-center justify-center w-32 h-8">六</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">日</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">一</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">二</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">三</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">四</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">五</div>
+            <div className="flex items-center justify-center xl:w-32 lg:w-28 w-24 h-8">六</div>
           </div>
           <div className="grid grid-cols-7 auto-rows-min gap-1 w-fit h-fit">
             {placeholderArrayBefore}
@@ -572,7 +583,7 @@ const DayFrame = ({ time, data, setNewSchedule }) => {
         />
       )}
       <div
-        className="flex flex-col bg-white cursor-pointer w-32 h-32 rounded p-2 relative hover:opacity-80 transition-all duration-200"
+        className="relative flex flex-col bg-white xl:w-32 xl:h-32 lg:w-28 lg:h-28 w-24 h-24 p-2 xl:text-lg lg:text-base text-sm rounded hover:opacity-80 cursor-pointer transition-all duration-200"
         onClick={() => setEnlarge(true)}
       >
         <div className="text-right">{date}</div>
@@ -1025,7 +1036,7 @@ const Schedule = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 min-w-[960px] w-fit h-full">
+    <div className="flex flex-col mx-auto xl:pt-8 pb-8 xl:w-[960px] lg:w-[832px] md:w-[720px] w-fit h-full">
       <div className="w-fit">
         <div className="flex flex-row w-full">
           <button
@@ -1058,12 +1069,12 @@ const Schedule = () => {
         </div>
       </div>
       <div
-        className={`bg-white w-full p-4 rounded-b-md ${
+        className={`bg-white w-fit p-2 xl:p-4 rounded-b-md ${
           action === "view" ? "rounded-tr-md" : "rounded-t-md"
         } `}
       >
         {action === "view" && (
-          <div className="w-full">
+          <div className="w-fit">
             <MonthSchedule />
           </div>
         )}
@@ -1290,10 +1301,12 @@ const Records = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 w-fit h-full">
+    <div className="flex flex-col mx-auto xl:pt-8 pb-8 w-fit h-full">
       <div className="flex flex-col h-full p-3 bg-white rounded overflow-x-hidden ">
         <div className="flex flex-row justify-between items-center">
-          <h3 className="my-2 font-medium text-2xl">約診紀錄</h3>
+          <h3 className="my-2 font-medium xl:text-2xl lg:text-xl text-base">
+            約診紀錄
+          </h3>
           <search className="flex flex-row gap-2">
             <div className="flex flex-row gap-2 items-center justify-center w-fit rounded">
               <label className="w-fit" htmlFor="startTime">
@@ -1380,34 +1393,34 @@ const Records = () => {
             </button>
           </search>
         </div>
-        <table className="w-fit mt-2 bg-white rounded table-fixed">
+        <table className="w-fit my-2 bg-white rounded table-fixed xl:text-xl lg:text-lg text-base">
           <thead>
             <tr>
-              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal">
                 日期
               </th>
-              <th className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal">
                 診間
               </th>
-              <th className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal">
                 號碼
               </th>
-              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal">
                 飼主姓名
               </th>
-              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal">
                 電話
               </th>
-              <th className="px-2 py-1 w-48 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 xl:w-48 w-36 border-4 border-bg-gray text-left font-normal">
                 Email
               </th>
-              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal">
                 寵物
               </th>
-              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal">
                 醫師
               </th>
-              <th className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal">
                 備註
               </th>
             </tr>
@@ -1415,41 +1428,41 @@ const Records = () => {
           <tbody>
             {records &&
               records.map((record) => (
-                <tr key={record.id}>
-                  <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
+                <tr key={record.id} className="xl:text-xl lg:text-lg text-base">
+                  <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal">
                     {record.date_key.slice(0, -5)}
                   </td>
-                  <td className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal">
                     {record.date_key.slice(-3, -2)}
                   </td>
-                  <td className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-16 border-4 border-bg-gray text-left font-normal">
                     {record.number}
                   </td>
                   <td
-                    className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                    className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal truncate"
                     title={`${record.owner.lastName + record.owner.firstName}`}
                   >
                     {`${record.owner.lastName + record.owner.firstName}`}
                   </td>
-                  <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal">
                     {record.owner.phone}
                   </td>
                   <td
-                    className="px-2 py-1 w-48 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                    className="px-2 py-1 xl:w-48 w-36 border-4 border-bg-gray text-left font-normal truncate"
                     title={record.owner.email}
                   >
                     {record.owner.email}
                   </td>
                   <td
-                    className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                    className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal truncate"
                     title={record.pet_name}
                   >
                     {record.pet_name}
                   </td>
-                  <td className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-28 border-4 border-bg-gray text-left font-normal">
                     {record.doctor.slice(0, -7)}
                   </td>
-                  <td className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal text-xl">
+                  <td className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal">
                     {record.isCanceled ? "已取消" : ""}
                   </td>
                 </tr>
@@ -1675,7 +1688,7 @@ const Users = () => {
   };
 
   return (
-    <div className="flex flex-col mx-auto py-8 w-fit h-full">
+    <div className="flex flex-col mx-auto xl:pt-8 pb-8 w-fit h-full">
       <div className="flex flex-col h-full p-3 bg-white rounded">
         <div className="flex flex-row justify-between items-center">
           <h3 className="my-2 font-medium text-2xl">使用者列表</h3>
@@ -1696,22 +1709,22 @@ const Users = () => {
             </button>
           </search>
         </div>
-        <table className="w-fit mt-2 bg-white rounded table-fixed">
+        <table className="w-fit my-2 bg-white rounded table-fixed xl:text-xl lg:text-lg text-base">
           <thead>
             <tr>
-              <th className="px-2 py-1 w-40 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-40 border-4 border-bg-gray text-left font-normal">
                 創建日期
               </th>
-              <th className="px-2 py-1 w-32 border-4 w border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-32 border-4 w border-bg-gray text-left font-normal">
                 姓名
               </th>
-              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal">
                 電話
               </th>
-              <th className="px-2 py-1 w-64 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-64 border-4 border-bg-gray text-left font-normal">
                 Email
               </th>
-              <th className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal text-xl">
+              <th className="px-2 py-1 w-20 border-4 border-bg-gray text-left font-normal">
                 寵物
               </th>
             </tr>
@@ -1720,26 +1733,26 @@ const Users = () => {
             {users &&
               users.map((user) => {
                 return (
-                  <tr key={user.id}>
-                    <td className="px-2 py-1 w-40 border-4 border-bg-gray text-left font-normal text-xl">
+                  <tr key={user.id} className="xl:text-xl lg:text-lg text-base">
+                    <td className="px-2 py-1 w-40 border-4 border-bg-gray text-left font-normal">
                       {moment(user.createdAt).format("YYYY-MM-DD")}
                     </td>
                     <td
-                      className="px-2 py-1 w-32 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                      className="px-2 py-1 w-32 border-4 border-bg-gray text-left font-normal truncate"
                       title={`${user.lastName || ""}${user.firstName || ""}`}
                     >
                       {`${user.lastName || ""}${user.firstName || ""}`}
                     </td>
-                    <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal text-xl">
+                    <td className="px-2 py-1 w-36 border-4 border-bg-gray text-left font-normal">
                       {user.phone}
                     </td>
                     <td
-                      className="px-2 py-1 w-64 border-4 border-bg-gray text-left font-normal text-xl truncate"
+                      className="px-2 py-1 w-64 border-4 border-bg-gray text-left font-normal truncate"
                       title={user.email}
                     >
                       {user.email}
                     </td>
-                    <td className="px-2 py-1 w-20 border-4 border-bg-gray text-center font-normal text-xl">
+                    <td className="px-2 py-1 w-20 border-4 border-bg-gray text-center font-normal">
                       {user.pets && (
                         <button
                           className="w-fit min-w-8 border border-black rounded-full hover:text-white hover:bg-footer-blue transition-all duration-200"
@@ -1779,4 +1792,4 @@ const Users = () => {
   );
 };
 
-export { Doctors, Schedule, Records, Users };
+export { Doctors, Schedule, Records, Users, Paginator };

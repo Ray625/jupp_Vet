@@ -28,14 +28,6 @@ const PhotoSection = () => {
   }, [data])
 
   if (error) return
-  if (photos.length === 0 && isLoading) return <div className={styles.loading}>
-    <Loading
-      position={'fiexd'}
-      height={'100vh'}
-      width={'100vw'}
-      background={'#ffffff50'}
-    />
-  </div>
 
   return (
     <section className={styles.container} id="photo">
@@ -48,8 +40,18 @@ const PhotoSection = () => {
           />
           <h2 className={styles.title}>Our Baby</h2>
         </div>
-        <h3 className={styles.subtitle}>寶貝們</h3>
+        <h3 className={styles.subtitle}>來看看小寶貝們的照片</h3>
       </div>
+      {(photos.length === 0 && isLoading) && (
+        <div className={styles.loading}>
+          <Loading
+            position={'absolute'}
+            height={'20vh'}
+            width={'100%'}
+            background={'#ffffff50'}
+          />
+        </div>
+      )}
       <div className={styles.body}>
         <div className={styles.marquee}>
           {photos.length !== 0 &&

@@ -20,8 +20,11 @@ import {
 import { useState, useEffect, } from "react";
 import moment from "moment";
 import useAuth from "../../hooks/useAuth";
+import useDevice from "../../hooks/useDevice";
+import { deviceParams } from "../../utils/const";
 import { ConfirmAlert, OneBtnAlert } from "../alert/alert";
 import { PasswordInput } from "../login/login"
+import { Paginator } from "../backstage/backstage";
 
 const list = [
   {
@@ -281,6 +284,7 @@ const PetsInfo = () => {
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [alertOpen, setAlertOpen] = useState(false)
   const [alertText, setAlertText] = useState('')
+  const device = useDevice()
 
   const {currentUser, petsInfo} = useAuth()
   const db = getDatabase();
@@ -522,9 +526,11 @@ const PetsInfo = () => {
                           alt="icon"
                           className={styles.icon}
                         />
-                        <div className={styles.petInfoGroup}>
-                          ({gender}・{age}歲・{pet.breed})
-                        </div>
+                        {device !== deviceParams.mobile && (
+                          <div className={styles.petInfoGroup}>
+                            ({gender}・{age}歲・{pet.breed})
+                          </div>
+                        )}
                         <div
                           className={`${styles.openArrow} ${
                             selectedIndex === key && styles.invert
@@ -532,29 +538,36 @@ const PetsInfo = () => {
                         ></div>
                       </div>
                       {selectedIndex === key && (
-                        <div className={styles.btnGroup}>
-                          <button
-                            className={styles.deleteBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setConfirmOpen(true);
-                              setEditPet(pet);
-                            }}
-                          >
-                            刪除
-                            <i className="fa-regular fa-trash-can"></i>
-                          </button>
-                          <button
-                            className={styles.editBtn}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setEditing(true);
-                              setEditPet(pet);
-                            }}
-                          >
-                            編輯
-                            <i className="fa-regular fa-pen-to-square"></i>
-                          </button>
+                        <div className={styles.petInfoBody}>
+                          {device === deviceParams.mobile && (
+                            <div className={styles.petbodyInfo}>
+                              {gender}・{age}歲・{pet.breed}
+                            </div>
+                          )}
+                          <div className={styles.btnGroup}>
+                            <button
+                              className={styles.deleteBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setConfirmOpen(true);
+                                setEditPet(pet);
+                              }}
+                            >
+                              刪除
+                              <i className="fa-regular fa-trash-can"></i>
+                            </button>
+                            <button
+                              className={styles.editBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setEditing(true);
+                                setEditPet(pet);
+                              }}
+                            >
+                              編輯
+                              <i className="fa-regular fa-pen-to-square"></i>
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -613,7 +626,139 @@ const Record = () => {
   })
 
   const { reserveInfo } = useAuth();
+  const [records, setRecords] = useState(null)
+  const [paginator, setPaginator] = useState({
+    totalPage: null,
+    currentPage: 1,
+    inputValue: 1,
+  });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const totalPage = Math.ceil(reserveInfo.length / 5);
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        totalPage: totalPage,
+      };
+    });
+  }, [reserveInfo]);
+
+  useEffect(() => {
+    if (paginator.currentPage) {
+      const startItems = 0 + (paginator.currentPage - 1) * 5;
+      const endItems = 5 + (paginator.currentPage - 1) * 5;
+
+      const currentPageData = reserveInfo.slice(startItems, endItems);
+
+      setRecords(currentPageData);
+    }
+  }, [paginator.currentPage, reserveInfo]);
+
+  const handleChangePage = (page) => {
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        inputValue: page,
+      };
+    });
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      const pageNumber = Number(paginator.inputValue);
+
+      if (pageNumber >= paginator.totalPage) {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: paginator.totalPage,
+            inputValue: paginator.totalPage,
+          };
+        });
+        return;
+      } else if (pageNumber <= 1) {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: 1,
+            inputValue: 1,
+          };
+        });
+        return;
+      } else {
+        setPaginator((prev) => {
+          return {
+            ...prev,
+            currentPage: pageNumber,
+          };
+        });
+      }
+
+      setSelectedIndex(0)
+    }
+  };
+
+  const handleOnBlur = () => {
+    if (paginator.inputValue === "") {
+      setPaginator((prev) => ({
+        ...prev,
+        currentPage: 1,
+        inputValue: 1,
+      }));
+    }
+  };
+
+  const handleTurnPage = (page) => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+    setPaginator((prev) => {
+      return {
+        ...prev,
+        currentPage: Number(prev.currentPage) + page,
+        inputValue: Number(prev.currentPage) + page,
+      };
+    });
+    setSelectedIndex(0)
+  };
+
+  const handleNextPage = () => {
+    if (paginator.currentPage !== paginator.inputValue) {
+      setPaginator((prev) => {
+        return {
+          ...prev,
+          currentPage: Number(prev.currentPage),
+          inputValue: Number(prev.currentPage),
+        };
+      });
+    }
+
+    if (paginator.currentPage < paginator.totalPage) {
+      handleTurnPage(1);
+    } else {
+      return;
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (paginator.currentPage !== paginator.inputValue) {
+      setPaginator((prev) => {
+        return {
+          ...prev,
+          currentPage: Number(prev.currentPage),
+          inputValue: Number(prev.currentPage),
+        };
+      });
+    }
+
+    if (paginator.currentPage > 1) {
+      handleTurnPage(-1);
+    } else {
+      return;
+    }
+  };
 
 
   const handleCancelReverse = (petName, date, key, roomShift) => {
@@ -682,8 +827,8 @@ const Record = () => {
           {reserveInfo?.length === 0 && (
             <div className={styles.noData}>尚無資料</div>
           )}
-          {reserveInfo &&
-            reserveInfo.map((info, index) => {
+          {records &&
+            records.map((info, index) => {
               const date = moment(info.date_key.split("_")[0]).format(
                 "YYYY/MM/DD"
               );
@@ -711,7 +856,7 @@ const Record = () => {
 
               return (
                 <>
-                  <div key={info.key}>
+                  <div key={info.key} className={styles.reserveInfoEntry}>
                     <div
                       className={`${styles.reserveInfo} ${
                         selectedIndex === key ? styles.rightAngle : ""
@@ -723,7 +868,7 @@ const Record = () => {
                     >
                       <div className={styles.petInfoTitle}>預約日期</div>
                       <div className={styles.infoDate}>{date}</div>
-                      <div className={styles.petInfoGroup}>{`(${day})`}</div>
+                      <div className={styles.revserveInfoDay}>{`(${day})`}</div>
                       <div
                         className={`${styles.openArrow} ${
                           selectedIndex === key && styles.invert
@@ -783,6 +928,17 @@ const Record = () => {
               );
             })}
         </div>
+        {reserveInfo.length !== 0 && (
+          <Paginator
+            currentPage={paginator.inputValue}
+            totalPage={paginator.totalPage}
+            handleChangePage={handleChangePage}
+            handleKeyDown={handleKeyDown}
+            handleOnBlur={handleOnBlur}
+            handleNextPage={handleNextPage}
+            handlePrevPage={handlePrevPage}
+          />
+        )}
         <Button
           text="預約門診"
           onClick={() => {

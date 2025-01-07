@@ -1,6 +1,35 @@
 {
   "rules": {
     ".read": "auth != null",
-    ".write": "auth != null"
+    ".write": "auth != null",
+    "pets": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["owner_id"]
+    },
+    "schedule": {
+      ".read": true,
+      ".write": "auth != null",
+      ".indexOn": ["month"],
+      "$date": {
+        ".indexOn": ["shift"],
+        "$roomShift": {
+          ".indexOn": "shift"
+        }
+      }
+    },
+    "appointments": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      ".indexOn": ["date_key", "owner_id", "pet_id"]
+    },
+    "doctors": {
+        ".read": "root.child('authorizedAdmins').child(auth.uid).exists()",
+        ".write": "root.child('authorizedAdmins').child(auth.uid).exists()"
+    },
+    "authorizedAdmins": {
+      ".read": "auth != null",
+      ".write": "false"
+    }
   }
 }

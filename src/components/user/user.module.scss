@@ -1,73 +1,50 @@
 @use '/src/styles/style.scss';
 
 .menu {
-  width: 240px;
+  width: fit-content;
   height: fit-content;
+  margin: 0 auto;
   padding: 8px;
   background-color: style.$white;
   border-radius: 16px;
+  text-align: left;
 }
 
 .title {
   margin: 0;
-  padding: 20px;
+  padding: 8px;
   font-size: style.$title-font-size;
   font-weight: 400;
 }
 
 .list {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 8px;
   margin: 0;
   padding: 0;
 }
 
-
 .entry {
-  width: 100%;
+  width: 60px;
+  height: 60px;
   margin: 0;
-  padding: 16px;
+  padding: 8px;
   list-style: none;
   border-radius: 8px;
   font-size: style.$font-size;
   font-weight: 400;
-  &:hover {
-    background-color: style.$info_gray;
-    cursor: pointer;
-    .footprint {
-      transform: rotate(30deg);
-      transition: transform .3s ease;
-    }
-  }
+  text-align: center;
 }
 
 .active {
   background-color: style.$icon_blue;
   color: style.$white;
-
-  &:hover {
-    background-color: style.$icon_blue;
-  }
-
-  .footprint {
-    background-image: url('/public/svg/footprint_white.svg');
-    transform: rotate(30deg);
-    transition: transform 0.3s ease;
-  }
 }
 
 .footprint {
-  width: 14px;
-  height: 13px;
-  margin-right: 10px;
-  background-image: url('/public/svg/footprint.svg');
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: top right;
-  transition: transform .3s ease;
+  display: none;
 }
 
 .item {
@@ -78,21 +55,20 @@
   padding: 0;
 }
 
-
 .wrapper {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-  gap: 56px;
-  margin-bottom: 84px;
-  width: style.$wrapper_width;
+  gap: 32px;
+  margin-bottom: 48px;
+  width: 80%;
   height: fit-content;
 }
 
 .btn {
   width: fit-content;
   min-width: 152px;
-  margin: 52px auto 0px auto;
+  margin: 48px auto 0px auto;
   padding: 16px 24px;
   color: style.$white;
   background-color: style.$icon_orange;
@@ -109,7 +85,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-width: 500px;
+  width: 100%;
 }
 
 .tableTitle {
@@ -127,6 +103,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  gap: 12px;
 }
 
 .inputGroup {
@@ -189,13 +166,17 @@
 
 .petInfo {
   @extend %info;
-  grid-template-columns: 90px auto auto 1fr auto;
+  grid-template-columns: 80px auto auto 1fr;
   cursor: pointer;
 }
 
 .reserveInfo {
   @extend %info;
   grid-template-columns: 90px 98px 1fr auto;
+}
+
+.reserveInfoEntry:nth-last-of-type(1) {
+  margin-bottom: 16px;
 }
 
 .rightAngle {
@@ -221,6 +202,10 @@
   color: style.$disabled_gray;
 }
 
+.revserveInfoDay {
+  display: none;
+}
+
 .openArrow {
   width: 24px;
   height: 24px;
@@ -231,6 +216,7 @@
   background-position: center;
   background-size: contain;
   transition: transform 0.3s ease;
+  justify-self: end;
 }
 
 .invert {
@@ -260,7 +246,7 @@
 
 .divider {
   height: 1px;
-  width: 466px;
+  width: 92%;
   background-color: style.$light_gray;
 }
 
@@ -278,6 +264,18 @@
   color: style.$icon_blue;
 }
 
+.petInfoBody {
+  display: flex;
+  flex-direction: column;
+  background-color: style.$white;
+}
+
+.petbodyInfo {
+  text-align: left;
+  padding: 0 16px;
+  color: style.$disabled_gray;
+}
+
 .btnGroup {
   position: relative;
   display: flex;
@@ -293,8 +291,8 @@
     content: '';
     position: absolute;
     top: 0;
-    left: 8px;
-    width: 484px;
+    left: 4%;
+    width: 92%;
     height: 1px;
     background-color: style.$light_gray;
   }
@@ -337,43 +335,8 @@
 }
 
 .editPetForm {
+  width: 100%;
   margin-top: 34px;
-}
-
-@media screen and (min-width: 480px) {
-  .wrapper {
-    min-height: 45vh;
-  }
-
-  .reserveInfo:hover {
-    cursor: pointer;
-
-    & .openArrow {
-      opacity: 0.8;
-    }
-  }
-
-  .deleteBtn:hover {
-    cursor: pointer;
-    background-color: rgba(50, 50, 50, 0.2);
-    color: style.$dark_gray;
-  }
-
-  .disable {
-    background-color: rgba(105, 105, 105, 0.1);
-    color: style.$disabled_gray;
-    &:hover {
-      cursor: auto;
-      background-color: rgba(105, 105, 105, 0.1);
-      color: style.$disabled_gray;
-    }
-  }
-
-  .editBtn:hover {
-    cursor: pointer;
-    background-color: rgba(0, 59, 99, 0.2);
-    color: style.$icon_gray;
-  }
 }
 
 .password {
@@ -397,7 +360,213 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 120px;
+  min-height: 120px;
+  height: fit-content;
+  padding: 16px;
   background-color: style.$white;
   border-radius: 8px;
+  text-align: left;
+}
+
+@media screen and (min-width: 480px) {
+  .wrapper {
+    width: style.$wrapper_width;
+    min-height: 45vh;
+  }
+
+  .reserveInfo:hover {
+    cursor: pointer;
+
+    & .openArrow {
+      opacity: 0.8;
+    }
+  }
+
+  .menu {
+    width: 100%;
+    height: fit-content;
+    margin: 0;
+    padding: 8px;
+    background-color: style.$white;
+    border-radius: 16px;
+    text-align: left;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+  }
+
+  .entry {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+    border-radius: 8px;
+    font-size: style.$font-size;
+    font-weight: 400;
+  }
+
+  .active {
+    background-color: style.$icon_blue;
+    color: style.$white;
+
+    .footprint {
+      background-image: url('/public/svg/footprint_white.svg');
+      transform: rotate(30deg);
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .footprint {
+    display: block;
+    width: 14px;
+    height: 13px;
+    margin-right: 10px;
+    background-image: url('/public/svg/footprint.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: top right;
+    transition: transform .3s ease;
+  }
+
+  .btn {
+    margin-top: 52px;
+  }
+
+  .deleteBtn:hover {
+    cursor: pointer;
+    background-color: rgba(50, 50, 50, 0.2);
+    color: style.$dark_gray;
+  }
+
+  .disable {
+    background-color: rgba(105, 105, 105, 0.1);
+    color: style.$disabled_gray;
+
+    &:hover {
+      cursor: auto;
+      background-color: rgba(105, 105, 105, 0.1);
+      color: style.$disabled_gray;
+    }
+  }
+
+  .editBtn:hover {
+    cursor: pointer;
+    background-color: rgba(0, 59, 99, 0.2);
+    color: style.$icon_gray;
+  }
+
+  .infoTable {
+    min-width: 500px;
+    width: 100%;
+  }
+
+  .petInfo {
+    grid-template-columns: 90px auto auto 1fr auto;
+    cursor: pointer;
+  }
+
+  .revserveInfoDay {
+    display: block;
+    text-align: start;
+    color: style.$disabled_gray;
+  }
+
+  .googleHint {
+    text-align: center;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .wrapper {
+    flex-direction: row;
+    justify-content: center;
+    gap: 56px;
+    margin-bottom: 84px;
+  }
+
+  .menu {
+    width: 240px;
+    height: fit-content;
+    padding: 8px;
+    background-color: style.$white;
+    border-radius: 16px;
+    text-align: center;
+  }
+
+  .title {
+    margin: 0;
+    padding: 20px;
+    font-size: style.$title-font-size;
+    font-weight: 400;
+  }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .entry {
+    width: 100%;
+    margin: 0;
+    padding: 16px;
+    list-style: none;
+    border-radius: 8px;
+    font-size: style.$font-size;
+    font-weight: 400;
+
+    &:hover {
+      background-color: style.$info_gray;
+      cursor: pointer;
+
+      .footprint {
+        transform: rotate(30deg);
+        transition: transform .3s ease;
+      }
+    }
+  }
+
+  .active {
+    background-color: style.$icon_blue;
+    color: style.$white;
+
+    &:hover {
+      background-color: style.$icon_blue;
+    }
+
+    .footprint {
+      background-image: url('/public/svg/footprint_white.svg');
+      transform: rotate(30deg);
+      transition: transform 0.3s ease;
+    }
+  }
+
+  .footprint {
+    display: block;
+    width: 14px;
+    height: 13px;
+    margin-right: 10px;
+    background-image: url('/public/svg/footprint.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: top right;
+    transition: transform .3s ease;
+  }
+
+  .infoTable {
+    width: fit-content;
+  }
 }

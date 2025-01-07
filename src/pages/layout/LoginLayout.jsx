@@ -11,9 +11,13 @@ const LoginLayout = () => {
 
   return (
     <div className={styles.container}>
-      {device === deviceParams.mobile && <Header />}
+      {(device === deviceParams.mobile || device === deviceParams.tablet) && (
+        <Header />
+      )}
       <Outlet />
-      {device === deviceParams.mobile && <Footer />}
+      {(device === deviceParams.mobile || device === deviceParams.tablet) && (
+        <Footer />
+      )}
     </div>
   );
 }

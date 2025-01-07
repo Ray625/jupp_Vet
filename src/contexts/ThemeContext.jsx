@@ -14,10 +14,10 @@ const ThemeProvider = ({ children }) => {
   const device = useDevice()
 
   useEffect(() => {
-    if (device === deviceParams.mobile) {
-      setTickerOpen(false)
-    } else if (device === deviceParams.pc) {
-      setTickerOpen(true)
+    if (device === deviceParams.mobile || device === deviceParams.tablet) {
+      setTickerOpen(false);
+    } else if (device === deviceParams.pc || device === deviceParams.laptop) {
+      setTickerOpen(true);
     }
   },[device])
 

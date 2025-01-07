@@ -10,7 +10,7 @@ const LoginContainer = ({ children }) => {
   return (
     <div className={styles.container}>
       <div className={styles.wrapper}>{children}</div>
-      {device === deviceParams.pc && (
+      {(device === deviceParams.pc || device === deviceParams.laptop) && (
         <div className={styles.copyright}>
           Copyright © 2024 JP Pet Clinic All rights reserved.
         </div>
@@ -26,7 +26,7 @@ const LeftSide = ({ describe, focus, img }) => {
 
   return (
     <div className={styles.leftSide} style={{ backgroundImage: img }}>
-      {device === deviceParams.pc && (
+      {(device === deviceParams.pc || device === deviceParams.laptop) && (
         <div className={styles.logoContainer}>
           <div className={styles.logo} onClick={() => navigate("/")}></div>
         </div>
