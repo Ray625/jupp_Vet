@@ -1,13 +1,17 @@
 ## 簡介
 
-以React建置的動物醫院官網，設有會員系統可以註冊及登入。
+以React建置的動物醫院官網，設有會員系統可以註冊及登入。\
+登入後可以進行預約及進入會員中心編輯個人資料。\
+管理者則可進入後台修改班表及查詢使用者資料。
 
 ## 功能
 
 串接firebase建立登入系統，可使用email註冊及使用google帳戶登入。\
 以react-router-dom做前端路由功能。\
 以react-slick做首頁的banner輪播功能。\
-預約功能將陸續更新...
+練習使用SWR串接API。\
+管理者後台練習使用Tailwind CSS編寫。\
+使用moment.js處理時間相關程式碼。
 
 ## 環境設置
 
@@ -15,7 +19,10 @@ firebase@ 10.13.0\
 react-router-dom@ 6.26.1\
 react-slick@ 0.30.2\
 slick-carousel@ 1.8.1\
-sass@ 1.71.1
+sass@ 1.71.1\
+swr@ 2.2.5\
+moment@ 2.30.1\
+tailwindcss@ 3.4.11
 
 ## 開始使用
 
@@ -51,3 +58,8 @@ http://localhost:5173
 ```
 Ctrl + C
 ```
+
+## 正式網站
+
+https://my-vet-web.web.app/ \
+佈署於firebase hosting
