@@ -35,10 +35,7 @@ const InfoSection = () => {
             </p>
           </div>
           <div className={styles.infoGroup}>
-            <IconGroup
-              svg={"/svg/icon_phone.svg"}
-              content={"02 2345 6789"}
-            />
+            <IconGroup svg={"/svg/icon_phone.svg"} content={"02 2345 6789"} />
             <IconGroup
               svg={"/svg/icon_time.svg"}
               content={"Mon - Sat 10:00 am - 21:00 pm"}
@@ -54,7 +51,7 @@ const InfoSection = () => {
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1590.2418086191021!2d121.57536631490653!3d24.996977295230206!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3442aa640ddea4d1%3A0xa4be333a46a96053!2z5YuV54mp5ZyS56uZ!5e0!3m2!1szh-TW!2stw!4v1709770702621!5m2!1szh-TW!2stw"
             className={styles.googleMap}
             title="map"
-            allowfullscreen="true"
+            allowFullScreen={true}
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
           >

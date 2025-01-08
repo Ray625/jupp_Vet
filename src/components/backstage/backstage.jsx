@@ -55,9 +55,9 @@ const EditInput = ({
               <input
                 type="radio"
                 name={day}
-                value={null}
+                value="休"
                 className="w-4 h-4 cursor-pointer"
-                checked={!editDoctor.work[day]}
+                checked={editDoctor.work[day] === "休"}
                 onChange={(e) => handleShiftChange(day, e.target.value)}
               />
             </div>
@@ -96,12 +96,12 @@ const Doctors = () => {
   const [editDoctor, setEditDoctor] = useState({
     name: "",
     work: {
-      mon: null,
-      tue: null,
-      wed: null,
-      thu: null,
-      fri: null,
-      sat: null,
+      mon: "",
+      tue: "",
+      wed: "",
+      thu: "",
+      fri: "",
+      sat: "",
     },
   });
   const [newDoctor, setNewDoctor] = useState(false);
@@ -134,12 +134,12 @@ const Doctors = () => {
     setEditDoctor({
       name: "",
       work: {
-        mon: null,
-        tue: null,
-        wed: null,
-        thu: null,
-        fri: null,
-        sat: null,
+        mon: "",
+        tue: "",
+        wed: "",
+        thu: "",
+        fri: "",
+        sat: "",
       },
     });
     setNewDoctor(false);
@@ -161,12 +161,12 @@ const Doctors = () => {
     setEditDoctor({
       name: "",
       work: {
-        mon: null,
-        tue: null,
-        wed: null,
-        thu: null,
-        fri: null,
-        sat: null,
+        mon: "",
+        tue: "",
+        wed: "",
+        thu: "",
+        fri: "",
+        sat: "",
       },
     });
     setNewDoctor(false);
@@ -195,12 +195,12 @@ const Doctors = () => {
     setEditDoctor({
       name: "",
       work: {
-        mon: null,
-        tue: null,
-        wed: null,
-        thu: null,
-        fri: null,
-        sat: null,
+        mon: "",
+        tue: "",
+        wed: "",
+        thu: "",
+        fri: "",
+        sat: "",
       },
     });
     setEditing(false);

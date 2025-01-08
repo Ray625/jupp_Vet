@@ -1082,7 +1082,7 @@ const FormStep3 = ({
   };
 
   const handleReserve = async () => {
-    const date = moment(reserveInfo.date).format("YYYY-MM-DD");
+    const date = moment(reserveInfo.date.slice(0, -4), "YYYY/MM/DD").format("YYYY-MM-DD");
     const key = reserveInfo.key;
     const dateKey = `${date}_${key}`;
     const scheduleRef = ref(db, `schedule/${date}/${key}`);
@@ -1239,15 +1239,14 @@ const FormStep3 = ({
               if (age <= 0) age = "未滿1";
               const icon = getIcon(pet.species);
               return (
-                <>
-                  <InfoTableGroup
-                    title={`寵物${index + 1}`}
-                    info={pet.petName}
-                    mark={`(${age}歲 · ${pet.breed})`}
-                    icon={icon}
-                    className={styles.bookingInfo}
-                  />
-                </>
+                <InfoTableGroup
+                  title={`寵物${index + 1}`}
+                  info={pet.petName}
+                  mark={`(${age}歲 · ${pet.breed})`}
+                  icon={icon}
+                  className={styles.bookingInfo}
+                  key={index}
+                />
               );
             })}
             {haveNewPet && (

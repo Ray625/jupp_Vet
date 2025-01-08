@@ -54,25 +54,24 @@ const Menu = () => {
   return (
     <div className={styles.menu}>
       <div className={styles.title}>{`Hi, ${userName}`}</div>
-      <ul className={styles.list}>
+      <div className={styles.list}>
         {list.map((item) => {
           return (
-            <>
-              <li
-                className={`${styles.entry} ${
-                  pathname === `/user${item.index}` && styles.active
-                }`}
-                onClick={() => navigate("/user" + item.index)}
-              >
-                <p className={styles.item}>
-                  <div className={styles.footprint}></div>
-                  {item.title}
-                </p>
-              </li>
-            </>
+            <div
+              className={`${styles.entry} ${
+                pathname === `/user${item.index}` && styles.active
+              }`}
+              onClick={() => navigate("/user" + item.index)}
+              key={item.index}
+            >
+              <div className={styles.item}>
+                <div className={styles.footprint}></div>
+                {item.title}
+              </div>
+            </div>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 };
@@ -506,72 +505,71 @@ const PetsInfo = () => {
                 const key = index + 1;
 
                 return (
-                  <>
+                  <div
+                    className={styles.tableField}
+                    onClick={() => {
+                      if (selectedIndex !== key) setSelectedIndex(key);
+                      if (selectedIndex === key) setSelectedIndex(0);
+                    }}
+                    key={pet.petId}
+                  >
                     <div
-                      className={styles.tableField}
-                      onClick={() => {
-                        if (selectedIndex !== key) setSelectedIndex(key);
-                        if (selectedIndex === key) setSelectedIndex(0);
-                      }}
+                      className={`${styles.petInfo} ${
+                        selectedIndex === key ? styles.rightAngle : ""
+                      }`}
                     >
-                      <div
-                        className={`${styles.petInfo} ${
-                          selectedIndex === key ? styles.rightAngle : ""
-                        }`}
-                      >
-                        <div className={styles.petInfoTitle}>寵物 {key}</div>
-                        <div className={styles.petName}>{pet.petName}</div>
-                        <img
-                          src={speciesIcon}
-                          alt="icon"
-                          className={styles.icon}
-                        />
-                        {device !== deviceParams.mobile && (
-                          <div className={styles.petInfoGroup}>
-                            ({gender}・{age}歲・{pet.breed})
-                          </div>
-                        )}
-                        <div
-                          className={`${styles.openArrow} ${
-                            selectedIndex === key && styles.invert
-                          }`}
-                        ></div>
-                      </div>
-                      {selectedIndex === key && (
-                        <div className={styles.petInfoBody}>
-                          {device === deviceParams.mobile && (
-                            <div className={styles.petbodyInfo}>
-                              {gender}・{age}歲・{pet.breed}
-                            </div>
-                          )}
-                          <div className={styles.btnGroup}>
-                            <button
-                              className={styles.deleteBtn}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setConfirmOpen(true);
-                                setEditPet(pet);
-                              }}
-                            >
-                              刪除
-                              <i className="fa-regular fa-trash-can"></i>
-                            </button>
-                            <button
-                              className={styles.editBtn}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setEditing(true);
-                                setEditPet(pet);
-                              }}
-                            >
-                              編輯
-                              <i className="fa-regular fa-pen-to-square"></i>
-                            </button>
-                          </div>
+                      <div className={styles.petInfoTitle}>寵物 {key}</div>
+                      <div className={styles.petName}>{pet.petName}</div>
+                      <img
+                        src={speciesIcon}
+                        alt="icon"
+                        className={styles.icon}
+                      />
+                      {device !== deviceParams.mobile && (
+                        <div className={styles.petInfoGroup}>
+                          ({gender}・{age}歲・{pet.breed})
                         </div>
                       )}
+                      <div
+                        className={`${styles.openArrow} ${
+                          selectedIndex === key && styles.invert
+                        }`}
+                      ></div>
                     </div>
-                  </>
+                    {selectedIndex === key && (
+                      <div className={styles.petInfoBody}>
+                        {device === deviceParams.mobile && (
+                          <div className={styles.petbodyInfo}>
+                            {gender}・{age}歲・{pet.breed}
+                          </div>
+                        )}
+                        <div className={styles.btnGroup}>
+                          <button
+                            className={styles.deleteBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setConfirmOpen(true);
+                              setEditPet(pet);
+                            }}
+                          >
+                            刪除
+                            <i className="fa-regular fa-trash-can"></i>
+                          </button>
+                          <button
+                            className={styles.editBtn}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditing(true);
+                              setEditPet(pet);
+                            }}
+                          >
+                            編輯
+                            <i className="fa-regular fa-pen-to-square"></i>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 );
               })}
           </div>
@@ -829,9 +827,7 @@ const Record = () => {
           )}
           {records &&
             records.map((info, index) => {
-              const date = moment(info.date_key.split("_")[0]).format(
-                "YYYY/MM/DD"
-              );
+              const date = moment(info.date_key.split("_")[0]).format("YYYY/MM/DD");
               const day = [
                 "星期日",
                 "星期一",
@@ -841,9 +837,12 @@ const Record = () => {
                 "星期五",
                 "星期六",
                 "星期日",
-              ][moment(date).day()];
+              ][moment(info.date_key.split("_")[0]).day()];
               const key = index + 1;
-              const isPassed = moment().isAfter(date, "day");
+              const isPassed = moment().isAfter(
+                info.date_key.split("_")[0],
+                "day"
+              );
 
               const shift = ["10:00 ~ 13:00", "14:00 ~ 18:00", "19:00 ~ 21:00"][
                 info.date_key.slice(-1) - 1
@@ -855,76 +854,74 @@ const Record = () => {
               const room = info.date_key.slice(-3, -2);
 
               return (
-                <>
-                  <div key={info.key} className={styles.reserveInfoEntry}>
+                <div key={info.key} className={styles.reserveInfoEntry}>
+                  <div
+                    className={`${styles.reserveInfo} ${
+                      selectedIndex === key ? styles.rightAngle : ""
+                    }`}
+                    onClick={() => {
+                      if (selectedIndex !== key) setSelectedIndex(key);
+                      if (selectedIndex === key) setSelectedIndex(0);
+                    }}
+                  >
+                    <div className={styles.petInfoTitle}>預約日期</div>
+                    <div className={styles.infoDate}>{date}</div>
+                    <div className={styles.revserveInfoDay}>{`(${day})`}</div>
                     <div
-                      className={`${styles.reserveInfo} ${
-                        selectedIndex === key ? styles.rightAngle : ""
+                      className={`${styles.openArrow} ${
+                        selectedIndex === key && styles.invert
                       }`}
-                      onClick={() => {
-                        if (selectedIndex !== key) setSelectedIndex(key);
-                        if (selectedIndex === key) setSelectedIndex(0);
-                      }}
-                    >
-                      <div className={styles.petInfoTitle}>預約日期</div>
-                      <div className={styles.infoDate}>{date}</div>
-                      <div className={styles.revserveInfoDay}>{`(${day})`}</div>
-                      <div
-                        className={`${styles.openArrow} ${
-                          selectedIndex === key && styles.invert
-                        }`}
-                      ></div>
-                    </div>
-                    {selectedIndex === key && (
-                      <>
-                        <div className={styles.reserveInfoGroup}>
-                          <div className={styles.dividerBg}>
-                            <div className={styles.divider}></div>
-                          </div>
-                          <div className={styles.infoRow}>
-                            <div className={styles.infoTitle}>時段</div>
-                            <p className={styles.info}>{shift}</p>
-                          </div>
-                          <div className={styles.infoRow}>
-                            <div className={styles.infoTitle}>醫師</div>
-                            <p className={styles.info}>{doctor}</p>
-                          </div>
-                          <div className={styles.infoRow}>
-                            <div className={styles.infoTitle}>看診寵物</div>
-                            <p className={styles.info}>{petName}</p>
-                          </div>
-                          <div className={styles.infoRow}>
-                            <div className={styles.infoTitle}>約診號碼</div>
-                            <p
-                              className={styles.numInfo}
-                            >{`${room} 診 ${revserveNumber} 號`}</p>
-                          </div>
-                        </div>
-                        <div className={styles.reserveBtnGroup}>
-                          <button
-                            className={`${styles.deleteBtn} ${
-                              isPassed ? styles.disable : ""
-                            }`}
-                            onClick={() =>
-                              handleCancelReverse(
-                                petName,
-                                info.date,
-                                info.key,
-                                roomShift
-                              )
-                            }
-                            disabled={isPassed}
-                          >
-                            {isPassed ? "日期已過，無法變更" : "取消預約"}
-                            {!isPassed && (
-                              <i className="fa-regular fa-trash-can"></i>
-                            )}
-                          </button>
-                        </div>
-                      </>
-                    )}
+                    ></div>
                   </div>
-                </>
+                  {selectedIndex === key && (
+                    <>
+                      <div className={styles.reserveInfoGroup}>
+                        <div className={styles.dividerBg}>
+                          <div className={styles.divider}></div>
+                        </div>
+                        <div className={styles.infoRow}>
+                          <div className={styles.infoTitle}>時段</div>
+                          <p className={styles.info}>{shift}</p>
+                        </div>
+                        <div className={styles.infoRow}>
+                          <div className={styles.infoTitle}>醫師</div>
+                          <p className={styles.info}>{doctor}</p>
+                        </div>
+                        <div className={styles.infoRow}>
+                          <div className={styles.infoTitle}>看診寵物</div>
+                          <p className={styles.info}>{petName}</p>
+                        </div>
+                        <div className={styles.infoRow}>
+                          <div className={styles.infoTitle}>約診號碼</div>
+                          <p
+                            className={styles.numInfo}
+                          >{`${room} 診 ${revserveNumber} 號`}</p>
+                        </div>
+                      </div>
+                      <div className={styles.reserveBtnGroup}>
+                        <button
+                          className={`${styles.deleteBtn} ${
+                            isPassed ? styles.disable : ""
+                          }`}
+                          onClick={() =>
+                            handleCancelReverse(
+                              petName,
+                              info.date,
+                              info.key,
+                              roomShift
+                            )
+                          }
+                          disabled={isPassed}
+                        >
+                          {isPassed ? "日期已過，無法變更" : "取消預約"}
+                          {!isPassed && (
+                            <i className="fa-regular fa-trash-can"></i>
+                          )}
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
               );
             })}
         </div>

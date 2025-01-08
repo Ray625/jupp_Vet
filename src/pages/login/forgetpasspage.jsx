@@ -19,9 +19,9 @@ import {
 import { OneBtnAlert } from '../../components/alert/alert';
 
 const ForgetPassPage = () => {
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState("")
   const [alertOpen, setAlertOpen] = useState(false)
-  const [alertText, setAlertText] = useState('')
+  const [alertText, setAlertText] = useState("")
   const navigate = useNavigate()
   const auth = getAuth()
 

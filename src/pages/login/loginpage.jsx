@@ -17,8 +17,8 @@ import { OneBtnAlert } from "../../components/alert/alert";
 
 
 const LoginPage = () => {
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [alertOpen, setAlertOpen] = useState(false)
   const [alertText, setAlertText] = useState('')
   const navigate = useNavigate();

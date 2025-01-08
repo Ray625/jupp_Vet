@@ -15,6 +15,7 @@ const fetcher = (...args) => fetch(...args, option).then(res => res.json())
 const PhotoSection = () => {
   const [photos, setPhotos] = useState([])
   const photoSet = useRef(new Set())
+  const [animation, setAnimation] = useState(true)
 
   const { data, error, isLoading } = useSWR(`https://api.thecatapi.com/v1/images/search?limit=12&page=1`, fetcher, { revalidateOnFocus: false, revalidateIfStale: false })
 
@@ -42,18 +43,22 @@ const PhotoSection = () => {
         </div>
         <h3 className={styles.subtitle}>來看看小寶貝們的照片</h3>
       </div>
-      {(photos.length === 0 && isLoading) && (
+      {photos.length === 0 && isLoading && (
         <div className={styles.loading}>
           <Loading
-            position={'absolute'}
-            height={'20vh'}
-            width={'100%'}
-            background={'#ffffff50'}
+            position={"absolute"}
+            height={"20vh"}
+            width={"100%"}
+            background={"#ffffff50"}
           />
         </div>
       )}
-      <div className={styles.body}>
-        <div className={styles.marquee}>
+      <div className={styles.body} onClick={() => setAnimation(!animation)} title={animation ? "暫停" : "播放"}>
+        <div
+          className={`${styles.marquee} ${
+            animation ? styles.running : styles.paused
+          }`}
+        >
           {photos.length !== 0 &&
             photos.map((photo) => {
               return (
@@ -63,7 +68,11 @@ const PhotoSection = () => {
               );
             })}
         </div>
-        <div className={styles.marquee2}>
+        <div
+          className={`${styles.marquee2} ${
+            animation ? styles.running : styles.paused
+          }`}
+        >
           {photos.length !== 0 &&
             photos.map((photo) => {
               return (

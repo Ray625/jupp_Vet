@@ -298,7 +298,6 @@ const BackstageLayout = () => {
     onValue(usersRef, (snap) => {
       if (snap.exists()) {
         const list = snap.val()
-        console.log("list", list)
         const usersData = []
         for (const [key, value] of Object.entries(list)) {
           if (value.email === "admin001@gmail.com") continue

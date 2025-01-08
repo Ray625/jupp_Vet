@@ -17,10 +17,10 @@ import { OneBtnAlert } from "../../components/alert/alert";
 
 
 const SignupPage = () => {
-  const [firstName, setFirstName] = useState(null);
-  const [lastName, setLastName] = useState(null);
-  const [email, setEmail] = useState(null);
-  const [password, setPassword] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [checkedTerms, setCheckedTerms] = useState(false);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertText, setAlertText] = useState("");
@@ -160,7 +160,7 @@ const SignupPage = () => {
                 id="terms"
                 className={styles.checkbox}
                 checked={checkedTerms}
-                onClick={() => setCheckedTerms(!checkedTerms)}
+                onChange={() => setCheckedTerms(!checkedTerms)}
               />
               <p className={styles.describe}>
                 我同意 <span onClick={() => alert("服務條款")}>服務條款</span>{" "}

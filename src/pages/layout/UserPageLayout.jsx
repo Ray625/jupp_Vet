@@ -11,7 +11,6 @@ const UserPage = () => {
   const { tickerOpen } = useTheme();
   const { currentUser } = useAuth()
   const navigate = useNavigate()
-  console.log("currentUser", currentUser);
 
   useEffect(() => {
     if (!currentUser) {
