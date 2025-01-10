@@ -24,6 +24,13 @@ swr@ 2.2.5\
 moment@ 2.30.1\
 tailwindcss@ 3.4.11
 
+## 正式網站
+
+https://my-vet-web.web.app/ \
+佈署於firebase hosting\
+使用admin001@gmail.com登入可至後台編輯班表及查詢使用者資料，\
+密碼為00000000
+
 ## 開始使用
 
 clone專案至本地。\
@@ -58,8 +65,3 @@ http://localhost:5173
 ```
 Ctrl + C
 ```
-
-## 正式網站
-
-https://my-vet-web.web.app/ \
-佈署於firebase hosting
