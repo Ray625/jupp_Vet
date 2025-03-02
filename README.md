@@ -29,7 +29,7 @@ tailwindcss@ 3.4.11
 https://my-vet-web.web.app/ \
 佈署於firebase hosting\
 使用admin001@gmail.com登入可至後台編輯班表及查詢使用者資料，\
-密碼為00000000
+密碼為admin001
 
 ## 開始使用
 
